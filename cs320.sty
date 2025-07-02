@@ -41,6 +41,7 @@
   name=Remark,
   style=basic,
   shaded={
+    bgcolor=cornsilk,
     textwidth=0.98\textwidth,
     padding=6.7pt,
   },
@@ -66,7 +67,6 @@
   name=Example,
   style=basic,
   shaded={
-    bgcolor=cornsilk,
     textwidth=0.98\textwidth,
     padding=6.7pt,
   },
@@ -84,7 +84,7 @@
   name=Theorem,
   style=basic,
   shaded={
-    bgcolor=powderblue(web),
+    bgcolor=piggypink,
     textwidth=0.98\textwidth,
     padding=6.7pt,
   },
@@ -118,17 +118,6 @@
 \makeatother
 
 \lstset{
-  literate=
-    {0}{{{\ProcessDigit{0}}}}1
-    {1}{{{\ProcessDigit{1}}}}1
-    {2}{{{\ProcessDigit{2}}}}1
-    {3}{{{\ProcessDigit{3}}}}1
-    {4}{{{\ProcessDigit{4}}}}1
-    {5}{{{\ProcessDigit{5}}}}1
-    {6}{{{\ProcessDigit{6}}}}1
-    {7}{{{\ProcessDigit{7}}}}1
-    {8}{{{\ProcessDigit{8}}}}1
-    {9}{{{\ProcessDigit{9}}}}1,
   commentstyle=\color{iris},
   keywordstyle=[1]{\color{burntorange}},
   keywordstyle=[2]{\color{darkpastelgreen}},
@@ -147,6 +136,17 @@
 }
 
 \lstdefinelanguage{ocaml}{
+  literate=
+    {0}{{{\ProcessDigit{0}}}}1
+    {1}{{{\ProcessDigit{1}}}}1
+    {2}{{{\ProcessDigit{2}}}}1
+    {3}{{{\ProcessDigit{3}}}}1
+    {4}{{{\ProcessDigit{4}}}}1
+    {5}{{{\ProcessDigit{5}}}}1
+    {6}{{{\ProcessDigit{6}}}}1
+    {7}{{{\ProcessDigit{7}}}}1
+    {8}{{{\ProcessDigit{8}}}}1
+    {9}{{{\ProcessDigit{9}}}}1,
   keywords={[1]of,type,rec,let,match,with,val},
   keywords={[2]list,int},
   otherkeywords={=,|,*,:,->},
@@ -181,7 +181,19 @@
 \newcommand{\bnfeq}{\ \Coloneqq \ }
 \newcommand{\bnfalt}{\ | \ }
 \newcommand{\bnfaltn}{ \hspace{4mm} | \hspace{4mm} }
-\newcommand{\bnfempty}{\textcolor{blue}{\varepsilon}}
+\newcommand{\bnfempty}{\textcolor{darkgray}{\varepsilon}}
+
+\newcommand{\codel}[1]{\textcolor{purple}{\texttt{#1}}}
+
+% testing
+\usepackage{pdflscape}
+\usepackage{framed}
+
+\newenvironment{ffigure}{
+  \begin{figure}\begin{framed}
+}{
+  \end{framed}\end{figure}
+}
 
 % order matters, leave these at the end
 \usepackage{hyperref}

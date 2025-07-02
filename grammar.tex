@@ -7,23 +7,23 @@ It's \textit{not} the concern of grammar to determine that the first sentence ha
 
 The grammar of a programming language determines what constitutes a well-formed \textit{program} in that language.
 Due to the grammatical precision of programming languages, these tend to be called \textbf{formal grammars}.
-In OCaml, the program
+In OCaml, the program:
 %
 \begin{ocaml}
-  let f x = x + 1
+let f x = x + 1
 \end{ocaml}
 %
-is well-formed, but the program
+is well-formed, but the program:
 %
 \begin{ocaml}
-  f let x = x 1 +
+f let x = x 1 +
 \end{ocaml}
 %
 is not.
-As with natural language, the grammar of a programming language is not concerned with the \textit{meaning} of programs, just their well-formedness, e.g., the program
+As with natural language, the grammar of a programming language is not concerned with the \textit{meaning} of programs, just their well-formedness, e.g., the program:
 %
 \begin{ocaml}
-  let omega x = x x
+let omega x = x x
 \end{ocaml}
 %
 is well-formed, but isn't well-typed.
@@ -40,61 +40,75 @@ After going though this chapter, you should be able to read the specification gi
 How do we know that this sentence is grammatically correct?
 Let's try to break down the cognitive process of this determination.
 Consider the following English statement.
+%
 \begin{align*}
-  \newcommand{\tm}{\bnft}
-  \tm{the} \ \tm{cow} \ \tm{jumped} \ \tm{over} \ \tm{the} \ \tm{moon}
+\newcommand{\tm}{\bnft}
+\tm{the} \ \tm{cow} \ \tm{jumped} \ \tm{over} \ \tm{the} \ \tm{moon}
 \end{align*}
+%
 We might first recognize that each word is a particular part of speech (noun, verb, preposition, etc.) and that, with regards to grammar, only the part of speech counts.
 We represent this step of the process by replacing each word with an abstract symbol that stands in for its part of speech.
+%
 \begin{align*}
-  \newcommand{\nt}{\bnfnt}
-  \nt{article} \ \nt{noun} \ \nt{verb} \ \nt{prep} \ \nt{article} \ \nt{noun}
+\newcommand{\nt}{\bnfnt}
+\nt{article} \ \nt{noun} \ \nt{verb} \ \nt{prep} \ \nt{article} \ \nt{noun}
 \end{align*}
+%
 After this, there are some familiar patterns: $\bnfnt{article} \ \bnfnt{noun}$ is the determination or quantification of an object, e.g., \enquote{the house} or \enquote{a car.}
 In other words, this pattern represents a \textit{noun phrase} or \textit{nominal phrase}.
 We mentally group these forms, and this group can be represented by a new symbol.
+%
 \begin{align*}
-  \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{noun-phrase}
+\bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{noun-phrase}
 \end{align*}
+%
 Another pattern we might recognize: a proposition followed by a noun phrase is a single unit, e.g., \enquote{over the moon}, \enquote{through the woods}, and \enquote{behind the wall.}
 These are called \textit{prepositional phrases} and can, again, be represented by a new symbol.
+%
 \begin{align*}
-  \newcommand{\nt}{\bnfnt}
-  \nt{noun-phrase} \ \nt{verb} \ \nt{prep-phrase}
+\newcommand{\nt}{\bnfnt}
+\nt{noun-phrase} \ \nt{verb} \ \nt{prep-phrase}
 \end{align*}
+%
 Prepositional phrases modify verbs, creating a \textit{verb phrase} (e.g., \enquote{ran to the car}) leaving us with something like:
+%
 \begin{align*}
-  \newcommand{\nt}{\bnfnt}
-  \nt{noun-phrase} \ \nt{verb-phrase}
+\newcommand{\nt}{\bnfnt}
+\nt{noun-phrase} \ \nt{verb-phrase}
 \end{align*}
+%
 which we should finally recognized as the canonical structure of a well-formed sentence: \textit{thing does}.
 
 There are general structures that are allowed by a grammar, and these structures can be \textit{instantiated} at particular words in the language.
 The rules that define these structures are often heirarchical; a sentence is made of parts (e.g, a noun phrase and a verb phrase) and those constituent parts are made of smaller parts (e.g., an article and a noun) and so on until we reach units of our language, the particular words.
 Demonstrating that a sentence is grammatically correct means demonstrating that it fits into this heirarchy of allowed structures.
-If we reverse the order of steps we took above, and break up some of the steps we did in parallel, we get a \textit{proof} that our sentence is grammatically correct.
-%
-\begin{align*}
-  & \bnfnt{sentence} \\
-  & \bnfnt{noun-phrase} \ \bnfnt{verb-phrase} \\
-  & \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep-phrase} \\
-  & \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{noun-phrase} \\
-  & \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
-  & \bnfnt{article} \ \bnfnt{noun} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
-  & \bnft{the} \ \bnfnt{noun} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
-  & \bnft{the} \ \bnft{cow} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
-  & \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
-  & \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnfnt{article} \ \bnfnt{noun} \\
-  & \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnfnt{noun} \\
-  & \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}
-\end{align*}
-%
+If we reverse the order of steps we took above, and break up some of the steps we did in parallel, we get a \textit{proof} that our sentence is grammatically correct, e.g., see \Cref{fig:cow-deriv}.
+
 In what follows we call this sort of proof a \textbf{derivation}.
 Each line corresponds to the application of a grammatical rule.
 For example, the fourth line follows from the third by way of applying the grammatical rule that a prepositional phrase can be made up of a preposition followed by a verb phrase.
-If we squint, we can also start to see the tree-like structure encoded in this derivation (which we will call a \textbf{parse tree}).
-\bigskip
+And if we squint, we can start to see the tree-like structure encoded in this derivation (which we will call a \textbf{parse tree}), e.g., see \Cref{fig:cow-tree}.
 
+\begin{ffigure}
+\begin{align*}
+& \bnfnt{sentence} \\
+& \bnfnt{noun-phrase} \ \bnfnt{verb-phrase} \\
+& \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep-phrase} \\
+& \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{noun-phrase} \\
+& \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
+& \bnfnt{article} \ \bnfnt{noun} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
+& \bnft{the} \ \bnfnt{noun} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
+& \bnft{the} \ \bnft{cow} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
+& \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
+& \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnfnt{article} \ \bnfnt{noun} \\
+& \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnfnt{noun} \\
+& \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}
+\end{align*}
+\caption{Derivation of $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar from \Cref{fig:simple-grammar}}
+\label{fig:cow-deriv}
+\end{ffigure}
+
+\begin{ffigure}
 \Tree
   [.$\bnfnt{sentence}$
     [.$\bnfnt{noun-phrase}$
@@ -124,26 +138,29 @@ If we squint, we can also start to see the tree-like structure encoded in this d
       ]
     ]
   ]
+\caption{Parse tree for $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar from \Cref{fig:simple-grammar}}
+\label{fig:cow-tree}
+\end{ffigure}
 
 \section{Backus-Naur Form}
 
 A formal grammar is defined over a fixed collection of symbols.
 This collection is divided into two disjoint groups: the \textbf{terminal symbols} and the \textbf{non-terminal} symbols.
-We denote nonterminal symbols using notation of the form $\bnfnt{non-terminal}$, where \enquote{\textsf{non-terminal}} is replaced by an identifier.
-We denote terminal symbols in red typewriter font like $\bnft{terminal}$.
+We denote nonterminal symbols using notation of the form $\bnfnt{non-terminal}$.
+We denote terminal symbols in red typewriter font, e.g., $\bnft{terminal}$.
 %
 \begin{remark}
 We almost never state outright what our underlying symbols are.
 We can determine the terminal and non-terminal symbols of a grammar by looking at its specification, assuming that every symbol must appear at least once in the specification.
 \end{remark}
 %
-In the derivation from the previous section, we built a sequence of not-quite sentences, until the very last one, which was the sentence we wanted to prove grammatically correct.
-We call these possibly-not-quite sentences \textbf{sentential forms}.
+In the derivation from \Cref{fig:cow-deriv}, we built a sequence of not-quite sentences, until the very last one, which was the sentence we wanted to prove grammatically correct.
+These possibly-not-quite sentences are called \textbf{sentential forms}.
 %
 \begin{definition}
-  A \textbf{sentential form} is a sequence of symbols (terminal or non-terminal).
-  A \textbf{sentence} is a sequence of terminal symbols.
-  We will use the symbol $\bnfempty$ to refer to the empty sentential form.
+A \textbf{sentential form} is a sequence of symbols (terminal or non-terminal).
+A \textbf{sentence} is a sequence of terminal symbols.
+We will use the symbol $\bnfempty$ to refer to the empty sentential form.
 \end{definition}
 %
 \begin{remark}
@@ -155,24 +172,30 @@ It may be useful to think of a sentential form as a \textit{list} of symbols.
 %
 \begin{example}
 The following are sentential forms that appear above:
+%
 \begin{align*}
-  & \bnfnt{sentence} \\
-  & \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
-  & \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}
+& \bnfnt{sentence} \\
+& \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
+& \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}
 \end{align*}
+%
 but only the last one is a sentence.
 \end{example}
+%
 In the process of constructing sentential forms, we replaced a non-terminal symbol with a sentential form, e.g., we replaced $\bnfnt{noun-phrase}$ with $\bnfnt{article} \ \bnfnt{noun}$.
 These replacements are specified using \textbf{production rules}.
 %
 \begin{definition}
 A \textbf{production rule} is a nonterminal symbol together with a sentential form.
 Production rules are denoted using equations of the form
+%
 \begin{align*}
 \bnfnt{non-terminal} \bnfeq \textsf{SENTENTIAL-FORM}
 \end{align*}
+%
 where the left-hand side is the nonterminal symbol and the right-hand side is the sentential form.
 \end{definition}
+%
 We read a production rule as: \enquote{the non-terminal symbol on the left-hand side can be replaced with the sentential form on the right hand side.}
 %
 \begin{example}
@@ -181,43 +204,85 @@ We can express that a prepositional phrase can be made up of a preposition follo
 \begin{align*}
 \bnfnt{prep-phrase} \bnfeq \bnfnt{prep} \ \bnfnt{noun-phrase}
 \end{align*}
+%
 \end{example}
 %
 \textbf{Backus-Naur Form (BNF) specifications} are used to describe \textbf{context-free grammars}, which form a class of formal grammars that are expressive enough to capture the syntax of most programming languages.
 A BNF grammar is determined by what replacements we're allowed to perform and what kind of things we're trying to derive.
 %
 \begin{definition}
-  A \textbf{Backus-Naur Form (BNF) specification} is a collection of production rules, together with a designated symbol called the \textbf{starting symbol}.
-  If the start symbols is not explicitely given, it is taken to be the left-hand side of the \textit{first} rule appearing in the specification.
+A \textbf{Backus-Naur Form (BNF) specification} is a collection of production rules, together with a designated symbol called the \textbf{starting symbol}.
+If the start symbols is not explicitely given, it is taken to be the left-hand side of the \textit{first} rule appearing in the specification.
 \end{definition}
 %
 \begin{remark}
   John Backus and Peter Naur are computer scientist who formalized this metasyntax in the process of developing and implementing the programming language \href{https://dl.acm.org/doi/pdf/10.1145/366193.366201}{ALGOL 60}.
 \end{remark}
-%
+
+\begin{ffigure}
+\begin{align*}
+\bnfnt{sentence} &\bnfeq \bnfnt{noun-phrase} \ \bnfnt{verb-phrase} \\
+\bnfnt{verb-phrase} &\bnfeq \bnfnt{verb} \ \bnfnt{prep-phrase} \\
+\bnfnt{verb-phrase} &\bnfeq \bnfnt{verb} \\
+\bnfnt{prep-phrase} &\bnfeq \bnfnt{prep} \ \bnfnt{noun-phrase} \\
+\bnfnt{noun-phrase} &\bnfeq \bnfnt{article} \ \bnfnt{noun} \\
+\bnfnt{article} &\bnfeq \bnft{the} \\
+\bnfnt{noun} &\bnfeq \bnft{cow} \\
+\bnfnt{noun} &\bnfeq \bnft{moon} \\
+\bnfnt{verb} &\bnfeq \bnft{jumped} \\
+\bnfnt{prep} &\bnfeq \bnft{over}
+\end{align*}
+\caption{BNF specification for a simple grammar based on English}
+\label{fig:simple-grammar}
+\end{ffigure}
+
 \begin{example}
-  \label{simple-grammar}
-  The following is a BNF specification for a grammar from the previous section.
-  \begin{align*}
-    \bnfnt{sentence} &\bnfeq \bnfnt{noun-phrase} \ \bnfnt{verb-phrase} \\
-    \bnfnt{verb-phrase} &\bnfeq \bnfnt{verb} \ \bnfnt{prep-phrase} \\
-    \bnfnt{verb-phrase} &\bnfeq \bnfnt{verb} \\
-    \bnfnt{prep-phrase} &\bnfeq \bnfnt{prep} \ \bnfnt{noun-phrase} \\
-    \bnfnt{noun-phrase} &\bnfeq \bnfnt{article} \ \bnfnt{noun} \\
-    \bnfnt{article} &\bnfeq \bnft{the} \\
-    \bnfnt{noun} &\bnfeq \bnft{cow} \\
-    \bnfnt{noun} &\bnfeq \bnft{moon} \\
-    \bnfnt{verb} &\bnfeq \bnft{jumped} \\
-    \bnfnt{prep} &\bnfeq \bnft{over}
-  \end{align*}
+  \Cref{fig:simple-grammar} contains a BNF specification for the underlying grammar of the previous section.
   The nonterminal symbols of this grammar are: $\bnfnt{sentence}$, $\bnfnt{noun-phrase}$, $\bnfnt{verb-phrase}$, $\bnfnt{verb}$, $\bnfnt{prep}$, $\bnfnt{prep-phrase}$, $\bnfnt{article}$, and $\bnfnt{noun}$.
   The terminal symbols of this grammar are: $\bnft{the}$, $\bnft{cow}$, $\bnft{moon}, $\bnft{jumped}, and $\bnft{over}$.
   The nonterminal symbol $\bnfnt{sentence}$ is our starting symbol (because it appears as the left-hand side of the first rule).
   This is, of course, not a complete or accurate model of English grammar (such a model would be incredibly complicated).
 \end{example}
 %
-The last piece of our thought experiment that we need to formalize is the \textit{proof} of grammatical correction.
+As the previous example indicates, it's possible for a nonterminal symbol to have multiple associated production rules.
+This is very common so it has it's own syntax.
 %
+\begin{definition}
+We write
+%
+\begin{align*}
+\bnfnt{non-terminal} \bnfeq \textsf{SENTENTIAL-FORM}_1 \bnfalt \dots \bnfalt \textsf{SENTENTIAL-FORM}_k
+\end{align*}
+%
+as shorthand for
+%
+\begin{align*}
+\bnfnt{non-terminal} &\bnfeq \textsf{SENTENTIAL-FORM}_1 \\
+&\vdots \\
+\bnfnt{non-terminal} &\bnfeq \textsf{SENTENTIAL-FORM}_k
+\end{align*}
+%
+The multiple forms of a given nonterminal symbol are often called \textbf{alternatives}, and this shorthand is often called \textbf{alternative syntax}.
+\end{definition}
+%
+It's not difficult to rewrite the grammar from \Cref{fig:simple-grammar} using alternative syntax, see \Cref{fig:simple-grammar-alt}.
+The last piece of our thought experiment that we need to formalize is the \textit{proof} of grammatical correction.
+
+\begin{ffigure}
+\begin{align*}
+\bnfnt{sentence} &\bnfeq \bnfnt{noun-phrase} \ \bnfnt{verb-phrase} \\
+\bnfnt{verb-phrase} &\bnfeq \bnfnt{verb} \ \bnfnt{prep-phrase} \bnfalt \bnfnt{verb} \\
+\bnfnt{prep-phrase} &\bnfeq \bnfnt{prep} \ \bnfnt{noun-phrase} \\
+\bnfnt{noun-phrase} &\bnfeq \bnfnt{article} \ \bnfnt{noun} \\
+\bnfnt{article} &\bnfeq \bnft{the} \\
+\bnfnt{noun} &\bnfeq \bnft{cow} \bnfalt \bnft{moon} \\
+\bnfnt{verb} &\bnfeq \bnft{jumped} \\
+\bnfnt{prep} &\bnfeq \bnft{over}
+\end{align*}
+\caption{The grammar from \Cref{fig:simple-grammar} rewritten with alternative syntax}
+\label{fig:simple-grammar-alt}
+\end{ffigure}
+
 \begin{definition}
 A \textbf{derivation} of a sentence $S$ in a BNF grammar $\mathcal G$ is a sequence of sentential forms $S_1, \dots, S_k$ with the following properties:
 \begin{itemize}
@@ -249,30 +314,25 @@ For the derivation in the previous example, determine which production
 rule is applied in each line of the derivation.
 \end{exercise}
 %
-A sentence is not guaranteed to have a \textit{unique} derivation, but there a form of derivation we will single out.
+A sentence is not guaranteed to have a \textit{unique} derivation, but there a form of derivation we'll single out for reasons which will become more clear at the end of this section.
 %
 \begin{definition}
-A \textbf{leftmost derivation} of a sentence is one in which the leftmost nonterminal symbol is expanded in each step.
+A \textbf{leftmost derivation} is one in which the leftmost nonterminal symbol is expanded in each step.
 \end{definition}
 %
 The derivation given in the previous example is a leftmost derivation,
 whereas the derivation in the previous section is not.
 %
 \begin{exercise}
-Write a leftmost derivation of the sentence $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar from \Cref{simple-grammar}.
+Write a leftmost derivation of the sentence $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar from \Cref{fig:simple-grammar}.
 \end{exercise}
 %
-\begin{remark}
-In addition to context-free grammars, there are also context-\textit{sensitive} grammars.
-In a context-sensitive grammar, production rules can transform \textit{sequences of} symbols.
-In other words, for context-sensitive grammars, the left-hand side of a production rule is not required to be a single symbol.
-\end{remark}
-%
-As we've noted several times now, Grammars imbue sentences with hierarchical structure.
+Grammars imbue sentences with hierarchical structure.
 We can represent this structure formally in terms of \textbf{parse trees}.
 %
 \begin{definition}
 A \textbf{parse tree} for a sentence $S$ recognized by a grammar $\mathcal G$ is a tree $T$ with the following properties:
+%
 \begin{itemize}
 \item the root of $T$ is the starting symbol of $\mathcal G$;
 \item For every node $n$ of $T$, if $n$ has children $T_1, \dots, T_k$ then
@@ -280,13 +340,20 @@ A \textbf{parse tree} for a sentence $S$ recognized by a grammar $\mathcal G$ is
 \mathsf{val}(n) \bnfeq \mathsf{root}(T_1) \ \dots \mathsf{root}(T_k)
 \end{align*}
 is a production rule of $\mathcal G$;
-\item The leaves in order from left to right (i.e., the \textbf{frontier} of $T$) form the sentence $S$.
-In particular, the leaves of $T$ are labeled with terminal symbols of $\mathcal G$.
+\item The terminal symbols at the leaves of $T$, in order from left to right form the sentence $S$.
+Note that the value at a leaf $l$ may be a nonterminal symbol in the case that
+%
+\begin{align*}
+\mathsf{val}(l) \bnfeq \bnfempty
+\end{align*}
+%
+is a production rule of $\mathcal G$.
 \end{itemize}
 \end{definition}
 %
 \begin{example}
-The tree at the end of the previous section is a parse tree for the sentence $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar from \Cref{simple-grammar}.  The following is a parse tree for the sentence $\bnft{the} \ \bnft{moon} \ \bnft{jumped}$ in the same grammar:
+The tree at the end of the previous section is a parse tree for the sentence $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar from \Cref{fig:simple-grammar}.  The following is a parse tree for the sentence $\bnft{the} \ \bnft{moon} \ \bnft{jumped}$ in the same grammar:
+\bigskip
 
 \Tree
   [.$\bnfnt{sentence}$
@@ -309,30 +376,473 @@ The tree at the end of the previous section is a parse tree for the sentence $\b
 If a sentence $S$ has a derivation in a grammar $\mathcal G$, then it also has a parse tree, and vice versa.
 Multiple derivations may correspond to the same parse tree, but to every parse tree there is a unique corresponding leftmost derivation; a leftmost derivation corresponds to a pre-order traversal of a parse tree.
 %
+\begin{theorem}
+\label{thm:tree-leftmost}
+There is a one-to-one correspondence between parse trees and leftmost derivations.
+In particular, a sentence $S$ has exactly one parse tree in the $\mathcal G$ if and only if it has a exactly one leftmost derivation in $\mathcal G$.
+\end{theorem}
+%
 \begin{exercise}
-Implement the OCaml function
-%
-\begin{ocaml}
-val frontier : 'a tree -> 'a list
-\end{ocaml}
-%
-where \texttt{frontier t} is the list the values at the leaves of \texttt{t} in order from left to right.
-You should use the following ADT for trees:
-%
-\begin{ocaml}
-type 'a tree =
-  | Leaf of 'a
-  | Node of 'a * 'a tree list
-\end{ocaml}
-%
+\textbf{(Challenge)} Prove \Cref{thm:tree-leftmost}.
 \end{exercise}
+%
+\begin{remark}
+In addition to context-free grammars, there are also context-\textit{sensitive} grammars.
+For context-sensitive grammars, production rules can transform \textit{sequences of} symbols, i.e., the left-hand side of a production rule is not required to be a single symbol.
+\end{remark}
+%% \begin{exercise}
+%% Implement the OCaml function
+%% %
+%% \begin{ocaml}
+%% val frontier : 'a tree -> 'a list
+%% \end{ocaml}
+%% %
+%% where \texttt{frontier t} is the list the values at the leaves of \texttt{t} in order from left to right.
+%% You should use the following ADT for trees:
+%% %
+%% \begin{ocaml}
+%% type 'a tree =
+%%   | Leaf of 'a
+%%   | Node of 'a * 'a tree list
+%% \end{ocaml}
+%% %
+%% \end{exercise}
+%% %
 
 \section{Examples}
 
-In this short section we look at a couple of examples that are closer to real-world examples we'll see.
+\begin{ffigure}
+\begin{align*}
+\bnfnt{program} &\bnfeq \bnfnt{stmts} \\
+\bnfnt{stmts} &\bnfeq \bnfempty \bnfalt \bnfnt{stmt} \ \bnft{;} \ \bnfnt{stmts} \\
+\bnfnt{stmt} &\bnfeq \bnfnt{var} \ \bnft{=} \ \bnfnt{expr} \\
+\bnfnt{expr} &\bnfeq
+\bnfnt{term} \bnfalt
+\bnfnt{term} \ \bnft{+} \ \bnfnt{term} \bnfalt
+\bnfnt{term} \ \bnft{-} \ \bnfnt{term} \\
+\bnfnt{term} &\bnfeq \bnfnt{var} \bnfalt \bnft{0} \bnfalt \bnft{1} \\
+\bnfnt{var} &\bnfeq \bnft{a} \bnfalt \bnft{b} \bnfalt \bnft{c} \bnfalt \bnft{d}
+\end{align*}
+\caption{BNF specification for a toy imperative programming language}
+\label{fig:line-pl}
+\end{ffigure}
 
+\noindent
+\textbf{Imperative programs}.
+\Cref{fig:line-pl} contains a BNF specification for a toy imperative programming language, similar to what is known as a \textit{straight-line program}.
+In English, we would read this specification as:
+\begin{itemize}
+\item a \textit{program} is made up of \textit{statements};
+\item a collection of \textit{statements} is empty or is a single \textit{statement}, followed a semicolon, followed by a collection of \textit{statements};
+\item a statement is a \textit{variable}, followed by an equals sign, followed by a \textit{expression};
+\item and so on\dots
+\end{itemize}
+%
+The second rule highlights an interesting feature of BNF specifications: production rules are allowed to be \textit{recursive}.
+The production rule for $\bnfnt{stmts}$ allows us to expand it to a sentential form that \textit{contains} the non-terminal symbol $\bnfnt{stmts}$.
+This means the above grammar recognizes infinitely many sentences.
+%
+\begin{exercise}
+Determine the number of sentences recognized by the grammar from \Cref{fig:simple-grammar}.
+\end{exercise}
+%
+Consider the following program in this language.
+%
+\begin{lstlisting}
+a = 1;
+a = a + 1;
+b = a;
+\end{lstlisting}
+%
+To verify that this program is recognized by the above grammar, we can write a (leftmost) derivation of it, see \Cref{fig:line-deriv}.
+
+\begin{ffigure}
+\begin{align*}
+& \bnfnt{program} \\
+& \bnfnt{stmts} \\
+& \bnfnt{stmt} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnfnt{var} \ \bnft{=} \ \bnfnt{expr} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnfnt{expr} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnfnt{term} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnfnt{stmt} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnfnt{var} \ \bnft{=} \ \bnfnt{expr} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnft{a} \ \bnft{=} \ \bnfnt{expr} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnft{a} \ \bnft{=} \ \bnfnt{term} \ \bnft{+} \ \bnfnt{term} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{+} \ \bnfnt{term} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{+} \ \bnft{1} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{+} \ \bnft{1} \ \bnft{;} \ \bnfnt{stmt} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{+} \ \bnft{1} \ \bnft{;} \ \bnfnt{var} \ \bnft{=} \ \bnfnt{expr} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{+} \ \bnft{1} \ \bnft{;} \ \bnft{b} \ \bnft{=} \ \bnfnt{expr} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{+} \ \bnft{1} \ \bnft{;} \ \bnft{b} \ \bnft{=} \ \bnfnt{term} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{+} \ \bnft{1} \ \bnft{;} \ \bnft{b} \ \bnft{=} \ \bnfnt{var} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{+} \ \bnft{1} \ \bnft{;} \ \bnft{b} \ \bnft{=} \ \bnft{a} \ \bnft{;} \ \bnfnt{stmts} \\
+& \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{+} \ \bnft{1} \ \bnft{;} \ \bnft{b} \ \bnft{=} \ \bnft{a} \ \bnft{;}
+\end{align*}
+\caption{Example derivation in the grammar from \Cref{fig:line-pl}}
+\label{fig:line-deriv}
+\end{ffigure}
+%
+
+\begin{remark}
+As a reminder, we're not interested in low-level syntactic concerns like whitespace when we consider whether or not a sentence is recognized by a grammar.
+The choice to present the program above in three lines was for readability, and the choice to present it in a single line in the derivation was for convenience.
+\end{remark}
+%
+Alternatively, we could construct a parse tree $\mathcal T$ for the given program, see \Cref{fig:line-tree}.
+
+\begin{ffigure}
+\Tree
+  [.$\bnfnt{program}$
+    [.$\bnfnt{stmts}$
+      [.$\bnfnt{stmt}$
+        [.$\bnfnt{var}$
+          $\bnft{a}$
+        ]
+        $\bnft{=}$
+        [.$\bnfnt{expr}$
+          [.$\bnfnt{term}$
+            $\bnft{1}$
+          ]
+        ]
+      ]
+      $\bnft{;}$
+      \qroof{$\mathcal T_1$}.
+    ]
+  ]
+\vspace{1cm}
+
+\noindent The subtree $\mathcal T_1$:
+\Tree
+  [.$\bnfnt{stmts}$
+    [.$\bnfnt{stmt}$
+      [.$\bnfnt{var}$
+        $\bnft{a}$
+      ]
+      $\bnft{=}$
+      [.$\bnfnt{expr}$
+        [.$\bnfnt{term}$
+          $\bnft{1}$
+        ]
+        $\bnft{+}$
+        [.$\bnfnt{term}$
+          $\bnft{1}$
+        ]
+      ]
+    ]
+    $\bnft{;}$
+    \qroof{$\mathcal T_2$}.
+  ]
+\vspace{1cm}
+
+\noindent The subtree $\mathcal T_2$:
+\Tree
+  [.$\bnfnt{stmts}$
+    [.$\bnfnt{stmt}$
+      [.$\bnfnt{var}$
+        $\bnft{b}$
+      ]
+      $\bnft{=}$
+      [.$\bnfnt{expr}$
+        [.$\bnfnt{term}$
+          [.$\bnfnt{var}$
+            $\bnft{a}$
+          ]
+        ]
+      ]
+    ]
+    $\bnft{;}$
+    $\bnfnt{stmts}$
+  ]
+\caption{
+Example parse tree for the grammar from \Cref{fig:line-pl}.
+We've factored out some of the subtrees to fit the whole tree on the page.
+}
+\label{fig:line-tree}
+\end{ffigure}
+
+\begin{exercise}
+Verify that
+\begin{lstlisting}
+a = a + a;
+b = b;
+\end{lstlisting}
+is recognized by the above grammar.
+For additional practice, give both a derivation and a parse tree.
+\end{exercise}
+%
+\textbf{Arithmetic Expressions.}
+\todo{Last thing I worked on.}
+Another example, let's look at arithmetic expressions.
+Consider the following grammar.
+%
+\begin{align*}
+\bnfnt{expr} &\bnfeq
+\bnfnt{num} \bnfalt
+\bnfnt{expr} \ \bnfnt{op} \ \bnfnt{expr} \bnfalt
+\bnft{(} \ \bnfnt{expr} \ \bnft{)} \\
+\bnfnt{op} &\bnfeq \bnft{+} \bnfalt \bnft{-} \bnfalt \bnft{*} \bnfalt \bnft{/} \\
+\bnfnt{num} &\bnfeq \bnft{1} \bnfalt \bnft{2} \bnfalt \bnft{3}
+\end{align*}
+%
+\begin{exercise}
+Give a derivation and parse tree for the following sentence:
+%
+\begin{align*}
+\bnft{(} \ \bnft{1} \ \bnft{+} \ \bnft{2} \ \bnft{)} \ \bnft{*} \ \bnft{3}
+\end{align*}
+\end{exercise}
+%
+This seems, ignoring obvious issues like missing numbers, a reasonable enough definition; an expression is either a number or a pair of expressions with an operator between them.
+Note that the recursive nature of the first production rule means that this grammar recognizes an infinite of sentence number.
+But this grammar has a curious feature: there are sentences which have multiple parse trees.
+Consider the sentence \codel{1 - 2 - 3}.
+One the one hand, we might thing that this expression says \enquote{subtract 2 from 1, and then subtract 3 from that.}
+This reading is witnessed by the following parse tree:
+\bigskip
+
+\Tree
+  [.$\bnfnt{expr}$
+    [.$\bnfnt{expr}$
+      [.$\bnfnt{num}$
+        $\bnft{1}$
+      ]
+      $\bnft{-}$
+      [.$\bnfnt{num}$
+        $\bnft{2}$
+      ]
+    ]
+    $\bnft{-}$
+    [.$\bnfnt{num}$
+      $\bnft{3}$
+    ]
+  ]
+\bigskip
+
+\noindent But there's nothing in the structure of the expression itself which keeps us from intepreting it as \enquote{subtract from 1 the result of subtracting 3 from 2.}, which is witnessed by this alternative parse tree:
+\bigskip
+
+\Tree
+  [.$\bnfnt{expr}$
+    [.$\bnfnt{num}$
+      $\bnft{1}$
+    ]
+    $\bnft{-}$
+    [.$\bnfnt{expr}$
+      [.$\bnfnt{num}$
+        $\bnft{2}$
+      ]
+      $\bnft{-}$
+      [.$\bnfnt{num}$
+        $\bnft{3}$
+      ]
+    ]
+  ]
+\bigskip
+
+\noindent And this ambiguity really matters for the design of programming languages.
+The first reading would give us the value $-4$ wheras the latter gives us $2$.
+If we want to allow the programmer to write down an expression like \codel{1 - 2 - 3}, then we have to be clear as to what the intended ouput should be.
+More generally, we must ensure that our grammar is \textit{unambiguous} so there's no question as to how to interpret what the programmer has written.
+This will be our focus for the next section.
 
 \section{Grammatical Ambiguity}
+
+As participants of language, we are no strangers to grammatical ambiguity.
+Take, for instance, the following sentence:\footnote{This example is taken from the Wikipedia page on \href{https://en.wikipedia.org/wiki/Syntactic_ambiguity}{Syntactic ambiguity}.}
+%
+\begin{align*}
+\bnft{John saw the man on the mountain with the telescope}
+\end{align*}
+%
+Was John using the telescope to see the man on the mountain?
+Was the man carrying the telescope?
+Are there multiple mountains, one of which has a telescope on it?
+The ambiguity exists because it is not clear \textit{which} hierarchical structure should scaffold the sentence.
+Here's a possible parse trees for the sentence:
+\todo{Deal with figures.}
+
+\begin{figure}
+\Tree
+  [.$\bnfnt{s}$
+    [.$\bnfnt{np}$
+      [.$\bnfnt{n}$
+        $\bnft{John}$
+      ]
+    ]
+    [.$\bnfnt{vp}$
+      [.$\bnfnt{v}$
+        $\bnft{saw}$
+      ]
+      [.$\bnfnt{np}$
+        [.$\bnfnt{np}$
+          [.$\bnfnt{a}$
+            $\bnft{the}$
+          ]
+          [.$\bnfnt{n}$
+            $\bnft{man}$
+          ]
+        ]
+        [.$\bnfnt{pp}$
+          [.$\bnfnt{p}$
+            $\bnft{on}$
+          ]
+          [.$\bnfnt{np}$
+            [.$\bnfnt{a}$
+              $\bnft{the}$
+            ]
+            [.$\bnfnt{n}$
+              $\bnft{mountain}$
+            ]
+          ]
+        ]
+      ]
+      [.$\bnfnt{pp}$
+        [.$\bnfnt{p}$
+          $\bnft{with}$
+        ]
+        [.$\bnfnt{np}$
+          [.$\bnfnt{a}$
+            $\bnft{the}$
+          ]
+          [.$\bnfnt{n}$
+            $\bnft{telescope}$
+          ]
+        ]
+      ]
+    ]
+  ]
+\caption{TODO}
+\end{figure}
+
+\noindent
+The prepositional phrase \enquote{with the telescope} is grouped alongside the verb phrase starting with \enquote{saw}, indicating that John was \textit{using} the telescope.
+This is an alternative parse tree in \Cref{TODO}.
+\Cref{TODO} is a natural-enough-looking grammar which recognizes this sentence.
+In this grammar, our ambiguous sentence has multiple parse trees.
+Equivalently, by \Cref{TODO}, it has multiple leftmost derivations.
+
+
+
+\pagebreak
+\begin{figure}
+\Tree
+  [.$\bnfnt{s}$
+    [.$\bnfnt{np}$
+      [.$\bnfnt{n}$
+        $\bnft{John}$
+      ]
+    ]
+    [.$\bnfnt{vp}$
+      [.$\bnfnt{v}$
+        $\bnft{saw}$
+      ]
+      [.$\bnfnt{np}$
+        [.$\bnfnt{np}$
+          [.$\bnfnt{a}$
+            $\bnft{the}$
+          ]
+          [.$\bnfnt{n}$
+            $\bnft{man}$
+          ]
+        ]
+        [.$\bnfnt{pp}$
+          [.$\bnfnt{p}$
+            $\bnft{on}$
+          ]
+          [.$\bnfnt{np}$
+            [.$\bnfnt{np}$
+              [.$\bnfnt{a}$
+                $\bnft{the}$
+              ]
+              [.$\bnfnt{n}$
+                $\bnft{mountain}$
+              ]
+            ]
+            [.$\bnfnt{pp}$
+              [.$\bnfnt{p}$
+                $\bnft{with}$
+              ]
+              [.$\bnfnt{np}$
+                [.$\bnfnt{a}$
+                  $\bnft{the}$
+                ]
+                [.$\bnfnt{n}$
+                  $\bnft{telescope}$
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
+    ]
+  ]
+\caption{TODO}
+\end{figure}
+
+\begin{remark}
+Grammatical ambiguity comes from not being completely sure which parse tree to give to a sentence.
+We experience language in a \textit{linear fashion}, either by reading it or hearing it.
+If our interlocutor could \textit{display} the parse tree of their statement (floating eerily in space before our eyes) there would be nothing to say of (grammatical) ambiguity.
+
+Another way of thinking about it: Grammatical ambiguity is ultimately a question of parenthesis.
+If it were standard practice to use parentheses in natural language, we could avoid some grammatical ambiguity.
+For example, the parse tree in \Cref{TODO} corresponds to:
+%
+\begin{align*}
+\bnft{John saw ( the man on the mountain ) with the telescope}
+\end{align*}
+%
+whereas the parse tree in \Cref{TODO} corresponds to:
+\begin{align*}
+\bnft{John saw the man on ( the mountain with the telescope )}
+\end{align*}
+\end{remark}
+%
+\begin{exercise}
+Give a third distinct parse tree for this sentence.
+\end{exercise}
+%
+\begin{exercise}
+Give two (or three) leftmost derivations of this sentence in the grammar from \Cref{TODO}
+\end{exercise}
+%
+Ambiguity in natural language is a complex topic, but restricted to formal grammars, ambiguity is a well-defined notion.
+%
+\begin{definition}
+A grammar is \textbf{ambiguous} if it recognizes a sentence with (at least) two distinct parse trees.
+Equivalently, it is ambiguous if it recognizes a sentence with (at least) two distinct leftmost derivations.
+\end{definition}
+%
+\begin{example}
+The grammar from \Cref{TODO} is ambiguous.
+So is the one from \Cref{TODO} by virtue of the examples given in the previous section.
+\end{example}
+%
+\begin{remark}
+In the previous example, along with many of the examples we'll see, it'll be fairly obvious that the grammar is ambiguous.
+As computer scientists, we might think that we could write \textit{program} to determine if a grammar is ambiguous.
+Unfortunately, this is impossible (not just very difficult, but \textit{impossible}).
+Formally speaking, determining if a context-free grammar is ambiguous is \textit{undecidable} \cite{TODO}.
+\end{remark}
+\subsection{Avoiding Ambiguity}
+
+Our next task it to determine how to avoid grammatical ambiguity when possible, but first, \textit{why should we care?}
+Natural language is ambiguous and we get along perfectly fine, so why should we go through the trouble to make sure grammars we design for programming languages are unambiguous?
+It's a fair question; the way I see it, it's a promise that we make to a programmer: \textit{we never make unspoken assumptions about what you meant when we read your programs.}
+We try to do this with natural language too, but in communication, if a statement is ambiguous, we can usually just ask our interlocutor what they meant.
+We can't do this for a program, so instead we make it \textit{impossible} for a sentence to have multiple readings.\footnote{We see a similar phenomena in legal language, which tends to be grammatically sterile, and usually no fun to read.}
+
+\subsubsection*{Reverse Polish Notation}
+
+If our only concern is avoiding ambiguity, we can use \textbf{(reverse) Polish notation}.
+In this setting, operators appear \textit{before} all their arguments, e.g.
+
+\subsection{Associativity}
+
+\subsection{Precedence}
+
+\subsection{Parentheses}
 
 \section{Extended BNF}
 
