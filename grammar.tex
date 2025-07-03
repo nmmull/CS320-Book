@@ -850,19 +850,103 @@ As computer scientists, we might think that we could write \textit{program} to d
 Unfortunately, this is impossible (not just very difficult, but \textit{impossible}).
 Formally speaking, determining if a context-free grammar is ambiguous is \textit{undecidable} \cite{TODO}.
 \end{remark}
-
-\subsection{Avoiding Ambiguity}
-
+%
 Our next task it to determine how to avoid grammatical ambiguity when possible, but first, \textit{why should we care?}
 Natural language is ambiguous and we get along perfectly fine, so why should we go through the trouble of making sure grammars we design for programming languages are unambiguous?
 It's a fair question; the way I see it, it's a promise that we make to a programmer: \textit{we never make unspoken assumptions about what you meant when we read your programs.}
 We try to do this with natural language too, but in communication, if a statement is ambiguous, we can usually just ask our interlocutor what they meant.
 We can't do this for a program, so instead we make it \textit{impossible} for a sentence to have multiple readings.\footnote{We see a similar phenomena in legal language, which tends to be grammatically sterile, and usually no fun to read.}
 
-\subsubsection*{Reverse Polish Notation}
+\subsection{Fixity}
 
-If our only concern is avoiding ambiguity, we can use \textbf{(reverse) Polish notation}.
-In this setting, operators appear \textit{before} all their arguments, e.g.
+\begin{ffigure}
+\begin{align*}
+\bnfnt{expr} &\bnfeq
+\bnfnt{num} \bnfalt
+\bnfnt{op} \ \bnfnt{expr} \ \bnfnt{expr} \\
+\bnfnt{op} &\bnfeq \bnft{+} \bnfalt \bnft{-} \bnfalt \bnft{*} \bnfalt \bnft{/} \\
+\bnfnt{num} &\bnfeq \bnft{1} \bnfalt \bnft{2} \bnfalt \bnft{3}
+\end{align*}
+\caption{BNF specification for arithmetic expressions in Polish Notation}
+\label{fig:arith-polish}
+\end{ffigure}
+
+If our only concern is avoiding ambiguity, we can do so by making sure operators appear \textit{before} all their arguments.
+\Cref{fig:arith-polish} has a such a grammar for arithmetic expressions.
+This is called \textbf{Polish notation}, and always yields an unambiguous grammar \textit{without any need for parentheses.}
+
+It's not difficult to then guess what reverse polish notation is: operators appear \textit{after} their arguments.
+This is how early calculators like the \href{https://en.wikipedia.org/wiki/Hewlett-Packard_9100A]}{HP 9100A Desktop Calculator} were designed.
+If you wanted to calculate something like \codel{(2 + 3) * (4 - 5)}, you would \textit{push} the operands onto a \textit{stack} and then apply operators to the
+top elements of the stack:
+%
+\begin{align*}
+\emptyset \xlongrightarrow{\codel{2}} [2]
+\xlongrightarrow{\codel{3}} [2, 3]
+\xlongrightarrow{\codel{+}} [5]
+\xlongrightarrow{\codel{4}} [5, 4]
+\xlongrightarrow{\codel{5}} [5, 4, 5]
+\xlongrightarrow{\codel{-}} [5, -1]
+\xlongrightarrow{\codel{*}} [-5]
+\end{align*}
+%
+so that the expression you typed was in reverse Polish notation, in this case \codel{2 3 + 4 5 - *}.
+%
+\begin{exercise}
+Derive the sentence \codel{+ * 1 * 2 - 3 2 1 2} in the grammar from \Cref{fig:arith-polish}.
+\end{exercise}
+%
+The obvious benefit of Polish notation is that it is extremely simple, and easy to parse.
+The obvious issue with Polish notation is that it's difficult to read.
+Imagine having to write code with a prefix form of if-then-else.
+Code in OCaml like:
+%
+\begin{ocaml}
+if n < 10
+then -1
+else if n > 10
+then 1
+else 0
+\end{ocaml}
+becomes something like:
+\begin{lstlisting}
+if_then_else
+  < n 10
+  -1
+  if_then_else
+    > n 10
+    1
+    0
+\end{lstlisting}
+which is not \textit{so} bad, but is clearly less readable.\footnote{
+  There are cases in which the simplicity trumps readability, e.g., for dialects of \href{https://www.forth.com/forth/}{Forth}.
+}
+This is all to say that ambiguity in expressions is in part due to issues of operator \textbf{fixity}.
+%
+\begin{definition}
+The \textbf{fixity} of an operator refers to where the syntactic components of an operator are placed relative to its arguments.
+There are four kinds of operator fixity.
+\begin{itemize}
+\item
+A \textbf{prefix} operator appears before its arguments.
+In the expression \codel{-5} the operator \codel{-} appears before its argument \codel{5}.
+\item
+A \textbf{postfix} operator appears after its arguments.
+In the expression \codel{10!} the factorial operator \codel{!} appears after its argument \codel{10}.
+\item
+A \textbf{infix} operator appears between its arguments.
+Infix operators are required to be binary.
+In the expression \codel{4 + 3} the binary addition operator \codel{+} appears between its arguments \codel{4} and \codel{3}.
+\item
+A \textbf{mixfix} operator has multiple syntactic components which appear in some combination of before, after, and in between its arguments.
+In the expression \codel{if x < 0 then -x else x} the syntactic components \codel{if}, \codel{then}, and \codel{else} appear in various positions with respect to the arguments of the if-then-else operator.
+\end{itemize}
+\end{definition}
+%
+The above discussion indicates that if we're willing to accept \textit{only} prefix operators or \textit{only} postfix operators, then it's easy to design unambiguous grammars.
+But if we want to contend with multiple kinds of operator fixity, then we'll have to do a bit more work.
+
+\subsection{Parentheses}
 
 \subsection{Associativity}
 
