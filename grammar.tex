@@ -104,7 +104,7 @@ And if we squint, we can start to see the tree-like structure encoded in this de
 & \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnfnt{noun} \\
 & \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}
 \end{align*}
-\caption{Derivation of $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar from \Cref{fig:simple-grammar}}
+\caption{Derivation of $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar in \Cref{fig:simple-grammar}}
 \label{fig:cow-deriv}
 \end{ffigure}
 
@@ -138,7 +138,7 @@ And if we squint, we can start to see the tree-like structure encoded in this de
       ]
     ]
   ]
-\caption{Parse tree for $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar from \Cref{fig:simple-grammar}}
+\caption{Parse tree for $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar in \Cref{fig:simple-grammar}}
 \label{fig:cow-tree}
 \end{ffigure}
 
@@ -154,7 +154,7 @@ We almost never state outright what our underlying symbols are.
 We can determine the terminal and non-terminal symbols of a grammar by looking at its specification, assuming that every symbol must appear at least once in the specification.
 \end{remark}
 %
-In the derivation from \Cref{fig:cow-deriv}, we built a sequence of not-quite sentences, until the very last one, which was the sentence we wanted to prove grammatically correct.
+In the derivation in \Cref{fig:cow-deriv}, we built a sequence of not-quite sentences, until the very last one, which was the sentence we wanted to prove grammatically correct.
 These possibly-not-quite sentences are called \textbf{sentential forms}.
 %
 \begin{definition}
@@ -237,7 +237,7 @@ If the start symbols is not explicitely given, it is taken to be the left-hand s
 \end{ffigure}
 
 \begin{example}
-  \Cref{fig:simple-grammar} contains a BNF specification for the underlying grammar of the previous section.
+  \Cref{fig:simple-grammar} has a BNF specification for the underlying grammar of the previous section.
   The nonterminal symbols of this grammar are: $\bnfnt{sentence}$, $\bnfnt{noun-phrase}$, $\bnfnt{verb-phrase}$, $\bnfnt{verb}$, $\bnfnt{prep}$, $\bnfnt{prep-phrase}$, $\bnfnt{article}$, and $\bnfnt{noun}$.
   The terminal symbols of this grammar are: $\bnft{the}$, $\bnft{cow}$, $\bnft{moon}, $\bnft{jumped}, and $\bnft{over}$.
   The nonterminal symbol $\bnfnt{sentence}$ is our starting symbol (because it appears as the left-hand side of the first rule).
@@ -265,7 +265,7 @@ as shorthand for
 The multiple forms of a given nonterminal symbol are often called \textbf{alternatives}, and this shorthand is often called \textbf{alternative syntax}.
 \end{definition}
 %
-It's not difficult to rewrite the grammar from \Cref{fig:simple-grammar} using alternative syntax, see \Cref{fig:simple-grammar-alt}.
+It's not difficult to rewrite the grammar in \Cref{fig:simple-grammar} using alternative syntax, see \Cref{fig:simple-grammar-alt}.
 The last piece of our thought experiment that we need to formalize is the \textit{proof} of grammatical correction.
 
 \begin{ffigure}
@@ -279,7 +279,7 @@ The last piece of our thought experiment that we need to formalize is the \texti
 \bnfnt{verb} &\bnfeq \bnft{jumped} \\
 \bnfnt{prep} &\bnfeq \bnft{over}
 \end{align*}
-\caption{The grammar from \Cref{fig:simple-grammar} rewritten with alternative syntax}
+\caption{The grammar in \Cref{fig:simple-grammar} rewritten with alternative syntax}
 \label{fig:simple-grammar-alt}
 \end{ffigure}
 
@@ -324,7 +324,7 @@ The derivation given in the previous example is a leftmost derivation,
 whereas the derivation in the previous section is not.
 %
 \begin{exercise}
-Write a leftmost derivation of the sentence $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar from \Cref{fig:simple-grammar}.
+Write a leftmost derivation of the sentence $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar in \Cref{fig:simple-grammar}.
 \end{exercise}
 %
 Grammars imbue sentences with hierarchical structure.
@@ -352,7 +352,7 @@ is a production rule of $\mathcal G$.
 \end{definition}
 %
 \begin{example}
-The tree at the end of the previous section is a parse tree for the sentence $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar from \Cref{fig:simple-grammar}.  The following is a parse tree for the sentence $\bnft{the} \ \bnft{moon} \ \bnft{jumped}$ in the same grammar:
+The tree at the end of the previous section is a parse tree for the sentence $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar in \Cref{fig:simple-grammar}.  The following is a parse tree for the sentence $\bnft{the} \ \bnft{moon} \ \bnft{jumped}$ in the same grammar:
 \bigskip
 
 \Tree
@@ -429,7 +429,7 @@ For context-sensitive grammars, production rules can transform \textit{sequences
 
 \noindent
 \textbf{Imperative programs}.
-\Cref{fig:line-pl} contains a BNF specification for a toy imperative programming language, similar to what is known as a \textit{straight-line program}.
+\Cref{fig:line-pl} has a BNF specification for a toy imperative programming language, similar to what is known as a \textit{straight-line program}.
 In English, we would read this specification as:
 \begin{itemize}
 \item a \textit{program} is made up of \textit{statements};
@@ -443,7 +443,7 @@ The production rule for $\bnfnt{stmts}$ allows us to expand it to a sentential f
 This means the above grammar recognizes infinitely many sentences.
 %
 \begin{exercise}
-Determine the number of sentences recognized by the grammar from \Cref{fig:simple-grammar}.
+Determine the number of sentences recognized by the grammar in \Cref{fig:simple-grammar}.
 \end{exercise}
 %
 Consider the following program in this language.
@@ -479,7 +479,7 @@ To verify that this program is recognized by the above grammar, we can write a (
 & \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{+} \ \bnft{1} \ \bnft{;} \ \bnft{b} \ \bnft{=} \ \bnft{a} \ \bnft{;} \ \bnfnt{stmts} \\
 & \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{;} \ \bnft{a} \ \bnft{=} \ \bnft{1} \ \bnft{+} \ \bnft{1} \ \bnft{;} \ \bnft{b} \ \bnft{=} \ \bnft{a} \ \bnft{;}
 \end{align*}
-\caption{Example derivation in the grammar from \Cref{fig:line-pl}}
+\caption{Example derivation in the grammar in \Cref{fig:line-pl}}
 \label{fig:line-deriv}
 \end{ffigure}
 %
@@ -555,7 +555,7 @@ Alternatively, we could construct a parse tree $\mathcal T$ for the given progra
     $\bnfnt{stmts}$
   ]
 \caption{
-Example parse tree for the grammar from \Cref{fig:line-pl}.
+Example parse tree for the grammar in \Cref{fig:line-pl}.
 We've factored out some of the subtrees to fit the whole tree on the page.
 }
 \label{fig:line-tree}
@@ -572,10 +572,9 @@ For additional practice, give both a derivation and a parse tree.
 \end{exercise}
 %
 \textbf{Arithmetic Expressions.}
-\todo{Last thing I worked on.}
-Another example, let's look at arithmetic expressions.
-Consider the following grammar.
-%
+\Cref{fig:arith-simple} has a first attempt at a BNF specification for arithmetic expressions.
+
+\begin{ffigure}
 \begin{align*}
 \bnfnt{expr} &\bnfeq
 \bnfnt{num} \bnfalt
@@ -584,6 +583,9 @@ Consider the following grammar.
 \bnfnt{op} &\bnfeq \bnft{+} \bnfalt \bnft{-} \bnfalt \bnft{*} \bnfalt \bnft{/} \\
 \bnfnt{num} &\bnfeq \bnft{1} \bnfalt \bnft{2} \bnfalt \bnft{3}
 \end{align*}
+\caption{First attempt at a BNF specification for arithmetic expressions}
+\label{fig:arith-simple}
+\end{ffigure}
 %
 \begin{exercise}
 Give a derivation and parse tree for the following sentence:
@@ -593,9 +595,9 @@ Give a derivation and parse tree for the following sentence:
 \end{align*}
 \end{exercise}
 %
-This seems, ignoring obvious issues like missing numbers, a reasonable enough definition; an expression is either a number or a pair of expressions with an operator between them.
-Note that the recursive nature of the first production rule means that this grammar recognizes an infinite of sentence number.
-But this grammar has a curious feature: there are sentences which have multiple parse trees.
+It seems, ignoring obvious issues like missing numbers, a reasonable enough specification: an expression is either a number or a pair of expressions with an operator between them.
+Note that the recursive nature of the first production rule means that this grammar recognizes infinitely many sentences.
+But this grammar has a curious feature: \textit{there are sentences which have multiple parse trees.}
 Consider the sentence \codel{1 - 2 - 3}.
 One the one hand, we might thing that this expression says \enquote{subtract 2 from 1, and then subtract 3 from that.}
 This reading is witnessed by the following parse tree:
@@ -619,7 +621,7 @@ This reading is witnessed by the following parse tree:
   ]
 \bigskip
 
-\noindent But there's nothing in the structure of the expression itself which keeps us from intepreting it as \enquote{subtract from 1 the result of subtracting 3 from 2.}, which is witnessed by this alternative parse tree:
+\noindent But there's nothing in the structure of the expression itself which keeps us from intepreting it as \enquote{subtract from 1 the result of subtracting 3 from 2} which is witnessed by this alternative parse tree:
 \bigskip
 
 \Tree
@@ -640,10 +642,10 @@ This reading is witnessed by the following parse tree:
   ]
 \bigskip
 
-\noindent And this ambiguity really matters for the design of programming languages.
+\noindent This ambiguity matters for the design of programming languages.
 The first reading would give us the value $-4$ wheras the latter gives us $2$.
-If we want to allow the programmer to write down an expression like \codel{1 - 2 - 3}, then we have to be clear as to what the intended ouput should be.
-More generally, we must ensure that our grammar is \textit{unambiguous} so there's no question as to how to interpret what the programmer has written.
+If we want to allow the programmer to write down an expression like \codel{1 - 2 - 3}, then we have to be clear about what the intended ouput should be.
+More generally, we'd like to ensure that our grammar is \textit{unambiguous} so there's no question as to how to interpret what the programmer has written.
 This will be our focus for the next section.
 
 \section{Grammatical Ambiguity}
@@ -658,11 +660,13 @@ Take, for instance, the following sentence:\footnote{This example is taken from 
 Was John using the telescope to see the man on the mountain?
 Was the man carrying the telescope?
 Are there multiple mountains, one of which has a telescope on it?
-The ambiguity exists because it is not clear \textit{which} hierarchical structure should scaffold the sentence.
-Here's a possible parse trees for the sentence:
-\todo{Deal with figures.}
+The ambiguity comes from it not being clear \textit{which} hierarchical structure should scaffold the sentence.
+\Cref{fig:ambiguous-tree-1} has one possible parse tree for this sentence in another grammar based on English (see \Cref{fig:john-grammar}).
+The prepositional phrase \enquote{with the telescope} is grouped with the verb phrase starting with \enquote{saw}, indicating that John was \textit{using} the telescope.
+\Cref{fig:ambiguous-tree-2} has an alternative parse tree for the same sentence.
+For this parse tree, the prepositional phrase \enquote{with the telescope} is grouped with the noun phrase \enquote{the mountain} indicating that there is a telescope on the mountain itself.
 
-\begin{figure}
+\begin{ffigure}
 \Tree
   [.$\bnfnt{s}$
     [.$\bnfnt{np}$
@@ -712,20 +716,11 @@ Here's a possible parse trees for the sentence:
       ]
     ]
   ]
-\caption{TODO}
-\end{figure}
+\caption{Parse tree of an ambiguous sentence for the grammar in \Cref{fig:john-grammar}}
+\label{fig:ambiguous-tree-1}
+\end{ffigure}
 
-\noindent
-The prepositional phrase \enquote{with the telescope} is grouped alongside the verb phrase starting with \enquote{saw}, indicating that John was \textit{using} the telescope.
-This is an alternative parse tree in \Cref{TODO}.
-\Cref{TODO} is a natural-enough-looking grammar which recognizes this sentence.
-In this grammar, our ambiguous sentence has multiple parse trees.
-Equivalently, by \Cref{TODO}, it has multiple leftmost derivations.
-
-
-
-\pagebreak
-\begin{figure}
+\begin{ffigure}
 \Tree
   [.$\bnfnt{s}$
     [.$\bnfnt{np}$
@@ -777,35 +772,29 @@ Equivalently, by \Cref{TODO}, it has multiple leftmost derivations.
       ]
     ]
   ]
-\caption{TODO}
-\end{figure}
+\caption{Another parse tree of an ambiguous sentence for the grammar in \Cref{fig:john-grammar}.}
+\label{fig:ambiguous-tree-2}
+\end{ffigure}
 
 \begin{remark}
-Grammatical ambiguity comes from not being completely sure which parse tree to give to a sentence.
 We experience language in a \textit{linear fashion}, either by reading it or hearing it.
 If our interlocutor could \textit{display} the parse tree of their statement (floating eerily in space before our eyes) there would be nothing to say of (grammatical) ambiguity.
 
-Another way of thinking about it: Grammatical ambiguity is ultimately a question of parenthesis.
+In another light, grammatical ambiguity is ultimately a question of parenthesis.
 If it were standard practice to use parentheses in natural language, we could avoid some grammatical ambiguity.
-For example, the parse tree in \Cref{TODO} corresponds to:
+For example, the parse tree in \Cref{fig:ambiguous-tree-1} corresponds to:
 %
 \begin{align*}
 \bnft{John saw ( the man on the mountain ) with the telescope}
 \end{align*}
 %
-whereas the parse tree in \Cref{TODO} corresponds to:
+whereas the parse tree in \Cref{fig:ambiguous-tree-2} corresponds to:
+%
 \begin{align*}
 \bnft{John saw the man on ( the mountain with the telescope )}
 \end{align*}
+%
 \end{remark}
-%
-\begin{exercise}
-Give a third distinct parse tree for this sentence.
-\end{exercise}
-%
-\begin{exercise}
-Give two (or three) leftmost derivations of this sentence in the grammar from \Cref{TODO}
-\end{exercise}
 %
 Ambiguity in natural language is a complex topic, but restricted to formal grammars, ambiguity is a well-defined notion.
 %
@@ -813,11 +802,47 @@ Ambiguity in natural language is a complex topic, but restricted to formal gramm
 A grammar is \textbf{ambiguous} if it recognizes a sentence with (at least) two distinct parse trees.
 Equivalently, it is ambiguous if it recognizes a sentence with (at least) two distinct leftmost derivations.
 \end{definition}
-%
+
+\todo{fix tree}
+
+\begin{ffigure}
+\begin{align*}
+\bnfnt{s} &\bnfeq \bnfnt{np} \ \bnfnt{vp} \\
+\bnfnt{vp} &\bnfeq
+\bnfnt{v} \bnfalt
+\bnfnt{v} \ \bnfnt{np} \bnfalt
+\bnfnt{v} \ \bnfnt{np} \\
+\bnfnt{np} &\bnfeq
+\bnfnt{n} \bnfalt
+\bnfnt{a} \ \bnfnt{n} \bnfalt
+\bnfnt{np} \ \bnfnt{pp} \\
+\bnfnt{n} &\bnfeq
+\bnft{John} \bnfalt
+\bnft{man} \bnfalt
+\bnft{mountain} \bnfalt
+\bnft{telescope} \\
+\bnfnt{v} &\bnfeq \bnft{saw} \\
+\bnfnt{a} &\bnfeq \bnft{the} \\
+\bnfnt{p} &\bnfeq \bnft{on} \bnfalt \bnft{with}
+\end{align*}
+\caption{BNF grammar that recognizes the ambiguous sentence in this section.}
+\label{fig:john-grammar}
+\end{ffigure}
+
 \begin{example}
-The grammar from \Cref{TODO} is ambiguous.
-So is the one from \Cref{TODO} by virtue of the examples given in the previous section.
+The grammar in \Cref{fig:john-grammar} is ambiguous.
+That is, in this grammar, our ambiguous sentence has multiple parse trees.
+Equivalently, by \Cref{thm:tree-leftmost}, it has multiple leftmost derivations.
+The grammar in \Cref{fig:arith-simple} is also ambiguous by virtue of the examples given in the previous section.
 \end{example}
+%
+\begin{exercise}
+Give a third distinct parse tree for the \enquote{John} sentence.
+\end{exercise}
+%
+\begin{exercise}
+Give two (or three) leftmost derivations of the \enquote{John} sentence.
+\end{exercise}
 %
 \begin{remark}
 In the previous example, along with many of the examples we'll see, it'll be fairly obvious that the grammar is ambiguous.
@@ -825,10 +850,11 @@ As computer scientists, we might think that we could write \textit{program} to d
 Unfortunately, this is impossible (not just very difficult, but \textit{impossible}).
 Formally speaking, determining if a context-free grammar is ambiguous is \textit{undecidable} \cite{TODO}.
 \end{remark}
+
 \subsection{Avoiding Ambiguity}
 
 Our next task it to determine how to avoid grammatical ambiguity when possible, but first, \textit{why should we care?}
-Natural language is ambiguous and we get along perfectly fine, so why should we go through the trouble to make sure grammars we design for programming languages are unambiguous?
+Natural language is ambiguous and we get along perfectly fine, so why should we go through the trouble of making sure grammars we design for programming languages are unambiguous?
 It's a fair question; the way I see it, it's a promise that we make to a programmer: \textit{we never make unspoken assumptions about what you meant when we read your programs.}
 We try to do this with natural language too, but in communication, if a statement is ambiguous, we can usually just ask our interlocutor what they meant.
 We can't do this for a program, so instead we make it \textit{impossible} for a sentence to have multiple readings.\footnote{We see a similar phenomena in legal language, which tends to be grammatically sterile, and usually no fun to read.}
