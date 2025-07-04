@@ -948,6 +948,45 @@ But if we want to contend with multiple kinds of operator fixity, then we'll hav
 
 \subsection{Parentheses}
 
+\begin{ffigure}
+\begin{align*}
+\bnfnt{expr} &\bnfeq
+\bnfnt{num} \bnfalt
+\bnft{(} \ \bnfnt{expr} \ \bnfnt{op} \ \bnfnt{expr} \bnft{)} \\
+\bnfnt{op} &\bnfeq \bnft{+} \bnfalt \bnft{-} \bnfalt \bnft{*} \bnfalt \bnft{/} \\
+\bnfnt{num} &\bnfeq \bnft{1} \bnfalt \bnft{2} \bnfalt \bnft{3}
+\end{align*}
+\caption{BNF specification for arithmetic expressions using many parentheses}
+\label{fig:arith-paren}
+\end{ffigure}
+
+Another solution to the ambiguity problem is to surround \textit{every} application of an operator with parentheses.
+\Cref{fig:arith-paren} has such a grammar for arithmetic expressions.
+%
+\begin{exercise}
+TODO
+\end{exercise}
+%
+The obvious issue with this approach is that it means our expressions has a lot of parentheses.
+This can be frustrating, but in reality it's not so bad.
+Note that, if we parenthesize everything, the fixity of operators becomes irrelevant; the parentheses play entirely the role of disambiguating multiple applications of operators.
+Furthermore, if we design our grammar so that all operators are prefix, then we get \textbf{S-expressions}.
+This might feel like piling on one hard-to-read syntax on another, but there are quite a few programming languages whose surface-level syntax is made up of S-expressions.\footnote{
+  I understand this might not be compelling to the parentheses-intolerant among us (of which there are far too many) but it at least indicates that the multitude of parentheses is an aesthetic \textit{inclination}, and not just a quirk of the bizarre and aged.
+}
+And the benefits are vast: S-expressions are dead-simple to parse, which makes for quick programming language development.
+This also allows for some fancier features we won't go into, but make for convenient macros in languages like Lisp and Scheme.\footnote{
+  If you're interested, look up the term \textit{homoiconicity}.
+}
+
+\begin{exercise}
+TODO
+\end{exercise}
+
+All told, our basic question become: \textit{how do we avoid grammatical ambiguity while being able to mix operator fixity and not use so many parentheses?}
+And this question has a simple answer in theory: \textit{make explicit assumptions about how operator arguments should be grouped.}
+This will mean contending with two things: \textbf{associativity} and \textbf{precedence}.
+
 \subsection{Associativity}
 
 \subsection{Precedence}
