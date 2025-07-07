@@ -10,20 +10,20 @@ Due to the grammatical precision of programming languages, these tend to be call
 In OCaml, the program:
 %
 \begin{ocaml}
-let f x = x + 1
+  let f x = x + 1
 \end{ocaml}
 %
 is well-formed, but the program:
 %
 \begin{ocaml}
-f let x = x 1 +
+  f let x = x 1 +
 \end{ocaml}
 %
 is not.
 As with natural language, the grammar of a programming language is not concerned with the \textit{meaning} of programs, just their well-formedness, e.g., the program:
 %
 \begin{ocaml}
-let omega x = x x
+  let omega x = x x
 \end{ocaml}
 %
 is well-formed, but isn't well-typed.
@@ -42,16 +42,14 @@ Let's try to break down the cognitive process of this determination.
 Consider the following English statement.
 %
 \begin{align*}
-\newcommand{\tm}{\bnft}
-\tm{the} \ \tm{cow} \ \tm{jumped} \ \tm{over} \ \tm{the} \ \tm{moon}
+  \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}
 \end{align*}
 %
 We might first recognize that each word is a particular part of speech (noun, verb, preposition, etc.) and that, with regards to grammar, only the part of speech counts.
 We represent this step of the process by replacing each word with an abstract symbol that stands in for its part of speech.
 %
 \begin{align*}
-\newcommand{\nt}{\bnfnt}
-\nt{article} \ \nt{noun} \ \nt{verb} \ \nt{prep} \ \nt{article} \ \nt{noun}
+  \bnfnt{article} \ \bnfnt{noun} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun}
 \end{align*}
 %
 After this, there are some familiar patterns: $\bnfnt{article} \ \bnfnt{noun}$ is the determination or quantification of an object, e.g., \enquote{the house} or \enquote{a car.}
@@ -59,22 +57,20 @@ In other words, this pattern represents a \textit{noun phrase} or \textit{nomina
 We mentally group these forms, and this group can be represented by a new symbol.
 %
 \begin{align*}
-\bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{noun-phrase}
+  \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{noun-phrase}
 \end{align*}
 %
 Another pattern we might recognize: a proposition followed by a noun phrase is a single unit, e.g., \enquote{over the moon}, \enquote{through the woods}, and \enquote{behind the wall.}
 These are called \textit{prepositional phrases} and can, again, be represented by a new symbol.
 %
 \begin{align*}
-\newcommand{\nt}{\bnfnt}
-\nt{noun-phrase} \ \nt{verb} \ \nt{prep-phrase}
+  \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep-phrase}
 \end{align*}
 %
 Prepositional phrases modify verbs, creating a \textit{verb phrase} (e.g., \enquote{ran to the car}) leaving us with something like:
 %
 \begin{align*}
-\newcommand{\nt}{\bnfnt}
-\nt{noun-phrase} \ \nt{verb-phrase}
+  \bnfnt{noun-phrase} \ \bnfnt{verb-phrase}
 \end{align*}
 %
 which we should finally recognized as the canonical structure of a well-formed sentence: \textit{thing does}.
@@ -90,56 +86,58 @@ For example, the fourth line follows from the third by way of applying the gramm
 And if we squint, we can start to see the tree-like structure encoded in this derivation (which we will call a \textbf{parse tree}), e.g., see \Cref{fig:cow-tree}.
 
 \begin{ffigure}
-\begin{align*}
-& \bnfnt{sentence} \\
-& \bnfnt{noun-phrase} \ \bnfnt{verb-phrase} \\
-& \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep-phrase} \\
-& \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{noun-phrase} \\
-& \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
-& \bnfnt{article} \ \bnfnt{noun} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
-& \bnft{the} \ \bnfnt{noun} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
-& \bnft{the} \ \bnft{cow} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
-& \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
-& \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnfnt{article} \ \bnfnt{noun} \\
-& \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnfnt{noun} \\
-& \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}
-\end{align*}
-\caption{Derivation of $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar in \Cref{fig:simple-grammar}}
-\label{fig:cow-deriv}
+  \begin{align*}
+    & \bnfnt{sentence} \\
+    & \bnfnt{noun-phrase} \ \bnfnt{verb-phrase} \\
+    & \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep-phrase} \\
+    & \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{noun-phrase} \\
+    & \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
+    & \bnfnt{article} \ \bnfnt{noun} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
+    & \bnft{the} \ \bnfnt{noun} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
+    & \bnft{the} \ \bnft{cow} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
+    & \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
+    & \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnfnt{article} \ \bnfnt{noun} \\
+    & \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnfnt{noun} \\
+    & \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}
+  \end{align*}
+  \caption{Derivation of $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar in \Cref{fig:simple-grammar}}
+  \label{fig:cow-deriv}
 \end{ffigure}
 
 \begin{ffigure}
-\Tree
-  [.$\bnfnt{sentence}$
-    [.$\bnfnt{noun-phrase}$
-      [.$\bnfnt{article}$
-        $\bnft{the}$
-      ]
-      [.$\bnfnt{noun}$
-        $\bnft{cow}$
-      ]
-    ]
-    [.$\bnfnt{verb-phrase}$
-      [.$\bnfnt{verb}$
-        $\bnft{jumped}$
-      ]
-      [.$\bnfnt{prep-phrase}$
-        [.$\bnfnt{prep}$
-          $\bnft{over}$
+  \begin{forest}
+    [$\bnfnt{sentence}$
+      [$\bnfnt{noun-phrase}$
+        [$\bnfnt{article}$
+          [$\bnft{the}$]
         ]
-        [.$\bnfnt{noun-phrase}$
-          [.$\bnfnt{article}$
-            $\bnft{the}$
-          ]
-          [.$\bnfnt{noun}$
-            $\bnft{moon}$
-          ]
+        [$\bnfnt{noun}$
+          [$\bnft{cow}$]
         ]
       ]
+      [$\bnfnt{verb-phrase}$
+        [$\bnfnt{verb}$
+          [$\bnft{jumped}$]
+        ]
+        [$\bnfnt{prep-phrase}$
+          [$\bnfnt{prep}$
+            [$\bnft{over}$]
+          ]
+          [$\bnfnt{noun-phrase}$
+            [$\bnfnt{article}$
+              [$\bnft{the}$]
+            ]
+            [$\bnfnt{noun}$
+              [$\bnft{moon}$]
+            ]
+          ]
+        ]
+      ]
     ]
-  ]
-\caption{Parse tree for $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar in \Cref{fig:simple-grammar}}
-\label{fig:cow-tree}
+  \end{forest}
+  \centering
+  \caption{Parse tree for $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar in \Cref{fig:simple-grammar}}
+  \label{fig:cow-tree}
 \end{ffigure}
 
 \section{Backus-Naur Form}
@@ -150,61 +148,55 @@ We denote nonterminal symbols using notation of the form $\bnfnt{non-terminal}$.
 We denote terminal symbols in red typewriter font, e.g., $\bnft{terminal}$.
 %
 \begin{remark}
-We almost never state outright what our underlying symbols are.
-We can determine the terminal and non-terminal symbols of a grammar by looking at its specification, assuming that every symbol must appear at least once in the specification.
+  We almost never state outright what our underlying symbols are.
+  We can determine the terminal and non-terminal symbols of a grammar by looking at its specification, assuming that every symbol must appear at least once in the specification.
 \end{remark}
 %
 In the derivation in \Cref{fig:cow-deriv}, we built a sequence of not-quite sentences, until the very last one, which was the sentence we wanted to prove grammatically correct.
 These possibly-not-quite sentences are called \textbf{sentential forms}.
 %
 \begin{definition}
-A \textbf{sentential form} is a sequence of symbols (terminal or non-terminal).
-A \textbf{sentence} is a sequence of terminal symbols.
-We will use the symbol $\bnfempty$ to refer to the empty sentential form.
+  A \textbf{sentential form} is a sequence of symbols (terminal or non-terminal).
+  A \textbf{sentence} is a sequence of terminal symbols.
+  We will use the symbol $\bnfempty$ to refer to the empty sentential form.
 \end{definition}
 %
 \begin{remark}
-We denote sentential forms using whitespace as the delimiter.
-But it's important to recognize that \textit{this is just notation.}
-We're not interested in low-level concerns like whitespace when studying formal grammar.
-It may be useful to think of a sentential form as a \textit{list} of symbols.
+  We denote sentential forms using whitespace as the delimiter.
+  But it's important to recognize that \textit{this is just notation.}
+  We're not interested in low-level concerns like whitespace when studying formal grammar.
+  It may be useful to think of a sentential form as a \textit{list} of symbols.
 \end{remark}
 %
 \begin{example}
-The following are sentential forms that appear above:
-%
-\begin{align*}
-& \bnfnt{sentence} \\
-& \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
-& \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}
-\end{align*}
-%
-but only the last one is a sentence.
+  The following are sentential forms that appear above:
+  \begin{align*}
+    & \bnfnt{sentence} \\
+    & \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun} \\
+    & \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}
+  \end{align*}
+  but only the last one is a sentence.
 \end{example}
 %
 In the process of constructing sentential forms, we replaced a non-terminal symbol with a sentential form, e.g., we replaced $\bnfnt{noun-phrase}$ with $\bnfnt{article} \ \bnfnt{noun}$.
 These replacements are specified using \textbf{production rules}.
 %
 \begin{definition}
-A \textbf{production rule} is a nonterminal symbol together with a sentential form.
-Production rules are denoted using equations of the form
-%
-\begin{align*}
-\bnfnt{non-terminal} \bnfeq \textsf{SENTENTIAL-FORM}
-\end{align*}
-%
-where the left-hand side is the nonterminal symbol and the right-hand side is the sentential form.
+  A \textbf{production rule} is a nonterminal symbol together with a sentential form.
+  Production rules are denoted using equations of the form
+  \begin{align*}
+    \bnfnt{non-terminal} \bnfeq \textsf{SENTENTIAL-FORM}
+  \end{align*}
+  where the left-hand side is the nonterminal symbol and the right-hand side is the sentential form.
 \end{definition}
 %
 We read a production rule as: \enquote{the non-terminal symbol on the left-hand side can be replaced with the sentential form on the right hand side.}
 %
 \begin{example}
-We can express that a prepositional phrase can be made up of a preposition followed by a noun-phrase using the following production rule:
-%
-\begin{align*}
-\bnfnt{prep-phrase} \bnfeq \bnfnt{prep} \ \bnfnt{noun-phrase}
-\end{align*}
-%
+  We can express that a prepositional phrase can be made up of a preposition followed by a noun-phrase using the following production rule:
+  \begin{align*}
+    \bnfnt{prep-phrase} \bnfeq \bnfnt{prep} \ \bnfnt{noun-phrase}
+  \end{align*}
 \end{example}
 %
 \textbf{Backus-Naur Form (BNF) specifications} are used to describe \textbf{context-free grammars}, which form a class of formal grammars that are expressive enough to capture the syntax of most programming languages.
@@ -353,24 +345,27 @@ is a production rule of $\mathcal G$.
 %
 \begin{example}
 The tree at the end of the previous section is a parse tree for the sentence $\bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}$ in the grammar in \Cref{fig:simple-grammar}.  The following is a parse tree for the sentence $\bnft{the} \ \bnft{moon} \ \bnft{jumped}$ in the same grammar:
-\bigskip
 
-\Tree
-  [.$\bnfnt{sentence}$
-    [.$\bnfnt{noun-phrase}$
-      [.$\bnfnt{article}$
-        $\bnft{the}$
+\todo{redo with forest}
+\begin{center}
+  \begin{forest}
+    [$\bnfnt{sentence}$
+      [$\bnfnt{noun-phrase}$
+        [$\bnfnt{article}$
+          [$\bnft{the}$]
+        ]
+        [$\bnfnt{noun}$
+          [$\bnft{moon}$]
+        ]
       ]
-      [.$\bnfnt{noun}$
-        $\bnft{moon}$
+      [$\bnfnt{verb-phrase}$
+        [$\bnfnt{verb}$
+          [$\bnft{jumped}$]
+        ]
       ]
     ]
-    [.$\bnfnt{verb-phrase}$
-      [.$\bnfnt{verb}$
-        $\bnft{jumped}$
-      ]
-    ]
-  ]
+  \end{forest}
+\end{center}
 \end{example}
 %
 If a sentence $S$ has a derivation in a grammar $\mathcal G$, then it also has a parse tree, and vice versa.
@@ -492,73 +487,64 @@ The choice to present the program above in three lines was for readability, and 
 Alternatively, we could construct a parse tree $\mathcal T$ for the given program, see \Cref{fig:line-tree}.
 
 \begin{ffigure}
-\Tree
-  [.$\bnfnt{program}$
-    [.$\bnfnt{stmts}$
-      [.$\bnfnt{stmt}$
-        [.$\bnfnt{var}$
-          $\bnft{a}$
-        ]
-        $\bnft{=}$
-        [.$\bnfnt{expr}$
-          [.$\bnfnt{term}$
-            $\bnft{1}$
+  \begin{forest}
+    [$\bnfnt{program}$
+      [$\bnfnt{stmts}$
+        [$\bnfnt{stmt}$
+          [$\bnfnt{var}$
+            [$\bnft{a}$]
+          ]
+          [$\bnft{=}$]
+          [$\bnfnt{expr}$
+            [$\bnfnt{term}$
+              [$\bnft{1}$]
+            ]
           ]
         ]
-      ]
-      $\bnft{;}$
-      \qroof{$\mathcal T_1$}.
-    ]
-  ]
-\vspace{1cm}
-
-\noindent The subtree $\mathcal T_1$:
-\Tree
-  [.$\bnfnt{stmts}$
-    [.$\bnfnt{stmt}$
-      [.$\bnfnt{var}$
-        $\bnft{a}$
-      ]
-      $\bnft{=}$
-      [.$\bnfnt{expr}$
-        [.$\bnfnt{term}$
-          $\bnft{1}$
-        ]
-        $\bnft{+}$
-        [.$\bnfnt{term}$
-          $\bnft{1}$
-        ]
-      ]
-    ]
-    $\bnft{;}$
-    \qroof{$\mathcal T_2$}.
-  ]
-\vspace{1cm}
-
-\noindent The subtree $\mathcal T_2$:
-\Tree
-  [.$\bnfnt{stmts}$
-    [.$\bnfnt{stmt}$
-      [.$\bnfnt{var}$
-        $\bnft{b}$
-      ]
-      $\bnft{=}$
-      [.$\bnfnt{expr}$
-        [.$\bnfnt{term}$
-          [.$\bnfnt{var}$
-            $\bnft{a}$
+        [$\bnft{;}$]
+        [$\bnfnt{stmts}$
+          [$\bnfnt{stmt}$
+            [$\bnfnt{var}$
+              [$\bnft{a}$]
+            ]
+            [$\bnft{=}$]
+            [$\bnfnt{expr}$
+              [$\bnfnt{term}$
+                [$\bnft{1}$]
+              ]
+              [$\bnft{+}$]
+              [$\bnfnt{term}$
+                [$\bnft{1}$]
+              ]
+            ]
+          ]
+          [$\bnft{;}$]
+          [$\bnfnt{stmts}$
+            [$\bnfnt{stmt}$
+              [$\bnfnt{var}$
+                [$\bnft{b}$]
+              ]
+              [$\bnft{=}$]
+              [$\bnfnt{expr}$
+                [$\bnfnt{term}$
+                  [$\bnfnt{var}$
+                    [$\bnft{a}$]
+                  ]
+                ]
+              ]
+            ]
+            [$\bnft{;}$]
+            [$\bnfnt{stmts}$]
           ]
         ]
       ]
     ]
-    $\bnft{;}$
-    $\bnfnt{stmts}$
-  ]
-\caption{
-Example parse tree for the grammar in \Cref{fig:line-pl}.
-We've factored out some of the subtrees to fit the whole tree on the page.
-}
-\label{fig:line-tree}
+  \end{forest}
+  \centering
+  \caption{
+    Example parse tree for the grammar in \Cref{fig:line-pl}.
+  }
+  \label{fig:line-tree}
 \end{ffigure}
 
 \begin{exercise}

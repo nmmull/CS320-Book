@@ -175,7 +175,7 @@
 
 % EBNF grammar
 \newcommand{\bnfnt}[1]{{\textcolor{blue}{\texttt{<}\textsf{#1}\texttt{>}}}}
-\newcommand{\bnft}[1]{{\textcolor{red}{{\texttt{#1}}}}}
+\newcommand{\bnft}[1]{{\textcolor{purple}{{\texttt{#1}}}}}
 \newcommand{\bnfrep}[1]{{\{ #1 \}}}
 \newcommand{\bnfopt}[1]{{[ #1 ]}}
 \newcommand{\bnfeq}{\ \Coloneqq \ }
@@ -185,15 +185,26 @@
 
 \newcommand{\codel}[1]{\textcolor{purple}{\texttt{#1}}}
 
+\newcommand{\tnode}{\mathsf{node}}
+\newcommand{\tnil}{\mathsf{nil}}
+\newcommand{\troot}[1]{\mathsf{root}\left(#1\right)}
+\newcommand{\tchildren}[1]{\mathsf{children}\left(#1\right)}
+
 % testing
 \usepackage{pdflscape}
 \usepackage{framed}
+
+
+%% better bullet point
+\renewcommand{\labelitemi}{$\triangleright$}
 
 \newenvironment{ffigure}{
   \begin{figure}\begin{framed}
 }{
   \end{framed}\end{figure}
 }
+
+\usepackage{forest}
 
 % order matters, leave these at the end
 \usepackage{hyperref}
