@@ -983,15 +983,140 @@ This also allows for some fancier features we won't go into, but make for conven
 TODO
 \end{exercise}
 
-All told, our basic question become: \textit{how do we avoid grammatical ambiguity while being able to mix operator fixity and not use so many parentheses?}
+\begin{remark}
+TODO Parentheses are syntax.
+\end{remark}
+
+All told, our basic question becomes: \textit{how do we avoid grammatical ambiguity while being able to mix operator fixity and not use so many parentheses?}
 And this question has a simple answer in theory: \textit{make explicit assumptions about how operator arguments should be grouped.}
 This will mean contending with two things: \textbf{associativity} and \textbf{precedence}.
 
+Before that, a note on internal versus external approaches to dealing with ambiguity.
+There are two approaches to dealing with ambiguity.
+Either we can update our grammar to ensure that it is ambiguous, or we can specify a posteriori, which tree to accept, in the case that there are many.
+
 \subsection{Associativity}
+
+Associativity refers to how arguments are grouped when we're given a sequence of applications of an infix operator in the absence of parentheses.
+For example, the expression:
+%
+\begin{ocaml}
+1 + 2 + 3 + 4
+\end{ocaml}
+%
+may be understood as any one of the following:
+%
+\begin{ocaml}
+((1 + 2) + 3) + 4
+(1 + (2 + 3)) + 4
+(1 + 2) + (3 + 4)
+1 + ((2 + 3) + 4)
+1 + (2 + (3 + 4))
+\end{ocaml}
+%
+
+In the case of addition, the point is somewhat moot.
+The order in which we group arguments doesn't affect the \textit{value} of a sequence of additions.
+That is, addition is \textbf{associative}.
+%
+\begin{definition}
+An operation $\circ : X \to X \to X$ is \textbf{associative} if
+%
+\begin{align*}
+  (a \circ b) \circ c = a \circ (b \circ c)
+\end{align*}
+%
+for all $a$, $b$, and $c$ in $X$.
+\end{definition}
+%
+But not all operators are associative; take subtraction, for example.
+We need to \textit{decide} how to implicitly parenthesize an expression like \codel{1 - 2 - 3 - 4}.
+For binary operators, we typically choose one of two ways of grouping terms.
+%
+\begin{definition}
+An operator $\circ : X \to X \to X$ is said to be \textbf{left-associative} if sequences of applications of the operator are understood as grouping arguments from the left, i.e.,
+%
+\begin{align*}
+a \circ b \circ c \circ d = (((a \circ b) \circ c) \circ d)
+\end{align*}
+%
+for any $a$, $b$, $c$, and $d$, in $X$.
+It's said to be \textbf{right-associative} if arguments are grouped from the right, i.e.,
+%
+\begin{align*}
+a \circ b \circ c \circ d = (a \circ (b \circ (c \circ d)))
+\end{align*}
+%
+\end{definition}
+%
+Bringing this back to grammatical ambiguity, giving an implicit parenthesization of a sequence of operators means specifying a "shape" for the corresponding parse tree.
+Taking addition to be left-associative means that one of the two parse trees for the
+sentence \codel{1 - 2 - 3} in the previous section is correct (the first one) and the other is not (the second one).
+%
+\begin{exercise}
+The following is a grammar for function types over the base types \codel{int} and \codel{bool}.
+%
+\begin{align*}
+\bnfnt{fun-type} &\bnfeq
+\bnfnt{base-type} \bnfalt
+\bnfnt{fun-type} \ \bnft{->} \ \bnfnt{fun-type} \bnfalt
+\bnft{(} \ \bnfnt{fun-type} \ \bnft{)} \\
+\bnfnt{base-type} &\bnfeq \bnft{int} \bnfalt \bnft{bool}
+\end{align*}
+%
+Give two leftmost derivation of \codel{int -> bool -> int}.
+\end{exercise}
+%
+Again, one approach is to leave the grammar as is and express externally that an operator is left or right associative.
+If we take the grammar in \Cref{fig:arith-simple} together with a specification of the associativity of each operator, then we can take the grammar to be unambiguous.
+This is done in practice quite often.
+For example the OCaml Manual include a list of all precedences for operators and presents its grammar in an ambiguous fashion.
+But it's also possible to update the grammar itself to ensure it is not ambiguous.
+%
 
 \subsection{Precedence}
 
-\subsection{Parentheses}
+
+In the examples from the previous section, there was only one operator.
+In the presence of multiple operators we have new issues to deal with:
+\textit{How should something like \codel{x * y + z} be implicitly parenthesized?}
+This is an issue of \textbf{precedence} or \textbf{order of operations}, something which is likely already familiar to you.
+
+If you went through the American public school system then you probably learned the abbreviation PEMDAS (Parentheses, Exponentiation, Multiplication, Division, Addition, Subtraction) along with an accompanying mnemonic, something like \enquote{please excuse my dear aunt sally}.
+Focusing on just the last four letters, this rule tells us that we should group multiplications and divisions first, and then group additions and subtractions.
+That is to say, multiplication and division have greater \textbf{precedence} than addition and subtraction.
+%
+\begin{definition}
+The \textbf{precedence} of an operator, relative to another operator, determines which operator binds more tightly, in the presents of ambiguity.
+\end{definition}
+%
+The relative precedence of a collection of operators determines the "shape" of the parse tree for a sentence in a grammar.
+To say that multiplication has higher precedence is to say that when we build the parse tree for \codel{1 * 2 + 3}, we want \codel{+} to be the top-level operation,
+at the root of the tree.
+%
+\begin{example}
+\todo{use parse tree}
+The expression \codel{1 * 2 + 3 * 4} should have the parse tree
+%
+TODO
+%
+because multiplication binds tighter.
+\end{example}
+%
+\begin{remark}
+One thing that was probably glossed over if/when you learned PEMDAS:
+\textit{what do you do with something like \codel{1 + 2 - 3 + 4}?}
+Do you group additions and then subtractions?
+Or vice versa?
+The issue here is that addition and subtraction have the \textit{same} precedence.
+In this case, we'll use the associativity of the operators to determine how to parenthesize, i.e., given a sequences of operators of the same precedence, we use their associativity to group them.
+
+\todo{Parse tree}
+Since addition and subtraction are both left-associative, this would be parenthesized as \codel{(1 + 2) - 3) + 4}.
+Things get complicated if you have two operators with the same precedence, but \textit{different} associativity.
+We'll ignore this possibility, but this matters for languages like Haskell, in which users can define their own operators, with specified precedence and associativity.
+\end{remark}
+\subsection{Parentheses Revisited}
 
 \section{Extended BNF}
 
