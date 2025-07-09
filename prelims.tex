@@ -1,0 +1,177 @@
+\section{Trees}
+
+A surprisingly large amount of the study of programming languages depends on trees, and more generally on inductively defined structures.
+This is why functional languages like OCaml are well-suited for the implementation of programming languages.
+So we begin our discussion with the humble notion of a tree.
+
+If you've taken a course in discrete mathematics (and I pray that you have by the time you're reading this), you're likely familiar with the graph-theoretic definition of trees.
+
+\begin{definition}
+  A \textbf{tree} is an connected acyclic undirected graph.
+  A \textbf{directed tree} is a directed graph whose underlying graph is a tree.
+  A directed tree is \textbf{rooted} if there is a unique vertex with in-degree 0.
+\end{definition}
+%
+In the setting of programming languages we'll be exclusively interested in \textit{nonempty rooted directed} trees so, oving forward, by \enquote{tree} we will always mean \enquote{nonempty rooted directed tree.}
+These are also sometimes called \textbf{rose trees}.
+To make this more explicit we'll often work with the \textit{inductive} definition of a rose tree.
+
+\begin{definition}
+  \label{def:rose-tree}
+  A \textbf{tree} with values from $V$ is defined inductively as follows:
+  \begin{itemize}
+  \item if $v$ is a value from $V$ and $T_1, \dots, T_k$ are trees then so is $\tnode(v, T_1, \dots, T_k)$
+  \end{itemize}
+  Note, in particular, that $\tnode(v)$ a tree for any value $v$ from $V$.
+  The \textbf{root} of a tree is defined as follows:
+  \begin{align*}
+    \troot {\tnode(v, T_1, \dots, T_k)} = v
+  \end{align*}
+  The \textbf{children} a tree are defined as follows:
+  \begin{align*}
+    \tchildren{\tnode(v, T_1, \dots, T_k)} = [T_1, \dots, T_k]
+  \end{align*}
+\end{definition}
+
+\begin{exercise}
+  Rewrite \Cref{def:rose-tree} in OCaml.
+\end{exercise}
+
+\begin{example}
+  Example
+\end{example}
+
+\begin{example}
+  \label{ex:decision-tree}
+  We use decision trees to represent boolean functions.
+  Note that rose trees are suitable for representing decision trees because there is no need for an empty tree structure.
+  The decision tree for the boolean function $\mathsf{OR}(x_1, x_2, x_3) = x_1 \lor x_2 \lor x_3$ can be written:
+  \begin{align*}
+    \tnode(x_1 = 1, \tnode(1), \tnode(x_2 = 1, \tnode(1), \tnode(x_3)))
+  \end{align*}
+  In this scenario, values are taken from a set of possible queries to the inputs of the function.
+  Informally, this decision tree expresses the logic that the value of $\mathsf{OR}(x_1, x_2, x_3)$ can be determined by checking each input individually and determining if it's 1.
+\end{example}
+
+%% \section{Visualizing Trees}
+
+I expect that you're already familiar with basic ways of visualizing trees.
+Here, for example, is a visualization of the tree from \Cref{ex:decision-tree}:
+
+\begin{center}
+  \begin{forest}
+    for tree={
+      minimum width=1in,
+    }
+    [{$x_1 = 1$}
+      [$1$]
+      [{$x_2 = 1$}
+        [$1$]
+        [$x_3$]
+      ]
+    ]
+  \end{forest}
+\end{center}
+
+We will occassionally also use the following form of tree visualization.
+Throughout, we'll call this \textbf{compact form}.
+We won't use it too often, but it's useful when a tree it to wide to draw otherwise.
+
+\begin{center}
+  \begin{forest}
+    for tree={
+      grow'=0,
+      child anchor=west,
+      parent anchor=south,
+      anchor=west,
+      calign=first,
+      edge path={
+        \noexpand\path [draw, \forestoption{edge}]
+        (!u.south west) +(5pt,0) |- (.child anchor)\forestoption{edge label};
+      },
+      before typesetting nodes={
+        if n=1
+        {insert before={[,phantom]}}
+        {}
+      },
+      %% fit=band,
+      before computing xy={l=20pt},
+    }
+    [{$\Gamma \vdash M : A$}
+      [text1.1
+        [text1.1.1]
+        [text1.1.2]
+        [text1.1.3]
+      ]
+      [text1.2
+        [text1.2.1]
+        [text1.2.2]
+      ]
+    ]
+  \end{forest}
+\end{center}
+%
+Once we have a fixed notion of trees, we can define any nonempty inductive structure.
+
+\begin{example}
+  The natural numbers can be thought of as trees with values from $\{\bullet\}$, where $\mathsf{zero}$ is $\tnode(\bullet)$ and $\mathsf{succ}(n) = \tnode(\bullet, n)$.
+\end{example}
+
+%% \section{Structural Recursion and Induction}
+
+Ultimately, we'll be interested in \textit{proving} things about trees.
+This will nearly always come down to structural induction on trees.
+
+Part of what we emphasize here is that, everything is trees.
+Once we have a way to talk about induction over trees, we can talk about proving things in general.
+
+\section{Formal Systems}
+
+The study of programming languages is ultimately the study of a class of \textbf{formal systems}.
+The programming language itself is just an \textit{implementation} of a formal system.
+As such, we need to concern ourselves at least briefly with these notions.
+
+Let's paint a picture.
+When we program we type a bunch of symbols into a computer which get saved to a file.
+Depending on what language we're using (including what Human language we're assuming) there is a fixed number of characters we're allowed to type into a file.
+We call this set of symbols the \textbf{alphabet}.
+Of the possible orientations of symbols we can type into a file, only a handful of them are going to be well-formed programs.
+Of the well-formed programs, only a handful those make sense as programs.
+It doesn't, for example, make sense to add a string to an integer; in other words, only a handful of well-formed programs are well-typed.
+And of the well-typed programs, only a handful of \textit{those} make sense as computations.
+the program
+\begin{ocaml}
+  let rec f x = f x
+\end{ocaml}
+Make sense as an OCaml program in the sense that we can \textit{try} to compute its value, but we'll never succeed (it's an infinite loop).
+
+\todo{A picture, nested squares}
+
+We're interested in formal systems of this form.  In broad strokes, a formal system is made up of a formal language, determined by a \textbf{formal grammar} and one or more \textbf{deductive systems}.
+At each level, we have a deductive system which describes a subsection of system.
+If each step is \textit{decidable} or \textit{semi-decidable}, meaning we can determine which satisfy what, then we can implement it as a programming language.
+
+\section{Inference Rules}
+
+Deductive systems are formalizations of deductive reasoning over what are called \textbf{judgments}.
+They are made up of \textbf{inference rules}, which can be though of as functions which define when we can derive a new judgment from a collection of old ones.
+
+\begin{definition}
+  A \textbf{inference rule} is...
+\end{definition}
+
+\begin{example}
+
+\end{example}
+
+When we define an inference rule, we're often defining a \textit{collection} of inference rules simultaneously.
+This is done by the use of \textbf{meta-variables}.
+A meta-variable stands for a syntactic construct whose form is determined by context.
+
+One we have a notion of inference rule, we need the notion of a \textbf{derivation}.
+
+\begin{definition}
+A \textbf{derivation} is a tree with the following properties.
+\end{definition}
+
+\section{Derivations}
