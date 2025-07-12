@@ -31,7 +31,7 @@ is well-formed, but isn't well-typed.
 A good programming language has a clear specification of its grammar.
 The grammar of OCaml, for example, is given in its entirety in \href{https://ocaml.org/manual/5.3/expr.html}{The OCaml Manual}.
 After going though this chapter, you should be able to read the specification given there.\footnote{
-In order to not be entirely biased, I'll note that Python also has a complete specification of its grammar in \href{TODO}{The Python Manual}.}
+In order to not be entirely biased, I'll note that Python also has a complete specification of its grammar in \href{https://docs.python.org/3/reference/grammar.html}{The Python Manual}.}
 
 \section{A Thought Experiment}
 
@@ -971,6 +971,7 @@ They also allow for some fancier features we won't go into, but make for conveni
 }
 
 \begin{remark}
+  \label{rmk:parens}
   One common conceptual roadblock is in recognizing that \textit{parentheses are part of syntax}.
   We're trained to think of parentheses as meta-syntax, included only to make things more clear, but never explicitely considered (e.g., when you learned calculus, you likely didn't have a lesson on \enquote{the use of parentheses in analytic expressions}).
   But we're on \enquote{the other side} so to speak, meaning we're the ones who have to specify exactly (i.e., formally) how parentheses work.
@@ -1164,7 +1165,7 @@ This is done for the grammar in \Cref{fig:arith-left}.
   \begin{align*}
     &\codel{1 - 2 - 3} \\
     &\codel{1 * (2 - 3)} \\
-    &\codel{2 * 2 - 3}
+    &\codel{1 + 2 * 3}
   \end{align*}
 \end{exercise}
 
@@ -1185,7 +1186,7 @@ This is done for the grammar in \Cref{fig:arith-left}.
 \subsection{Precedence}
 
 We're getting closer to a grammar that captures our intuitions about arithmetic expressions.
-We've succeeded in designing a grammar that is not ambiguous, but as is demonstrated in Exercise \ref{exr:arith-left}, we've failed to enforce an aspect of arithmetic expressions that we learn in grade school: \codel{2 * 2 - 3} should be equivalent to \codel{(1 * 2) - 3} and not \codel{2 * (2 - 3)}.
+We've succeeded in designing a grammar that is not ambiguous, but as is demonstrated in Exercise \ref{exr:arith-left}, we've failed to enforce an aspect of arithmetic expressions that we learn in grade school: \codel{1 + 2 * 3} should be equivalent to \codel{1 + (2 * 3)} and not \codel{(1 + 2) * 3}.
 This is an issue of \textbf{precedence} or \textbf{order of operations}, something that you're likely already familiar with.
 And like associativity, incorrectly dealing with precedence can affect the output value of a program.
 
@@ -1201,6 +1202,7 @@ Like associativity, the relative precedence of a collection of operators determi
 To say that multiplication has higher precedence is to say that when we build the parse tree for \codel{1 * 2 + 3}, the operator \enquote{\codel{+}} should be the top-level operation, i.e., at the root of the tree.
 
 \begin{remark}
+  \label{rmk:diff-assoc}
   One thing that was probably glossed over if/when you learned PEMDAS:
   \textit{what do you do with something like \codel{1 + 2 - 3 + 4}?}
   Do you group additions and then subtractions?
@@ -1212,13 +1214,17 @@ To say that multiplication has higher precedence is to say that when we build th
   Things get complicated if we have two operators with the same precedence, but \textit{different} associativity.
   We'll ignore this possibility, but this matters in languages like Haskell, where users can define their own operators with specified precedence and associativity.
 \end{remark}
-
-So, how do we deal with precedence?
+%
+How do we deal with precedence?
 In the same way that as we dealt with associativity: by \enquote{factoring out} the operators of higher precedence.
 Another way of expressing that \enquote{\codel{*}} has higher precedence than \enquote{\codel{+}} is to say that the arguments of \enquote{\codel{*}} can't be applications of \enquote{\codel{+}} (of course we can still put additions in parentheses).
 Said another way, we need to create a new nonterminal symbol $\bnfnt{expr-no-pm}$ which is the same as $\bnfnt{expr}$ but which can't be expanded to an addition or subtraction.
 This is done for the grammar in \Cref{fig:arith-final}.
-Note that, in this grammar, we also maintain the asymmetry introduced to deal with precedence.
+Note that, in this grammar, we also maintain the asymmetry introduced to deal with associativity.
+
+\Cref{fig:arith-final-tree} has a parse tree for the sentence \codel{1 + 2 * 3} in this grammar.
+Naturally the tree is \enquote{noisier} in that there's more intermediate nonterminal symbols, but hopefully the point is clear: we have to expect with addition first because otherwise, we'd get stuck.
+That is, if we expand the multiplication first, the grammar disallows us expanding the left argument to \codel{1 + 2}.
 
 \begin{figure}
   \begin{align*}
@@ -1239,15 +1245,91 @@ Note that, in this grammar, we also maintain the asymmetry introduced to deal wi
   \label{fig:arith-final}
 \end{figure}
 
+\begin{figure}
+  \begin{forest}
+    [$\bnfnt{expr}$
+      [$\bnfnt{expr}$
+        [$\bnfnt{expr-no-pm}$
+          [$\bnfnt{expr-no-op}$
+            [$\bnfnt{num}$
+              [$\bnft{1}$]
+            ]
+          ]
+        ]
+      ]
+      [$\bnfnt{pm}$
+        [$\bnft{+}$]
+      ]
+      [$\bnfnt{expr-no-pm}$
+        [$\bnfnt{expr-no-pm}$
+          [$\bnfnt{expr-no-op}$
+            [$\bnfnt{num}$
+              [$\bnft{2}$]
+            ]
+          ]
+        ]
+        [$\bnfnt{md}$
+          [$\bnft{*}$]
+        ]
+        [$\bnfnt{expr-no-op}$
+          [$\bnfnt{num}$
+            [$\bnft{3}$]
+          ]
+        ]
+      ]
+    ]
+  \end{forest}
+  \centering
+  \caption{Parse tree of \codel{1 + 2 * 3} using the grammar in \Cref{fig:arith-final}}
+  \label{fig:arith-final-tree}
+\end{figure}
 
-\subsection{The External View}
+\begin{exercise}
+  Give a derivation of \codel{(1 + 2) * 3} using the grammar in \Cref{fig:arith-final}
+\end{exercise}
 
-Before that, a note on internal versus external approaches to dealing with ambiguity.
-There are two approaches to dealing with ambiguity.
-Either we can update our grammar to ensure that it is ambiguous, or we can specify a posteriori, which tree to accept, in the case that there are many.
-%% For example the OCaml Manual include a list of all precedences for operators and presents its grammar in an ambiguous fashion.
-%% But it's also possible to update the grammar itself to en
+\subsection{Operator Tables}
+In the next chapter, we'll see how to implement parsers for a given grammar.
+One way is to use a \textbf{parser generator}, which is a program that generates the code for a parser based on a specification.
+More on that later, the point: most parser generators don't require us to use the techniques above to deal with associativity and precedence.
+Rather, they take additional about associativity and precendence directly, often in the form of an \textbf{operator table}.
+For arithmetic, we might use the following table, which presents operators in order of increasing precedence.
 
+\begin{center}
+  \begin{tabular}{|c|c|}
+    \hline
+    Operator & Associativity \\
+    \hline
+    \codel{+}, \codel{-} & left \\
+    \codel{*}, \codel{/} & right \\
+    \hline
+  \end{tabular}
+\end{center}
+%
+Note that, in light of \Cref{rmk:diff-assoc}, it's reasonable to assume that all operators of the same precedence (i.e., appearing in the same row) have the same associativity.
+The \href{https://ocaml.org/manual/5.3/api/Ocaml_operators.html}{OCaml Manual} has an analogous table for its operators.
+
+\begin{remark}
+  We can think of this as an \textit{a posteriori} approach to disambiguation; rather than designing a grammar in which every sentence has a unique parse tree, we design an ambiguous grammar and then specify which of the parse trees we consider acceptable.
+  As long as the only source of ambiguity is due to associativity and precedence of binary operators, operator tables allow use to associate with every sentence a unqiue parse tree.
+\end{remark}
+
+A final word of warning for this section: as much as we've tried to present grammars as a rigorously as possible, they tend to be a bit handwavy in practice.
+For example, the following is a standard presentation of arithmetic expressions in a more mathematical setting:
+\begin{align*}
+  e \bnfeq e + e \bnfalt e - e \bnfalt e * e \bnfalt e / e \bnfalt \mathbb Z
+\end{align*}
+where $\mathbb Z$ refers to any integer.
+Operator associativity and precedence are understood from context and the production rule:
+\begin{align*}
+  e \bnfeq ( e )
+\end{align*}
+is implicitly assumed, contrary to \Cref{rmk:parens}!
+In other settings, (e.g., the \href{https://docs.python.org/3/reference/grammar.html}{full grammar specification} of Python) the notation used is a mixture of multiple syntaxes for grammar specifications.
+This is just to say, there is a difference between grammars as they are studied in formal language theory, and as they are used to specify programming languages or used to specify syntaxes in mathematical settings like logic and type theory.
+In the later cases, you'll likely have to read between the lines, so to speak.
+
+\section{Grammars as Formal Systems}
 
 \section{Extended BNF}
 
