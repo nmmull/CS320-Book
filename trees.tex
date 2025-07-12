@@ -1,20 +1,17 @@
-A surprisingly large amount of the study of programming languages depends on trees, and more generally on inductively defined structures.
-This is why functional languages like OCaml are well-suited for the implementation of programming languages.
-So we begin our discussion with the humble notion of a tree.
-
-\section{Basic Definitions}
-
-If you've taken a course in discrete mathematics (and I pray that you have by the time you're reading this), you're likely familiar with the graph-theoretic definition of trees.
+Much of the study of programming languages depends on trees or, more generally, inductively defined structures.
+This is in part why functional programming languages like OCaml are well-suited for the implementation of programming languages.
+This means we have to spend some time on the humble notion of trees.
+If you've taken a course in discrete mathematics, you've likely seens the graph-theoretic definition of a tree.
 
 \begin{definition}
-  A \textbf{tree} is an connected acyclic undirected graph.
+  A \textbf{tree} is undirected graph which is connected an acyclic.
   A \textbf{directed tree} is a directed graph whose underlying graph is a tree.
   A directed tree is \textbf{rooted} if there is a unique vertex with in-degree 0.
 \end{definition}
 %
-In the setting of programming languages we'll be exclusively interested in \textit{nonempty rooted directed} trees so, oving forward, by \enquote{tree} we will always mean \enquote{nonempty rooted directed tree.}
+In our setting we'll be primarily interested in \textit{nonempty rooted directed} trees; moving forward \enquote{tree} we will always mean \enquote{nonempty rooted directed tree.}
 These are also sometimes called \textbf{rose trees}.
-To make this more explicit we'll often work with the \textit{inductive} definition of a rose tree.
+To make this more explicit we'll work with the \textit{inductive} definition of a (rose) tree.
 
 \begin{definition}
   \label{def:rose-tree}
@@ -23,39 +20,35 @@ To make this more explicit we'll often work with the \textit{inductive} definiti
   \item if $v$ is a value from $V$ and $T_1, \dots, T_k$ are trees then so is $\tnode(v, T_1, \dots, T_k)$
   \end{itemize}
   Note, in particular, that $\tnode(v)$ a tree for any value $v$ from $V$.
-  The \textbf{root} of a tree is defined as follows:
+  We call this kind of node a \textbf{leaf}.
+  The \textbf{root} of a tree is defined as:
   \begin{align*}
     \troot {\tnode(v, T_1, \dots, T_k)} = v
   \end{align*}
-  The \textbf{children} a tree are defined as follows:
+  and the \textbf{children} a tree are defined as:
   \begin{align*}
     \tchildren{\tnode(v, T_1, \dots, T_k)} = [T_1, \dots, T_k]
   \end{align*}
 \end{definition}
-
-\begin{exercise}
-  Rewrite \Cref{def:rose-tree} in OCaml.
-\end{exercise}
-
-\begin{example}
-  Example
-\end{example}
+%
+We can, of course, define rose trees very naturally in OCaml:
+\begin{ocaml}
+  type 'a tree = Node of 'a * 'a tree list
+  let example = Node (1, [Node (2, []); Node (3, [])])
+\end{ocaml}
 
 \begin{example}
   \label{ex:decision-tree}
-  We use decision trees to represent boolean functions.
-  Note that rose trees are suitable for representing decision trees because there is no need for an empty tree structure.
+  We can use decision trees to represent boolean functions, and we can use view decisions trees as a particular class of rose tree.
   The decision tree for the boolean function $\mathsf{OR}(x_1, x_2, x_3) = x_1 \lor x_2 \lor x_3$ can be written:
   \begin{align*}
-    \tnode(x_1 = 1, \tnode(1), \tnode(x_2 = 1, \tnode(1), \tnode(x_3)))
+    \tnode(x_1 = 1, \tnode(1), \tnode(x_2 = 1, \tnode(1), \tnode(x_3 = 1, \tnode(1), \tnode(0))))
   \end{align*}
-  In this scenario, values are taken from a set of possible queries to the inputs of the function.
-  Informally, this decision tree expresses the logic that the value of $\mathsf{OR}(x_1, x_2, x_3)$ can be determined by checking each input individually and determining if it's 1.
+  Values of this tree are queries to the inputs of the function.
+  Roughly speaking, this decision tree expresses the idea that the value of $\mathsf{OR}(x_1, x_2, x_3)$ can be determined by searching for left to right for an input which is equal to 1.
 \end{example}
 
-\section{Visualizing Trees}
-
-I expect that you're already familiar with basic ways of visualizing trees.
+We can visualize trees in the usual way.
 Here, for example, is a visualization of the tree from \Cref{ex:decision-tree}:
 
 \begin{center}
@@ -67,15 +60,16 @@ Here, for example, is a visualization of the tree from \Cref{ex:decision-tree}:
       [$1$]
       [{$x_2 = 1$}
         [$1$]
-        [$x_3$]
+        [{$x_3 = 1$}
+          [$1$]
+          [$0$]
+        ]
       ]
     ]
   \end{forest}
 \end{center}
-
-We will occassionally also use the following form of tree visualization.
-Throughout, we'll call this \textbf{compact form}.
-We won't use it too often, but it's useful when a tree it to wide to draw otherwise.
+%
+We'll also occassionally use the following form of tree visualization, which we'll call \textbf{compact form}.
 
 \begin{center}
   \begin{forest}
@@ -94,30 +88,40 @@ We won't use it too often, but it's useful when a tree it to wide to draw otherw
         {insert before={[,phantom]}}
         {}
       },
-      %% fit=band,
       before computing xy={l=20pt},
     }
-    [{$\Gamma \vdash M : A$}
-      [text1.1
-        [text1.1.1]
-        [text1.1.2]
-        [text1.1.3]
-      ]
-      [text1.2
-        [text1.2.1]
-        [text1.2.2]
+    [{$x_1 = 1$}
+      [$1$]
+      [{$x_2 = 1$}
+        [$1$]
+        [{$x_3 = 1$}
+          [$1$]
+          [$0$]
+        ]
       ]
     ]
   \end{forest}
 \end{center}
 %
+This form is based on visualizations of file trees, e.g., see the directory listing program \texttt{tree}.
+It's particularly useful when a tree it too wide to draw otherwise, e.g., when the values in nodes are themselves very wide.\footnote{
+The other benefit of this form is we can implement our own version of \texttt{tree} which generates visualizations of rose trees in this form.
+}
+There's one more form of tree visualization we'll use for drawing derivation trees; this will be covered in \Cref{TODO}.
+
+\section{Structural Induction and Recursion}
+
+We won't concern greatly ourselves with the general notion of trees.
+Rather, we'll be primarily interested in a particular class of trees, namely trees generated from inference rules as in \Cref{TODO}.
+But in order to make more clear the process here
+
 Once we have a fixed notion of trees, we can define any nonempty inductive structure.
 
 \begin{example}
   The natural numbers can be thought of as trees with values from $\{\bullet\}$, where $\mathsf{zero}$ is $\tnode(\bullet)$ and $\mathsf{succ}(n) = \tnode(\bullet, n)$.
 \end{example}
 
-\section{Structural Recursion and Induction}
+%% \section{Structural Recursion and Induction}
 
 Ultimately, we'll be interested in \textit{proving} things about trees.
 This will nearly always come down to structural induction on trees.

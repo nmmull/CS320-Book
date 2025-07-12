@@ -1,10 +1,11 @@
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
 \ProvidesPackage{cs320}[2025/06/25 v0.01 LaTeX package for the course notes of CAS CS320 at Boston University]
 
+% Palatino
 \usepackage{mathpazo}
 
 % 1 inch margins
-\usepackage[margin=1in]{geometry}
+%% \usepackage[margin=1in]{geometry}
 
 % line spacing
 \usepackage{setspace}
@@ -89,6 +90,15 @@
     padding=6.7pt,
   },
 ]{theorem}
+\declaretheorem[
+  name=Proposition,
+  style=basic,
+  shaded={
+    bgcolor=piggypink,
+    textwidth=0.98\textwidth,
+    padding=6.7pt,
+  },
+]{proposition}
 
 % Page layout
 \usepackage{fancyhdr}
@@ -159,15 +169,6 @@
   \lstset{language=ocaml}
 }{}
 
-% box
-\newcommand{\widebox}[1]{
-  \begin{center}
-    \noindent\fbox{\parbox{\linewidth}{
-      #1
-    }}
-  \end{center}
-}
-
 % Trees
 \usepackage{qtree}
 
@@ -190,18 +191,19 @@
 \newcommand{\troot}[1]{\mathsf{root}\left(#1\right)}
 \newcommand{\tchildren}[1]{\mathsf{children}\left(#1\right)}
 
-% testing
-\usepackage{pdflscape}
-\usepackage{framed}
-
-
 %% better bullet point
 \renewcommand{\labelitemi}{$\triangleright$}
 
-\newenvironment{ffigure}{
-  \begin{figure}\begin{framed}
+%% boxes
+\usepackage{framed}
+
+%% https://tex.stackexchange.com/questions/673066/how-can-i-use-the-old-definition-of-an-environment-when-the-environment-is-redef
+\NewCommandCopy\oldfigure\figure
+\NewCommandCopy\endoldfigure\endfigure
+\renewenvironment{figure}{
+  \oldfigure\begin{framed}
 }{
-  \end{framed}\end{figure}
+  \end{framed}\endoldfigure
 }
 
 \usepackage{forest}
