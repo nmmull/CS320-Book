@@ -1629,16 +1629,20 @@ Rather than fixing a choice, we treat a repetition as being expandable to any nu
 
 \section{Regular Expressions}
 
+The last topic of formal language which we'll take on is that of \textbf{regularity}.
+As we'll see, regular grammars play a key role \textbf{lexical analysis} the first step of our interpretation pipeline.
+
 \begin{definition}
   A \textbf{(right) regular grammar} is one in which every production rule is of the following form:
   \begin{enumerate}
-  \item $\bnfnt{non-term} \bnfeq \bnft{term} \ \bnfnt{non-term'}$
-  \item $\bnfnt{non-term} \bnfeq \bnft{term}$
-  \item $\bnfnt{non-term} \bnfeq \bnfempty$
+  \item $\bnfnt{n} \bnfeq \bnft{t} \ \bnfnt{m}$
+  \item $\bnfnt{n} \bnfeq \bnft{t}$
+  \item $\bnfnt{n} \bnfeq \bnfempty$
   \end{enumerate}
 \end{definition}
 
 \begin{example}
+  \label{ex:reg-grammar}
   The following is a regular grammar.
   \begin{align*}
     \bnfnt{a} &\bnfeq \bnft{a} \ \bnfnt{a} \\
@@ -1663,7 +1667,53 @@ Rather than fixing a choice, we treat a repetition as being expandable to any nu
     \end{forest}
   \end{center}
 \end{example}
+%
+Regular grammars are incredibly simple.
+The parse trees for the sentences they recognize are always skewed, as in \Cref{ex:reg-grammar}.
+This simplicity makes it easy to write a naive algorithm for determining if a sentence is recognized by a regular grammar.
+We can interpret the skewedness as visually demonstrating that every rule in a grammar \enquote{makes forward progress} towards recognising a sentence.
+This means that a basic backtracking approach suffices for the recognition algorithm.
+We begin by setting up some types.
+\begin{ocaml}
+  type nonterminal = NT of char
+  type terminal = T of char
 
+  type rule_rhs =
+    | Empty
+    | Term of terminal
+    | Continue of terminal * nonterminal
+
+  type rule = nonterminal * rule_rhs
+  type sentence = terminal list
+\end{ocaml}
+Then, for a given sentence, we find a rule which matches its first character on the right-hand-side, and recurse on the remainder of the sentence as necessary.
+\begin{ocaml}
+  let recognizes
+      (start : nonterminal)
+      (rules : rule list)
+      (sent : sentence) : bool =
+    let rec go start = function
+      | [] -> List.exists ((=) (start, Empty)) rules
+      | t :: ts ->
+         let matches (nterm, rule) =
+           match rule with
+           | Empty -> false
+           | Term term -> term = t && List.is_empty ts
+           | Continue (term, next)
+               when nterm = start
+                    && term = t ->
+               go next ts
+         in
+         List.exists matches rules
+    in
+    go start sent
+\end{ocaml}
+Regular grammars are surprisingly expressive.
+They can recognize a fairly wide range of useful languages.
+But in a sense, regular grammars are \textit{too} simple.
+Specifying the regular grammars for \enquote{useful} lanuages can be complicated.
+\textbf{Regular expressions} are an alternative to BNF specifications for regular grammars with a compact and natural syntax.
+And they maintain the feature that its possible to write simple recognition algorithsm for regular expressions.
 \begin{definition}
   The set of regular expressions over the terminal symbols $\mathcal T$ are defined inductively as follows:
   \begin{itemize}
