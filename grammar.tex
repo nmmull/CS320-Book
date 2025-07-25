@@ -590,17 +590,27 @@ This reading is witnessed by the following parse tree:
   \begin{forest}
     [$\bnfnt{expr}$
       [$\bnfnt{expr}$
-        [$\bnfnt{num}$
-          [$\bnft{1}$]
+        [$\bnfnt{expr}$
+          [$\bnfnt{num}$
+            [$\bnft{1}$]
+          ]
         ]
-        [$\bnft{-}$]
-        [$\bnfnt{num}$
-          [$\bnft{2}$]
+        [$\bnfnt{op}$
+          [$\bnft{-}$]
+        ]
+        [$\bnfnt{expr}$
+          [$\bnfnt{num}$
+            [$\bnft{2}$]
+          ]
         ]
       ]
-      [$\bnft{-}$]
-      [$\bnfnt{num}$
-        [$\bnft{3}$]
+      [$\bnfnt{op}$
+        [$\bnft{-}$]
+      ]
+      [$\bnfnt{expr}$
+        [$\bnfnt{num}$
+          [$\bnft{3}$]
+        ]
       ]
     ]
   \end{forest}
@@ -611,17 +621,27 @@ But there's nothing in the structure of the expression itself which keeps us fro
 \begin{center}
   \begin{forest}
     [$\bnfnt{expr}$
-      [$\bnfnt{num}$
-        [$\bnft{1}$]
-      ]
-      [$\bnft{-}$]
       [$\bnfnt{expr}$
         [$\bnfnt{num}$
-          [$\bnft{2}$]
+          [$\bnft{1}$]
         ]
+      ]
+      [$\bnfnt{op}$
         [$\bnft{-}$]
-        [$\bnfnt{num}$
-          [$\bnft{3}$]
+      ]
+      [$\bnfnt{expr}$
+        [$\bnfnt{expr}$
+          [$\bnfnt{num}$
+            [$\bnft{2}$]
+          ]
+        ]
+        [$\bnfnt{op}$
+          [$\bnft{-}$]
+        ]
+        [$\bnfnt{expr}$
+          [$\bnfnt{num}$
+            [$\bnft{3}$]
+          ]
         ]
       ]
     ]
@@ -633,11 +653,112 @@ If we want to allow the programmer to write down an expression like \codel{1 - 2
 More generally, we'd like to ensure that our grammar is \textit{unambiguous} so there's no question as to how to read what the programmer has written.
 This will be our focus for the next section.
 
+\begin{figure}
+  \begin{center}
+    \AxiomC{}
+    \RightLabel{(one)}
+    \UnaryInfC{$\bnft{1} \in \bnfnt{num}$}
+    \DisplayProof
+    \quad
+    \AxiomC{}
+    \RightLabel{(two)}
+    \UnaryInfC{$\bnft{2} \in \bnfnt{num}$}
+    \DisplayProof
+    \quad
+    \AxiomC{}
+    \RightLabel{(three)}
+    \UnaryInfC{$\bnft{3} \in \bnfnt{num}$}
+    \DisplayProof
+  \end{center}
+  \smallskip
+
+  \begin{center}
+    \AxiomC{}
+    \RightLabel{(add)}
+    \UnaryInfC{$\bnft{+} \in \bnfnt{op}$}
+    \DisplayProof
+    \quad
+    \AxiomC{}
+    \RightLabel{(sub)}
+    \UnaryInfC{$\bnft{-} \in \bnfnt{op}$}
+    \DisplayProof
+  \end{center}
+  \smallskip
+
+  \begin{center}
+    \AxiomC{}
+    \RightLabel{(mul)}
+    \UnaryInfC{$\bnft{*} \in \bnfnt{op}$}
+    \DisplayProof
+    \quad
+    \AxiomC{}
+    \RightLabel{(div)}
+    \UnaryInfC{$\bnft{/} \in \bnfnt{op}$}
+    \DisplayProof
+  \end{center}
+  \smallskip
+
+  \begin{center}
+    \AxiomC{$S \in \bnfnt{num}$}
+    \RightLabel{(num)}
+    \UnaryInfC{$S \in \bnfnt{expr}$}
+    \DisplayProof
+    \quad
+    \AxiomC{$S \in \bnfnt{expr}$}
+    \RightLabel{(paren)}
+    \UnaryInfC{$S \in \bnft{(} \ \bnfnt{expr} \ \bnft{)}$}
+    \DisplayProof
+  \end{center}
+  \smallskip
+
+  \begin{center}
+    \AxiomC{$S_1 \in \bnfnt{expr}$}
+    \AxiomC{$S_2 \in \bnfnt{op}$}
+    \AxiomC{$S_3 \in \bnfnt{expr}$}
+    \RightLabel{(op)}
+    \TrinaryInfC{$S_1 \ S_2 \ S_3 \in \bnfnt{expr}$}
+    \DisplayProof
+  \end{center}
+  \caption{Formal system for the grammar in \Cref{fig:arith-simple}}
+  \label{fig:arith-simple-formal}
+\end{figure}
+
+\begin{figure}
+  \begin{prooftree}
+    \AxiomC{}
+    \UnaryInfC{$\bnft{1} \in \bnfnt{num}$}
+    \UnaryInfC{$\bnft{1} \in \bnfnt{expr}$}
+    \AxiomC{}
+    \UnaryInfC{$\bnft{-} \in \bnfnt{op}$}
+    \AxiomC{}
+    \UnaryInfC{$\bnft{2} \in \bnfnt{num}$}
+    \UnaryInfC{$\bnft{2} \in \bnfnt{expr}$}
+    \TrinaryInfC{$\bnft{1 - 2} \in \bnfnt{expr}$}
+    \AxiomC{}
+    \UnaryInfC{$\bnft{-} \in \bnfnt{op}$}
+    \AxiomC{}
+    \UnaryInfC{$\bnft{3} \in \bnfnt{num}$}
+    \UnaryInfC{$\bnft{3} \in \bnfnt{expr}$}
+    \TrinaryInfC{$\bnft{1 - 2 - 3} \in \bnfnt{expr}$}
+  \end{prooftree}
+  \caption{A derivation tree proving the recognition of \codel{1 - 2 - 3} using the inference rules in \label{fig:arith-simple-formal}}
+  \label{fig:arith-proof-tree}
+\end{figure}
+
+\begin{remark}
+  Before moving forward, I'd like to point out that BNF specifications are formal systems, as introduced in the previous chapter, written in an alternative form.
+  From this perspective, judgments are of the form \enquote{$S \in \bnfnt{non-terminal}$}, where $S$ is a sentence.
+  We read a judgment as \enquote{the sentence $S$ is a $\bnfnt{non-terminal}$.}
+  Non-terminal symbols thus define categories of sentences.
+  Production rules define inference rules, which inform how sentences can be combined to produce new sentences of a given category.
+  We won't make this formal, but will point to \Cref{fig:arith-simple-formal} for the grammar in \Cref{fig:arith-simple} written as a formal system.
+  Note also in the derivation in \Cref{fig:arith-proof-tree} is, up to minor differences is labels, the same as a parse tree drawn (upside down) in derivation tree form.
+\end{remark}
+
 \section{Grammatical Ambiguity}
 
 As participants of language, we are no strangers to grammatical ambiguity.
 Take, for instance, the following sentence:\footnote{This example is taken from the Wikipedia page on \href{https://en.wikipedia.org/wiki/Syntactic_ambiguity}{Syntactic ambiguity}.}
-
 \begin{align*}
   \bnft{John saw the man on the mountain with the telescope}
 \end{align*}
@@ -892,7 +1013,7 @@ so that the expression you typed was in reverse Polish notation, in this case:
 The benefit of Polish notation is that it is extremely simple, and easy to parse.
 The issue with Polish notation is that it's difficult to read.
 Imagine having to write code with a prefix form of if-then-else.
-Code in OCaml like:
+OCaml code of the form:
 %
 \begin{ocaml}
   if n < 10
@@ -1119,21 +1240,27 @@ It's typical to take addition, subtraction, multiplication and division to be \t
   \begin{forest}
     [$\bnfnt{expr}$
       [$\bnfnt{expr}$
-        [$\bnfnt{num}$
-          [$\bnft{1}$]
+        [$\bnfnt{expr}$
+          [$\bnfnt{num}$
+            [$\bnft{1}$]
+          ]
         ]
         [$\bnfnt{op}$
           [$\bnft{-}$]
         ]
-        [$\bnfnt{num}$
-          [$\bnft{2}$]
+        [$\bnfnt{expr}$
+          [$\bnfnt{num}$
+            [$\bnft{2}$]
+          ]
         ]
       ]
       [$\bnfnt{op}$
         [$\bnft{-}$]
       ]
-      [$\bnfnt{num}$
-        [$\bnft{3}$]
+      [$\bnfnt{expr}$
+        [$\bnfnt{num}$
+          [$\bnft{3}$]
+        ]
       ]
     ]
   \end{forest}
@@ -1331,6 +1458,312 @@ In the later cases, you'll likely have to read between the lines, so to speak.
 
 \section{Extended BNF}
 
+There are several extensions of the BNF meta-syntax which make it more usable.
+We'll consider a small collection of extensions which capture common patterns of programming language syntax.
+We'll call BNF plus these extensions \textbf{extended BNF}, or \textbf{EBNF} for short.
+In particular, we'll use BNF if we intend to exclude the following extensions to the meta-syntax.
+
+\subsection*{Options}
+
+\begin{definition}
+We use the notation $\bnfopt{\textsf{SENT-FORM}}$ for parts of a production rule which are optional.
+That is, we write
+\begin{align*}
+  \bnfnt{nt} \bnfeq \textsf{SENT-FORM}_1 \ \bnfopt{\textsf{SENT-FORM}_2} \ \textsf{SENT-FORM}_3
+\end{align*}
+as shorthand for
+\begin{align*}
+  \bnfnt{nt} &\bnfeq \textsf{SENT-FORM}_1 \ \textsf{SENT-FORM}_3 \\
+  &\bnfaltn \textsf{SENT-FORM}_1 \ \textsf{SENT-FORM}_2 \ \textsf{SENT-FORM}_3
+\end{align*}
+\end{definition}
+
+\begin{example}
+  We can use the EBNF production rule
+  \begin{align*}
+    \bnfnt{if-expr} \bnfeq
+    \bnft{if} \ \bnfnt{expr} \
+    \bnft{then} \ \bnfnt{expr} \
+    \bnfopt{\bnft{else} \ \bnfnt{expr}}
+  \end{align*}
+  to write a grammar whose expressions allow for both if-then statements and if-then-else statements.
+\end{example}
+
+\begin{exercise}
+  Rewrite the following EBNF production rule as a collection of BNF production rules.
+  \begin{align*}
+    \bnfnt{a} \bnfeq \bnft{a} \ \bnfopt{\bnfnt{b}} \ \bnfopt{\bnft{a}}
+  \end{align*}
+\end{exercise}
+
+\begin{remark}
+  One issue with extending BNF syntax is that it's more difficult to express grammars which include symbosl used for the extensions (e.g, \enquote{$[$} and \enquote{$]$}).
+  In practice this is not a huge problem, we'll try to be explicit (e.g., by using color) in distiguishing between symbols in the meta-language and terminal symbols in the grammar.
+\end{remark}
+
+\subsection*{Alternatives}
+
+\begin{definition}
+  We use the notation $(\textsf{SENT-FORM}_1 \bnfalt \dots \bnfalt \textsf{SENT-FORM}_k)$ for parts of a production rule which can be one of several.
+  This is like alternative syntax, but it allows us to embed the alternatives within the production rule.
+  We write
+  \begin{align*}
+    \bnfnt{nt} \bnfeq \textsf{ST-FM}_0 \ (\textsf{ST-FM}_1 \bnfalt \dots \bnfalt \textsf{ST-FM}_k) \ \textsf{ST-FM}_{k + 1}
+  \end{align*}
+  as shorthand for
+  \begin{align*}
+    \bnfnt{nt} &\bnfeq \textsf{ST-FM}_0 \ \textsf{ST-FM}_1 \ \textsf{ST-FM}_{k + 1} \\
+    &\hspace{25mm} \vdots \\
+    &\bnfaltn \textsf{ST-FM}_0 \ \textsf{ST-FM}_k \ \textsf{ST-FM}_{k + 1}
+  \end{align*}
+\end{definition}
+
+\begin{example}
+  We can simplify the grammar in \Cref{fig:arith-simple} by removing the nonterminal symbol $\bnfnt{op}$ and putting the alternative binary operators within a single rule:
+  \begin{align*}
+    \bnfnt{expr} \bnfeq \bnfnt{expr} \ (\bnft{+} \bnfalt \bnft{-} \bnfalt \bnft{*} \bnfalt \bnft{/}) \ \bnfnt{expr}
+  \end{align*}
+\end{example}
+
+\begin{exercise}
+  TODO
+\end{exercise}
+
+\subsection*{Repetition}
+
+\begin{definition}
+  We use the notation $\bnfrep{\textsf{SENT-FORM}}$ for part of a production rule which can be repeated as many times as we want.
+  That is, we write
+  \begin{align*}
+    \bnfnt{nt} \bnfeq \textsf{ST-FM}_0 \ \bnfrep{\textsf{ST-FM}_1} \ \textsf{ST-FM}_2
+  \end{align*}
+  as shorthand for
+  \begin{align*}
+    \bnfnt{nt} &\bnfeq \textsf{ST-FM}_0 \ \textsf{ST-FM}_2 \\
+    &\bnfaltn \textsf{ST-FM}_0 \ \textsf{ST-FM}_1 \ \textsf{ST-FM}_2 \\
+    &\bnfaltn \textsf{ST-FM}_0 \ \textsf{ST-FM}_1 \ \textsf{ST-FM}_1 \ \textsf{ST-FM}_2 \\
+    &\hspace{25mm}\vdots
+\end{align*}
+\end{definition}
+%
+The previous definition is an abuse of notation.
+Even though we didn't strictly enforce it, we tend to think of grammars as having a finite number of production rules.
+We can't give a simple translation into BNF production rules as we did for the previous extensions because such a translation would require use to make a choice: \textit{do we repeat to the left or the right?}
+In other words, is
+\begin{align*}
+  \bnfnt{nt} \bnfeq \textsf{ST-FM}_0 \ \bnfrep{\textsf{ST-FM}_1} \ \textsf{ST-FM}_2
+\end{align*}
+shorthand for
+\begin{align*}
+  \bnfnt{nt} &\bnfeq \textsf{ST-FM}_0 \ \bnfnt{reps} \ \textsf{ST-FM}_2 \\
+  \bnfnt{reps} &\bnfeq \bnfempty \bnfalt \textsf{ST-FM}_1 \ \bnfnt{reps}
+\end{align*}
+or
+\begin{align*}
+  \bnfnt{nt} &\bnfeq \textsf{ST-FM}_0 \ \bnfnt{reps} \ \textsf{ST-FM}_2 \\
+  \bnfnt{reps} &\bnfeq \bnfempty \bnfalt \bnfnt{reps} \ \textsf{ST-FM}_1
+\end{align*}
+Rather than fixing a choice, we treat a repetition as being expandable to any number of its corresponding sentential form.
+
+\begin{figure}
+  \begin{align*}
+    \bnfnt{e} &\bnfeq
+    \bnfnt{e-no-pm} \ \bnfrep{( \bnft{+} \bnfalt \bnft{-} ) \ \bnfnt{e-no-pm}} \\
+    \bnfnt{e-no-pm} &\bnfeq
+    \bnfnt{e-no-op} \ \bnfrep{( \bnft{*} \bnfalt \bnft{/} ) \ \bnfnt{e-no-op}} \\
+    \bnfnt{e-no-op} &\bnfeq
+    \bnfnt{num} \bnfalt
+    \bnft{(} \ \bnfnt{e} \ \bnft{)} \\
+    \bnfnt{num} &\bnfeq \bnft{1} \bnfalt \bnft{2} \bnfalt \bnft{3}
+  \end{align*}
+  \caption{EBNF specification for arithmetic}
+  \label{fig:arith-short}
+\end{figure}
+
+\begin{example}
+  \label{ex:ebnf-tree}
+  \Cref{fig:arith-short} has a grammar which takes advantage of these extensions to BNF in the case of arithmetic expressions.
+  Note that we lose the ability to express that the operators are left-associative because the repetitions are expanded in a single step.
+  Take, for example the following derivation of \codel{1 + 2 + 3 * 1 + 2}:
+  \begin{center}
+    \begin{forest}
+      [$\bnfnt{e}$
+        [$\bnfnt{e-no-pm}$
+          [$\bnfnt{e-no-op}$
+            [$\bnfnt{num}$
+              [$\bnft{1}$]]]]
+        [$\bnft{+}$]
+        [$\bnfnt{e-no-pm}$
+          [$\bnfnt{e-no-op}$
+            [$\bnfnt{num}$
+              [$\bnft{2}$]]]]
+        [$\bnft{+}$]
+        [$\bnfnt{e-no-pm}$
+          [$\bnfnt{e-no-op}$
+            [$\bnfnt{num}$
+              [$\bnft{3}$]]]
+          [$\bnft{*}$]
+          [$\bnfnt{e-no-op}$
+            [$\bnfnt{num}$
+              [$\bnft{1}$]]]]
+        [$\bnft{+}$]
+        [$\bnfnt{e-no-pm}$
+          [$\bnfnt{e-no-op}$
+            [$\bnfnt{num}$
+              [$\bnft{2}$]]]]]
+    \end{forest}
+  \end{center}
+  Because the operator applications are collapsed to a single level the left associativity of the operators needed to be dealt with in a different way.
+  We'll see how this is done in the next chapter.
+\end{example}
+
+\begin{remark}
+  These extensions of BNF syntax are strictly \textit{meta}-syntactic.
+  The notion of a derivation or a parse tree does not change.
+  In particular, as in \Cref{ex:ebnf-tree}, \textit{EBNF syntax should never appear in a derivation or a parse tree.}
+\end{remark}
+
+\begin{exercise}
+  TODO
+\end{exercise}
+
 \section{Regular Expressions}
 
-\section{Grammars as Formal Systems}
+\begin{definition}
+  A \textbf{(right) regular grammar} is one in which every production rule is of the following form:
+  \begin{enumerate}
+  \item $\bnfnt{non-term} \bnfeq \bnft{term} \ \bnfnt{non-term'}$
+  \item $\bnfnt{non-term} \bnfeq \bnft{term}$
+  \item $\bnfnt{non-term} \bnfeq \bnfempty$
+  \end{enumerate}
+\end{definition}
+
+\begin{example}
+  The following is a regular grammar.
+  \begin{align*}
+    \bnfnt{a} &\bnfeq \bnft{a} \ \bnfnt{a} \\
+    \bnfnt{a} &\bnfeq \bnft{a} \ \bnfnt{b} \\
+    \bnfnt{b} &\bnfeq \bnft{b} \ \bnfnt{b} \\
+    \bnfnt{b} &\bnfeq \bnfempty
+  \end{align*}
+  This grammar recognizes the sentence $\bnft{aaabb}$ and has the following parse tree.
+  \begin{center}
+    \begin{forest}
+      [$\bnfnt{a}$
+        [$\bnft{a}$]
+        [$\bnfnt{a}$
+          [$\bnft{a}$]
+          [$\bnfnt{a}$
+            [$\bnft{a}$]
+            [$\bnfnt{b}$
+              [$\bnft{b}$]
+              [$\bnfnt{b}$
+                [$\bnft{b}$]
+                [$\bnfnt{b}$]]]]]]
+    \end{forest}
+  \end{center}
+\end{example}
+
+\begin{definition}
+  The set of regular expressions over the terminal symbols $\mathcal T$ are defined inductively as follows:
+  \begin{itemize}
+  \item (empty) $\bnfempty$ is a regular expression;
+  \item (terminal) if $\bnft{t} \in \mathcal T$ then $\bnft{t}$ is a regular expression;
+  %% \item (optional) if $e$ is regular expression, then $e^?$ is a regular expression;
+  \item (repetition) if $e$ is a regular expression, then $e^*$ is a regular expression;
+  %% \item (at least one) if $e$ is a regular expression, then $e^+$ is a regular expression;
+  \item (alternatives) if $e_1, \dots, e_k$ are regular expressions, then $(e_1 \bnfalt \dots \bnfalt e_k)$ is a regular expression;
+  \item (concatenation) if $e_1, \dots, e_k$ are regular expressions, then $e_1 \dots e_k$ is a regular expression;
+  \end{itemize}
+\end{definition}
+
+\begin{definition}
+  \begin{itemize}
+  \item $e^?$ is shorthand for $(\bnfempty \bnfalt e)$
+  \item $e^+$ is shorthand for $e \ e^*$
+  \end{itemize}
+\end{definition}
+
+\begin{definition}
+  TODO
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{(empty)}
+    \UnaryInfC{$\bnfempty \triangleleft \bnfempty$}
+  \end{prooftree}
+  \begin{prooftree}
+    \AxiomC{\fbox{$\bnft{t} \in \mathcal T$}}
+    \RightLabel{(terminal)}
+    \UnaryInfC{$\bnft{t} \triangleleft \bnft{t}$}
+  \end{prooftree}
+  \begin{prooftree}
+    \AxiomC{$e \triangleleft S_1$}
+    \AxiomC{$\dots$}
+    \AxiomC{$e \triangleleft S_k$}
+    \RightLabel{(repetition$_k$)}
+    \TrinaryInfC{$e^* \triangleleft S_1 \dots S_k$}
+  \end{prooftree}
+  \begin{prooftree}
+    \AxiomC{$e_i \triangleleft S_i$}
+    \RightLabel{(alternatives$_i$)}
+    \UnaryInfC{$(e_1 \bnfalt \dots \bnfalt e_k) \triangleleft S_i$}
+  \end{prooftree}
+  \begin{prooftree}
+    \AxiomC{$e_1 \triangleleft S_1$}
+    \AxiomC{$\dots$}
+    \AxiomC{$e_k \triangleleft S_k$}
+    \RightLabel{(concatenation$_k$)}
+    \TrinaryInfC{$e_1\dots e_k \triangleleft S_1 \dots S_k$}
+  \end{prooftree}
+  %% \begin{itemize}
+  %% \item $\bnfempty$ recognizes the sentence $\bnfempty$;
+  %% \item if $\bnft{t} \in \mathcal T$ then $\bnft{t}$ recognizes the sentence $\bnft{t}$;
+  %% \item if $e$ recognizes $S_1, \dots, S_k$ then $e^*$ recognizes $S_1 \ \dots \ S_k$; in particular, $e^*$ recognizes $\bnfempty$;
+  %% \item if $e_i$ recognizes $S_i$, then $(e_1 \bnfalt \dots \bnfalt e_k)$ recognizes $S_i$.
+  %% \item if $e_1, \dots, e_k$ recognize $S_1, \dots, S_k$, respectively, then  $e_1 \ \dots \ e_k$ recognizes $S_1 \ \dots \ S_k$.
+  %% \end{itemize}
+\end{definition}
+
+\begin{example}
+  The regular expression $\bnft{a}^+ \bnft{b}^*$ recognizes $\bnft{aaabb}$.
+  \begin{prooftree}
+    \AxiomC{$\bnft{a} \triangleleft \bnft{a}$}
+    \AxiomC{$\bnft{a} \triangleleft \bnft{a}$}
+    \AxiomC{$\bnft{a} \triangleleft \bnft{a}$}
+    \RightLabel{(rep)}
+    \BinaryInfC{$\bnft{a}^* \triangleleft \bnft{aa}$}
+    \RightLabel{(concat)}
+    \BinaryInfC{$\bnft{a} \bnft{a}^* \triangleleft \bnft{aaa}$}
+    \AxiomC{$\bnft{b} \triangleleft \bnft{b}$}
+    \AxiomC{$\bnft{b} \triangleleft \bnft{b}$}
+    \RightLabel{(rep)}
+    \BinaryInfC{$\bnft{b}^* \triangleleft \bnft{bb}$}
+    \RightLabel{(concat)}
+    \BinaryInfC{$\bnft{a} \bnft{a}^* \bnft{b}^* \triangleleft \bnft{aaabb}$}
+  \end{prooftree}
+\end{example}
+
+\begin{theorem}
+  Let $\mathcal G$ be a regular grammar.
+  There is a regular expression $e$ such that for any sentence $S$, the grammar $\mathcal G$ recognizes $S$ if and only if $e \triangleleft S$.
+\end{theorem}
+
+\begin{theorem}
+  Let $e$ be a regular expression.
+  There is a regular grammar $\mathcal G$ such that for any sentence $S$, the grammar $\mathcal G$ recognizes $S$ if and only if $e \triangleleft S$.
+\end{theorem}
+
+%% \section{Grammars as Formal Systems}
+
+%% \begin{definition}
+%%   \begin{align*}
+%%     \bnfnt{a} \bnfeq \bnfnt{b} \ \bnft{c} \ \bnft{d} \ \bnfnt{e}
+%%   \end{align*}
+%%   \begin{prooftree}
+%%     \AxiomC{$S_1 \in \bnfnt{b}$}
+%%     \AxiomC{$S_2 \in \bnfnt{e}$}
+%%     \BinaryInfC{$S_1 \ \bnft{c} \ \bnft{d} \ S_2 \in \bnfnt{e}$}
+%%   \end{prooftree}
+%% \end{definition}
+
+\section{Exercises}
