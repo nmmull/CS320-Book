@@ -43,7 +43,7 @@
   style=basic,
   shaded={
     bgcolor=cornsilk,
-    textwidth=0.98\textwidth,
+    textwidth=0.9725\textwidth,
     padding=6.7pt,
   },
 ]{remark}
@@ -52,7 +52,7 @@
   style=basic,
   shaded={
     bgcolor=teagreen,
-    textwidth=0.98\textwidth,
+    textwidth=0.9725\textwidth,
     padding=6.7pt,
   },
   ]{exercise}
@@ -60,7 +60,7 @@
   name=Notation,
   style=basic,
   shaded={
-    textwidth=0.98\textwidth,
+    textwidth=0.9725\textwidth,
     padding=6.7pt,
   },
 ]{notation}
@@ -68,7 +68,7 @@
   name=Example,
   style=basic,
   shaded={
-    textwidth=0.98\textwidth,
+    textwidth=0.9725\textwidth,
     padding=6.7pt,
   },
 ]{example}
@@ -77,7 +77,7 @@
   style=basic,
   shaded={
     bgcolor=lavendermist,
-    textwidth=0.98\textwidth,
+    textwidth=0.9725\textwidth,
     padding=6.7pt,
   },
 ]{definition}
@@ -86,7 +86,7 @@
   style=basic,
   shaded={
     bgcolor=piggypink,
-    textwidth=0.98\textwidth,
+    textwidth=0.9725\textwidth,
     padding=6.7pt,
   },
 ]{theorem}
@@ -95,7 +95,7 @@
   style=basic,
   shaded={
     bgcolor=piggypink,
-    textwidth=0.98\textwidth,
+    textwidth=0.9725\textwidth,
     padding=6.7pt,
   },
 ]{proposition}
@@ -114,19 +114,6 @@
 \usepackage{listings}
 \usepackage{lstautogobble}
 
-% https://tex.stackexchange.com/questions/34896/coloring-digits-with-the-listings-package
-%% \newcommand\digitstyle{\color{fireenginered}}
-%% \makeatletter
-%% \newcommand{\ProcessDigit}[1]
-%% {%
-%%   \ifnum\lst@mode=\lst@Pmode\relax%
-%%    {\digitstyle #1}%
-%%   \else
-%%     #1%
-%%   \fi
-%% }
-%% \makeatother
-
 \lstset{
   commentstyle=\color{iris},
   keywordstyle=[1]{\color{burntorange}},
@@ -144,20 +131,11 @@
   framexrightmargin=2pt,
   framextopmargin=2pt,
   framexbottommargin=2pt,
+  upquote=true,
+  columns=fullflexible,
 }
 
 \lstdefinelanguage{ocaml}{
-  %% literate=
-  %%   {0}{{{\ProcessDigit{0}}}}1
-  %%   {1}{{{\ProcessDigit{1}}}}1
-  %%   {2}{{{\ProcessDigit{2}}}}1
-  %%   {3}{{{\ProcessDigit{3}}}}1
-  %%   {4}{{{\ProcessDigit{4}}}}1
-  %%   {5}{{{\ProcessDigit{5}}}}1
-  %%   {6}{{{\ProcessDigit{6}}}}1
-  %%   {7}{{{\ProcessDigit{7}}}}1
-  %%   {8}{{{\ProcessDigit{8}}}}1
-  %%   {9}{{{\ProcessDigit{9}}}}1,
   keywords={[1]if,then,else,of,type,rec,let,match,with,val},
   keywords={[2]list,int,char,bool},
   keywords={[3]true,false,[]},
@@ -175,6 +153,8 @@
 \usepackage{qtree}
 
 % COMMANDS
+
+\newcommand{\N}{\mathbb N}
 
 % EBNF grammar
 \newcommand{\bnfnt}[1]{{\textcolor{blue}{\texttt{<}\textsf{#1}\texttt{>}}}}
@@ -196,6 +176,8 @@
 %% better bullet point
 \renewcommand{\labelitemi}{$\triangleright$}
 
+\newcommand{\defeq}{\triangleq}
+
 %% boxes
 \usepackage{framed}
 
@@ -211,6 +193,8 @@
 \usepackage{forest}
 
 \usepackage{bussproofs}
+
+\usepackage{textcomp}
 
 % order matters, leave these at the end
 \usepackage{hyperref}

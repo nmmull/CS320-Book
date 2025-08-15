@@ -1,54 +1,72 @@
-Much of the study of programming languages depends on trees or, more generally, inductively defined structures.
-This is in part why functional programming languages like OCaml are well-suited for the implementation of programming languages.
-This means we have to spend some time on the humble notion of trees.
-If you've taken a course in discrete mathematics, you've likely seens the graph-theoretic definition of a tree.
+Much of the study of programming languages depends on trees or, more generally, inductively-defined structures.
+This is, in part, why functional programming languages like OCaml are well-suited for \textit{implementing} programming languages.
+As such, we have to spend some time on the humble notion of trees.
+This appendix covers a small slice of the topic, only what we need for the main part of the text.\footnote{
+There are whole books dedicated to the study of mathematical induction and inductively defined structures!
+}
+
+If you've taken a course in discrete mathematics, you've likely seen the graph-theoretic definition of trees.
 
 \begin{definition}
-  A \textbf{tree} is undirected graph which is connected an acyclic.
+  A \textbf{tree} is undirected graph which is connected and acyclic.
   A \textbf{directed tree} is a directed graph whose underlying graph is a tree.
   A directed tree is \textbf{rooted} if there is a unique vertex with in-degree 0.
 \end{definition}
 %
-In our setting we'll be primarily interested in \textit{nonempty rooted directed} trees; moving forward \enquote{tree} we will always mean \enquote{nonempty rooted directed tree.}
+We'll be primarily interested in \textit{nonempty rooted directed} trees.\footnote{
+Moving forward \enquote{tree} we will always mean \enquote{nonempty rooted directed tree.}
+}
 These are also sometimes called \textbf{rose trees}.
-To make this more explicit we'll work with the \textit{inductive} definition of a (rose) tree.
+To make this more explicit we'll work with the \textit{inductive} definition of (rose) trees.
 
 \begin{definition}
   \label{def:rose-tree}
   A \textbf{tree} with values from $V$ is defined inductively as follows:
   \begin{itemize}
-  \item if $v$ is a value from $V$ and $T_1, \dots, T_k$ are trees then so is $\tnode(v, T_1, \dots, T_k)$
+  \item if $v$ is a value from $V$ and $T_1, \dots, T_k$ are trees then so is $\tnode(v, T_1, \dots, T_k)$.
   \end{itemize}
   Note, in particular, that $\tnode(v)$ a tree for any value $v$ from $V$.
-  We call this kind of node a \textbf{leaf}.
+  We call this kind of tree a \textbf{leaf}.
   The \textbf{root} of a tree is defined as:
   \begin{align*}
-    \troot {\tnode(v, T_1, \dots, T_k)} = v
+    \troot {\tnode(v, T_1, \dots, T_k)} \defeq v
   \end{align*}
   and the \textbf{children} a tree are defined as:
   \begin{align*}
-    \tchildren{\tnode(v, T_1, \dots, T_k)} = [T_1, \dots, T_k]
+    \tchildren{\tnode(v, T_1, \dots, T_k)} \defeq (T_1, \dots, T_k)
   \end{align*}
 \end{definition}
-%
-We can, of course, define rose trees very naturally in OCaml:
-\begin{ocaml}
-  type 'a tree = Node of 'a * 'a tree list
-  let example = Node (1, [Node (2, []); Node (3, [])])
-\end{ocaml}
 
 \begin{example}
   \label{ex:decision-tree}
-  We can use decision trees to represent boolean functions, and we can use view decisions trees as a particular class of rose tree.
-  The decision tree for the boolean function $\mathsf{OR}(x_1, x_2, x_3) = x_1 \lor x_2 \lor x_3$ can be written:
+  Decision trees represent boolean functions, and we can represent a decisions tree as a rose tree.
+  One decision tree for the boolean function $\mathsf{OR}(x_1, x_2, x_3) = x_1 \lor x_2 \lor x_3$ is:
   \begin{align*}
     \tnode(x_1 = 1, \tnode(1), \tnode(x_2 = 1, \tnode(1), \tnode(x_3 = 1, \tnode(1), \tnode(0))))
   \end{align*}
   Values of this tree are queries to the inputs of the function.
-  Roughly speaking, this decision tree expresses the idea that the value of $\mathsf{OR}(x_1, x_2, x_3)$ can be determined by searching for left to right for an input which is equal to 1.
+  Roughly speaking, this decision tree expresses that the value of $\mathsf{OR}(x_1, x_2, x_3)$ can be determined by searching from left to right for an input which is equal to 1.
 \end{example}
+%
+We can naturally define rose trees in OCaml, which means we can also define the usual functions on trees:
+\begin{ocaml}
+  type 'a rose_tree = Node of 'a * 'a rose_tree list
+  let example = Node (1, [Node (2, []); Node (3, [])])
 
-We can visualize trees in the usual way.
+  let rec depth (Node (_, ts)) =
+  List.fold_left
+    (fun acc n -> max acc (n + 1))
+    0
+    (List.map depth ts)
+
+  let rec size (Node (_, ts)) =
+    List.(fold_left (+) 1 (map size ts))
+
+  let _ = assert (depth example = 1)
+  let _ = assert (size example = 3)
+\end{ocaml}
+%
+We visualize trees in the usual way.
 Here, for example, is a visualization of the tree from \Cref{ex:decision-tree}:
 
 \begin{center}
@@ -69,7 +87,7 @@ Here, for example, is a visualization of the tree from \Cref{ex:decision-tree}:
   \end{forest}
 \end{center}
 %
-We'll also occassionally use the following form of tree visualization, which we'll call \textbf{compact form}.
+We'll also occassionally use the following form of tree visualization, which we'll call \textbf{compact form}:
 
 \begin{center}
   \begin{forest}
@@ -103,28 +121,190 @@ We'll also occassionally use the following form of tree visualization, which we'
   \end{forest}
 \end{center}
 %
-This form is based on visualizations of file trees, e.g., see the directory listing program \texttt{tree}.
-It's particularly useful when a tree it too wide to draw otherwise, e.g., when the values in nodes are themselves very wide.\footnote{
-The other benefit of this form is we can implement our own version of \texttt{tree} which generates visualizations of rose trees in this form.
+This form is based on visualizations of file trees.\footnote{
+If you're interested, look up the command line tool \texttt{tree}, or just type \texttt{tree .} in your terminal and see what you get.
 }
-There's one more form of tree visualization we'll use for drawing derivation trees; this will be covered in \Cref{TODO}.
+It's particularly useful when a tree it too wide to draw otherwise, e.g., when the values in nodes are themselves very wide.
+There's one more form of tree visualization we'll use for drawing derivation trees; this will be covered in \Cref{ch:deriv}.
 
-\section{Structural Induction and Recursion}
+\section{Structural Induction}
 
-We won't concern greatly ourselves with the general notion of trees.
-Rather, we'll be primarily interested in a particular class of trees, namely trees generated from inference rules as in \Cref{TODO}.
-But in order to make more clear the process here
 
-Once we have a fixed notion of trees, we can define any nonempty inductive structure.
+Induction is a principle used to prove universal statements about inductively-defined structures (like trees).
+If you've taken a course in discrete mathematics, you've likely seen the principle of natural number induction:
+
+\begin{quote}
+  \textit{
+    Given a property $P$ of natural numbers, if:
+    \begin{itemize}
+    \item
+      $P$ holds of the number $0$;
+    \item
+      for every number $k$, if we assume $P$ holds of $k$ (an assumption often called the \textbf{induction hypothesis}), then we can demonstrate that $P$ holds of $k + 1$;
+    \end{itemize}
+    then $P$ holds of every natural number.
+  }
+\end{quote}
+
+\begin{exercise}
+  Prove that
+  \begin{align*}
+    2\sum_{i = 1}^n i = n(n+1)
+  \end{align*}
+  holds for all natural numbers $n$ using natural number induction.
+\end{exercise}
+%
+Inductive structures\textemdash by definition of being inductive\textemdash have analogous induction principles.
+Here's the principle of tree induction:
+
+\begin{quote}
+  \textit{
+    Given a property $P$ of trees with values from $V$, if
+    \begin{itemize}
+    \item for any value $v$ from $V$, and trees $T_1, \dots, T_k$, if we assume that $P$ holds of each tree $T_1, \dots, T_k$\footnote{Again, this assumption is called the \textit{induction hypothesis}.} then we can demonstrate that $P$ holds of $\tnode(v, T_1, \dots, T_k)$;
+    \end{itemize}
+    then $P$ holds of all trees with values from $V$.
+  }
+\end{quote}
+%
+We won't concern ourselves further with the general notion of trees.\footnote{There isn't much more we can say without also formally defining \textit{recursion} on trees, another interesting topic that we'll unceremoniously brush under the rug.}
+We'll focus on \textbf{inductively-define subsets} of trees.
+
+\begin{notation}
+  For a set $A$, we write $A^*$ for the set of finite sequences of elements of $A$ and we write $A^+$ for the subset of nonempty sequences in $A^*$.
+  For example, the sequence $(1, 2, 3, 4, 5)$ is an element of both $\N^*$ and $\N^+$.
+\end{notation}
+
+\begin{definition}
+  Let $Q$ be a property on $V^+$.
+  The \textbf{inductively-defined subset} of trees $\mathcal Q$ given by $Q$ is defined (inductively) as follows:
+  \begin{itemize}
+  \item for any value $v$ from $V$ and trees $T_1, \dots, T_k$ from $\mathcal Q$, if $Q$ holds of $(v, \troot {v_1}, \dots, \troot {v_k})$ then $\tnode(v, T_1, \dots, T_k) \in \mathcal Q$.
+  \end{itemize}
+\end{definition}
+%
+In other words, inductively-defined subsets of trees are defined by describing when we're allowed to build new trees from those we've already built.
 
 \begin{example}
-  The natural numbers can be thought of as trees with values from $\{\bullet\}$, where $\mathsf{zero}$ is $\tnode(\bullet)$ and $\mathsf{succ}(n) = \tnode(\bullet, n)$.
+  \label{ex:prime-fact}
+  Consider the inductively-defined set $\mathcal Q$ of trees with values from $\N$ given by the property $Q$ which holds of $(v, v_1,\dots, v_k)$ when $v$ is prime or $v = v_1 \dots v_k$.
+  That is, the value at the root of a given tree is prime or the product of the roots of its children.
+  The following is an example of such a tree.
+  \begin{center}
+    \begin{forest}
+      [$60$
+        [$5$]
+        [$12$
+          [$2$]
+          [$3$]
+          [$2$]
+        ]
+      ]
+    \end{forest}
+  \end{center}
+  We might recognize that the leaves of this tree define a prime factorization of the root, e.g., $80 = 5 * 2 * 3 * 2$.
 \end{example}
+%
+Once we have inductively-defined subsets of trees, we can define their corresponding principle of induction.
+It's the same as the principle of tree induction but with a slightly stronger induction hypothesis:
 
-%% \section{Structural Recursion and Induction}
+\begin{quote}
+  \textit{
+    Given a property $P$ of trees with values from $V$ \textcolor{red}{and a property $Q$ which inductively-defines a subset $\mathcal Q$ of trees}, if
+    \begin{itemize}
+    \item for any value $v$ from $V$, and trees $T_1, \dots, T_k$ \textcolor{red}{from $\mathcal Q$}, if we assume that $P$ holds of each tree $T_1, \dots, T_k$ \textcolor{red}{and that $Q$ holds of the sequence $(v, \troot {T_1}, \dots, \troot {T_k})$} then we can demonstrate that $P$ holds of $\tnode(v, T_1, \dots, T_k)$;
+    \end{itemize}
+    then $P$ holds of all trees \textcolor{red}{in $\mathcal Q$}.
+  }
+\end{quote}
+%
+Let's see this in action.
+Consider the subset $\mathcal Q$ of trees defined in \Cref{ex:prime-fact}.
+We'd like to prove that for any tree $T$ from $\mathcal Q$, the number $\troot{T}$ has a prime factorization.
 
-Ultimately, we'll be interested in \textit{proving} things about trees.
-This will nearly always come down to structural induction on trees.
+\begin{proof}
+Let $\tnode(n, T_1, \dots, T_k)$ be a tree in $\mathcal Q$ and suppose that $\troot {T_i}$ has a prime factorization $p_{1, i}\dots p_{l_i, i}$ for all indices $i$.
+Furthermore we assume, by definition of $\mathcal Q$, that $n$ is prime or
+\begin{align*}
+  n = \troot{T_1}\dots\troot{T_k}
+\end{align*}
+If $n$ is prime, then $n$ is also its prime factorization.
+Otherwise,
+\begin{align*}
+  n = \prod_{i = 1}^k\troot{T_i} = \prod_{i = 1}^k (p_{1, i}\dots p_{l_i, i})
+\end{align*}
+yielding a prime factorization of $n$.
+That is, we take the product of all the prime factorizations of the children of $T$ to get a prime factorization of its root.\footnote{
+What we've done here is only \textit{part of} the fundamental theorem of arithmetic.
+We would also, need to prove that every natural number is the root of some tree in $\mathcal Q$, which we can prove by (strong) induction over natural numbers (we also say nothing of uniqueness...).
+}
+\end{proof}
 
-Part of what we emphasize here is that, everything is trees.
-Once we have a way to talk about induction over trees, we can talk about proving things in general.
+\section{Induction on Derivations}
+
+What we've done so far is more general than necessary\footnote{Sorry, I can't help it.}, and is ultimately in service of defining the \textit{derivation induction principle}.
+First, observe that the set of derivations in a given derivation system $\mathcal D$, as defined in \Cref{ch:deriv}, is an inductively-define subset of trees.
+The property is straightforward: it holds of the nonempty sequence of judgments $(J, J_1, \dots, J_k)$ when
+\begin{prooftree}
+  \AxiomC{$J_1$}
+  \AxiomC{$\dots$}
+  \AxiomC{$J_k$}
+  \TrinaryInfC{$J$}
+\end{prooftree}
+is (an instance of) an inference rule of $\mathcal D$.
+In other words, a derivation is a tree in which every node is either an axiom or follows from an inference rule.
+The upshot is that the derivation induction principle is a specialization of the induction principle for inductively-defined subsets of trees.
+
+Our second observation: being able to prove that a property holds of all derivations is enough to be able to prove that a property holds of all \textit{derivable judgments}.
+There's is an obvious correspondence between derivations and derivable judgments: if a judgment is derivable, then it has a derivation.
+And this is ultimately what we care about when we reason about things like type safety and meta-theory.
+All said, we can state the derivation induction principle as follows:
+
+\begin{quote}
+  \textit{
+    Given a property $P$ of judgments of $\mathcal D$, if
+    \begin{itemize}
+    \item for any judgment $J$ and derivable judgments $J_1, \dots, J_k$, if we assume that $P$ holds of each judgment $J_1, \dots, J_k$ where
+      \begin{prooftree}
+        \AxiomC{$\troot{T_1}$}
+        \AxiomC{$\dots$}
+        \AxiomC{$\troot{T_k}$}
+        \TrinaryInfC{$J$}
+      \end{prooftree}
+    then we can demonstrate that $P$ holds of $J$;
+    \end{itemize}
+    then $P$ holds of all derivable judgments of $\mathcal D$.
+  }
+\end{quote}
+%
+This principle tells us that we can look at the \textit{last} inference rule applied and prove that the property holds assuming it holds of the \textit{antecedents} of the applied rule.
+
+It may be easier to grok this principle by example.
+Consider the following basic derivation system over judgments of the form \enquote{$n$ is even} where $n \in \N$.
+\begin{center}
+  \AxiomC{}
+  \RightLabel{(zero)}
+  \UnaryInfC{$0$ is even}
+  \DisplayProof
+   \qquad
+  \AxiomC{$n$ is even}
+  \RightLabel{(addTwo)}
+  \UnaryInfC{$n + 2$ is even}
+  \DisplayProof
+\end{center}
+We'd like to prove that this derivation system is sound, i.e., that if \enquote{$n$ is even} is derivable, then $n$ is, in fact, even (in particular, \enquote{$3$ is even} is not derivable).
+We can prove this by induction on derivations.
+\begin{proof}
+  Let $J$ denote an arbitrary judgment \enquote{$n$ is even.}
+  There are two cases to consider.
+  \begin{itemize}
+  \item If $J$ follows from (zero), then $J$ must be the judgment \enquote{$0$ is even} in which case the property holds.
+  \item
+    If $J$ follows from (addTwo), then \enquote{$n - 2$ is even} must be derivable and we may assume that $n - 2$ is even.
+    This implies that $n$ itself is even.
+  \end{itemize}
+\end{proof}
+%
+In a sense, this example might be \textit{too} simple.
+It's not immediately clear that we've done anything in this proof (the distinction between $n$ being even and the judgment \enquote{$n$ is even} being derivable is admittedly a subtle one).
+But, in order to avoid ballooning this appendix into a full-blown chapter, I'll relegate the presentation of more interesting examples to \Cref{todo} and our discussion of type safety.
