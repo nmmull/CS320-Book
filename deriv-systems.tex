@@ -1,25 +1,25 @@
 The study of programming languages is ultimately the study of a class of \textbf{derivation systems}.\footnote{
-  In some settings, these are called \textbf{formal systems} or \textbf{deductive systems}, but there is no real consensus as to what exactly these terms mean.
-  So, at the risk of introducing yet another term, I chose derivation systems so as to make sure I don't say something wrong.
+  In some settings, these are called \textbf{formal systems} or \textbf{deductive systems}, though it's my sense that there is no real consensus as to what exactly these terms mean.
 }
-The programming language itself is just an \textit{implementation} of a formal system.
+The programming language itself is just an \textit{implementation} of its underlying derivation systems.
 As such, we need to concern ourselves at least briefly with these notions.
 
-Let's paint a picture.
-When we program we type a bunch of symbols into a computer which get saved to a file.
-Depending on what language we're using (including what Human language we're assuming) there is a fixed number of characters we're allowed to type into a file.
-We call this set of symbols the \textbf{alphabet}.
-Of the possible orientations of symbols we can type into a file, only a handful of them are going to be well-formed programs.
-Of the well-formed programs, only a handful those make sense as programs.
-It doesn't, for example, make sense to add a string to an integer; in other words, only a handful of well-formed programs are well-typed.
-And of the well-typed programs, only a handful of \textit{those} make sense as computations.
-the program
-\begin{ocaml}
-  let rec f x = f x
-\end{ocaml}
-Make sense as an OCaml program in the sense that we can \textit{try} to compute its value, but we'll never succeed (it's an infinite loop).
+Let's begin with a picture.
+When we program we type a bunch of symbols which get saved to a file.
+Of the sequences of symbols we can type, only a handful of them will constitute sequences of \textit{tokens} in our programming language.
+Of the sequences of tokens we can produce, only a handful of those will constitute \textit{well-formed} programs.
+Of the well-formed programs, only a handful make sense as programs; said another way, only a handful are \textit{well-typed} programs.
+Of the well-typed programs, only a hand full of \textit{those} make sense as computations; said another way, only a handful can successfully \textit{evaluated}.
 
 \todo{A picture, nested squares}
+
+As noted in \Cref{ch:intro}, our goal is to transform a sequence of symbols into the \textit{value} of the underlying program.
+This is done by successive passes or transformations of the given data.
+And at each step, there's a derivation system which formally describes which inputs are \enquote{good} and which are \enquote{garbage.}
+
+\todo{Describe the outline of the chapter.}
+
+
 
 We're interested in formal systems of this form.  In broad strokes, a formal system is made up of a formal language, determined by a \textbf{formal grammar} and one or more \textbf{deductive systems}.
 At each level, we have a deductive system which describes a subsection of system.
