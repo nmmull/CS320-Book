@@ -1,0 +1,298 @@
+The study of programming languages can be understood in part as the study of a collection of \textbf{inference systems}.\footnote{
+  In some settings, these are called \textbf{formal systems} or \textbf{deductive systems}, though it's my sense that there is no real consensus as to what exactly these terms mean.
+}
+A programming language in the sense of the techology that we use when we program is just an \textit{implementation} of this collection of derivation systems.
+As such, we need to concern ourselves at least briefly with these notions.
+
+Let's begin with a picture.
+When we program we type a bunch of symbols into a file.
+Of the sequences of symbols we can type, only a handful of them are valid \textit{sequences of tokens} of the language in which we're programming.
+For example, \codel{let} is a keyword of OCaml, \codel{1.223} is a floating point literal, \codel{\%} is an operator, and \codel{yasn3\_\_} is a valid variable name.
+These are all valid tokens in OCaml.
+Furthermore, OCaml requires that sequences of tokens are separated by whitespace, so any whitespace-separated combination of these is a valid sequence of tokens.
+But \codel{,,A,,} is a meaningless sequences of symbols from OCaml's perspective, and cannot appear in a valid sequence of tokens.
+
+Of the possible sequences of tokens, only a handful of those will constitute \textit{well-formed programs}.
+For example, \codel{let f x = x + 2} is a valid OCaml program, whereas \codel{let f rec = =} is not, though both are valid sequences of tokens.
+
+Of the well-formed programs, only a handful make sense as programs; said another way, only a handful are \textit{well-typed programs}.
+For example, \codel{let rec f x = f x} is well-typed, whereas \codel{let rec f x = f + x} is not, though both are well-formed programs.
+
+And, of the well-typed programs, only a handful of \textit{those} make sense as computations; said another way, only a handful can be successfully \textit{evaluated}.
+This can be visualized as a nested collection of sets.\footnote{In order to make the graphic simpler, the code examples are actually OCaml \textit{expressions}, not programs.}
+Note that things get a bit interesting in the relationship between well-typed programs and programs that have values.
+We'll take this up in-depth when we cover type systems in \Cref{ch:type-systems}.
+
+\begin{center}
+  \begin{tikzpicture}
+    \draw[thick, rounded corners] (0,0) rectangle (10, 7);
+    \node at (9.0,0.2) {\tiny sequences of symbols};
+    \node at (5.0,0.25) {\tiny \codel{twe)((33\%\@\#  NQE--':://Uion  aPO^^<?}};
+    \draw[thick, rounded corners] (0.5, 0.5) rectangle (9.5, 6.5);
+    \node at (8.55,0.7) {\tiny sequences of tokens};
+    \node at (5.0,0.75) {\tiny \codel{rec let x 2 let f x + + y = f}};
+    \draw[thick, rounded corners] (1, 1) rectangle (9, 6);
+    \node at (7.95,1.2) {\tiny well-formed programs};
+    \node at (5.0,1.25) {\tiny \codel{let f x y = 1 + x x + f y in f 2 (-3)}};
+    \draw[thick, rounded corners] (1.5, 1.5) rectangle (5.5, 5.5);
+    \node at (4.55,1.7) {\tiny well-typed programs};
+    \node  at (3.75,2.3) {\tiny \codel{let rec f x = x > 0 || f x in f 0}};
+    \node at (3.75,3.7) {\tiny \codel{let f x y = 1 + x + y in f 2 (-3)}};
+    \node  at (3.75,4.3) {\tiny \codel{let rec f x = x > 0 || f x in f 1}};
+    \draw[thick, rounded corners] (2, 3) rectangle (8.5, 5);
+    \node  at (7.0,4.0) {\tiny \codel{let f x = x + "two" in 2}};
+    \node  at (7.0,2.3) {\tiny \codel{2 + "two"}};
+    \node at (7.5,3.2) {\tiny programs with values};
+  \end{tikzpicture}
+\end{center}
+%
+As noted in \Cref{ch:intro}, our goal is to transform a sequence of symbols into the \textit{value} of the underlying program.
+This is done by successive passes/transformations, each of which corresponds roughly to one of these nested sets:
+\begin{itemize}
+\item determining valid sequences of tokens in part of \textit{lexical analysis};
+\item determining well-formed programs is part of \textit{parsing} or \textit{syntactic analysis};
+\item determining well-typed programs is part of \textit{type-checking} or \textit{static semantic analysis};
+\item determining the value of a program is part of \textit{evaluation} or \textit{dynamic semantic analysis}.
+\end{itemize}
+And at each pass, there's an \textbf{inference system} that \textit{formally} describes which inputs are \enquote{good} and which are \enquote{garbage.}
+
+\todo{Describe the outline of the chapter.}
+
+\section{Inference Rules}
+
+An inference system is determined by a collection of \textbf{inference rules}.
+These inference rules describe what new information we're allowed to \textit{infer} given previously inferred information.
+Inference rules will generally have the following form.
+
+\begin{prooftree}
+\AxiomC{$m$ is even}
+\AxiomC{\hl{$n = m + 2$}}
+\RightLabel{\small (addTwo)}
+\BinaryInfC{$n$ is even}
+\end{prooftree}
+In rough terms, this inference rule expresses that we can infer that a number $n$ is even if we already know that $n - 2$ is even (i.e., that if $n = m + 2$ and $m$ is even).
+We begin by taking a look at the general anatomy of inference rules.
+
+An inference system is defined over a fixed class of \textbf{judgments}.
+We think of the judgments as the kinds of statements that we're allowed in the process of inferring.
+Mathematically speaking, judgments can be anything we want, element of an arbitrary set.
+Practically speaking, we'll always take judgments to be \textit{statements} parametrized by some other set.
+\begin{example}
+  \label{ex:evens-odds}
+  If we're interested in the parity of natural numbers, we make take $\mathcal J$, our set of judgments, to be all statements of the form
+  \begin{align*}
+    \text{$n$ is even} \qquad \text{or} \qquad \text{$n$ is odd}
+  \end{align*}
+  So \enquote{$7$ is even} and \enquote{$111$ is odd} are both judgments in $\mathcal J$.
+\end{example}
+We'll call something like \enquote{$n$ is even} a \textbf{parameterized judgment} and something like \enquote{$4$ is even} a \textbf{concrete judgment}, or just a judgment if it's clear from context that it's concrete.
+In particular, we'll say \enquote{$110$ is odd} is an \textbf{instance} of the parameterized judgment \enquote{$n$ is odd.}
+
+That said, we'll be a cavalier about this distinction.
+For example, we'll say that concrete judgments are also parameterized judgments, insofar as they're parametrized by zero parameters.
+Likewise, we'll say that a parameterized judgment is in a set $\mathcal J$ when we really mean that its instances are in $\mathcal J$.
+
+An \textbf{inference rule} as a way of describing what judgments we're allowed to infer given we've already inferred some other judgments.
+They also often include addition statements that need to hold in order for a rule to be applied; these are called \textbf{side conditions}.\footnote{
+In what follows we'll \hl{highlight} side conditions to make clear that they are not formal judgments.
+}
+\begin{definition}
+  An \textbf{inference rule} named (ruleName) is a nonempty sequence of parameterized judgments $J_1, \dots J_k, J_{k + 1}$ along with a collection of statements $S_1, \dots, S_l$ on the parameters used in those judgments. An inference rule is denoted by
+  \begin{prooftree}
+    \AxiomC{$J_1 \quad \dots \quad J_k$}
+    \AxiomC{$S_1 \quad \dots \quad S_l$}
+    \RightLabel{\small (ruleName)}
+    \BinaryInfC{$J_{k + 1}$}
+  \end{prooftree}
+  We say that a (concrete) judgment $J_{k + 1}'$ \textbf{follows from} the (concrete) judgments $J_1', \dots, J_k'$ \textbf{by (ruleName)} if $J_i'$ is an instance of $J_i$ for each index $i$ and all statements $S_1, \dots, S_l$ hold for the parameters used in the given judgments.
+  We'll often also denote this by
+  \begin{prooftree}
+    \AxiomC{$J_1'$}
+    \AxiomC{$\dots$}
+    \AxiomC{$J_k'$}
+    \RightLabel{\small (ruleName)}
+    \TrinaryInfC{$J_{k + 1}'$}
+  \end{prooftree}
+  and say that this is an \textbf{instance} of the rule (ruleName).
+  We'll also call this simply an \textbf{inference}.
+\end{definition}
+
+\begin{example}
+  The inference
+  \begin{prooftree}
+    \AxiomC{$10$ is even}
+    \RightLabel{\small (addTwo)}
+    \UnaryInfC{$12$ is even}
+  \end{prooftree}
+  is an instance of the rule (addTwo) from \Cref{ex:add-two}.
+  In particular, the side condition $12 = 10 + 2$ holds.
+  Note that the side condition is not included in the instance, it's checked \enquote{offline} so to speak.
+  Also note that
+  \begin{prooftree}
+    \AxiomC{$11$ is even}
+    \RightLabel{\small (addTwo)}
+    \UnaryInfC{$13$ is even}
+  \end{prooftree}
+  is an instance of the rule (addTwo).
+  It expresses that, hypothetically, if $11$ is even, then it's reasonable to infer that $13$ is even as well.
+\end{example}
+We call the judgments \enquote{above the line} \textbf{antecedences} and the judgment below called the \textbf{consequent}.
+It should be recognized that an inference rule may have no side-condition or no antecedent, it could even neither!
+These are a special form of inference rule called \textbf{axioms}.
+As we'll see, an inference system isn't all that interesting with axioms; without them, nothing can be unconditionally inferred!
+
+\section{Derivations}
+
+At this point, we can give a very basic definition of an inference system.
+
+\begin{definition}
+  An \textbf{inference system} over a set of judgment $\mathcal J$ is a collection of inference rules defined of $\mathcal J$.
+\end{definition}
+
+\begin{example}
+  \label{ex:even-system}
+  Let $\mathcal J$ be as in \Cref{ex:evens-odds}.
+  We can consider the inference system given by the following two inference rules (these rules do not say anything about odd numbers).
+  \begin{center}
+    \AxiomC{}
+    \RightLabel{\small (zero)}
+    \UnaryInfC{$0$ is even}
+    \DisplayProof
+    \qquad
+    \AxiomC{$m$ is even}
+    \AxiomC{\hl{$n = m + 2$}}
+    \RightLabel{\small (addTwo)}
+    \BinaryInfC{$n$ is even}
+    \DisplayProof
+  \end{center}
+\end{example}
+%
+But what were actually interested in with regards to inference systems is the collection of judgments that are \textit{possible} to infer, i.e., the \textit{closure} of the inference rules given in the system.
+We make this more concrete with the notion of a \textbf{derivation}, which is used to demonstrate that it's possible to infer a given judgment within an inference system by repeated invocations of its inference rules.
+
+\begin{definition}
+  A \textbf{derivation} of the judgment $J$ in an inference system $\mathcal I$ over the judgments $\mathcal J$ is a tree $T$ with the following properties:
+  \begin{itemize}
+  \item The values of $T$ are judgments from $\mathcal J$;
+  \item $\troot{T}$ is $J$;
+  \item For every node of $T$ of the form $\tnode(K, T_1, \dots, T_k)$
+    \begin{prooftree}
+      \AxiomC{$\troot{T_1}$}
+      \AxiomC{$\dots$}
+      \AxiomC{$\troot{T_k}$}
+      \TrinaryInfC{$K$}
+    \end{prooftree}
+    is an instance an inference rule in $\mathcal I$.
+  \end{itemize}
+  In particular, the leaves of $T$ are instances of axioms in $\mathcal I$.
+\end{definition}
+%
+It's in this definition that we see why we need axioms: without them, our derivations can't start anywhere.
+\Cref{fig:8-is-even} has a derivation of the judgment \enquote{$8$ is even} in the inference system from \Cref{ex:even-system}.
+It's not a terribly interesting derivation, but it capture the form of reasoning we're allowed to do in this system: $8$ is even because $6$ is even, which holds because $4$ is even, which holds because $2$ is even, which holds because $0$ is even, which holds by definition.
+\begin{remark}
+  Even though derivations are trees, we present them bottom-up as stacks of inferences.
+  This is in part, because it captures the structure of a proof more naturally, but it's also just historically motivated.
+  Gerhard Gentzen established much of the notation we use here (and in the field called \textit{proof theory}) in the 1930s \cite{TODO}.
+\end{remark}
+%
+Let's consider a slightly more interesting inference system.
+\Cref{ex:even-alt} contains alternative system which allows us to reason about number parity and \Cref{fig:8-is-even-again} is a derivation of \enquote{8 is even} is this alternative system.
+
+
+\begin{example}
+  \label{ex:even-alt}
+  We can define an alternative system which takes advantage of our ability to reason about odd numbers.
+   \begin{center}
+    \AxiomC{}
+    \RightLabel{\small (zero)}
+    \UnaryInfC{$0$ is even}
+    \DisplayProof
+    \qquad
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$1$ is odd}
+    \DisplayProof
+   \end{center}
+   \begin{center}
+     \AxiomC{$m$ is even}
+     \AxiomC{\hl{$n = m + 1$}}
+     \RightLabel{\small (odd)}
+     \BinaryInfC{$n$ is odd}
+     \DisplayProof
+   \end{center}
+   \begin{center}
+     \AxiomC{$m$ is odd}
+     \AxiomC{$n$ is odd}
+     \AxiomC{\hl{$k = m + n$}}
+     \RightLabel{\small (even)}
+     \TrinaryInfC{$k$ is even}
+     \DisplayProof
+  \end{center}
+\end{example}
+The primary takeaway: different inference systems provide us with different forms of reasoning.
+In this alternative system, we have to first separate $8$ into two summands and reason about them separately.
+This system differs from the one in \Cref{ex:even-system} also because a judgment may have multiple proofs.
+
+\begin{exercise}
+  Give another derivation of \enquote{$8$ is even} in this system from \Cref{ex:even-alt}.
+\end{exercise}
+
+\begin{exercise}
+  \textbf{(Challenge)}
+  Prove that \enquote{$n$ is even} is derivable in the system from \Cref{ex:even-system} if and only if it's derivable in the system from \Cref{ex:even-alt}.
+\end{exercise}
+
+\begin{figure}
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small (zero)}
+    \UnaryInfC{$0$ is even}
+    \RightLabel{\small (addTwo)}
+    \UnaryInfC{$2$ is even}
+    \RightLabel{\small (addTwo)}
+    \UnaryInfC{$4$ is even}
+    \RightLabel{\small (addTwo)}
+    \UnaryInfC{$6$ is even}
+    \RightLabel{\small (addTwo)}
+    \UnaryInfC{$8$ is even}
+  \end{prooftree}
+  \caption{A derivation of \enquote{$8$ is even} in the inference system from \Cref{ex:even-system}.}
+  \label{fig:8-is-even}
+\end{figure}
+
+\begin{figure}
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small (1)}
+    \UnaryInfC{$1$ is O}
+    \AxiomC{}
+    \RightLabel{\small (1)}
+    \UnaryInfC{$1$ is O}
+    \RightLabel{\small (E)}
+    \BinaryInfC{$2$ is E}
+    \RightLabel{\small (O)}
+    \UnaryInfC{$3$ is O}
+    \AxiomC{}
+    \RightLabel{\small (1)}
+    \UnaryInfC{$1$ is O}
+    \RightLabel{\small (E)}
+    \BinaryInfC{$4$ is E}
+    \RightLabel{\small (O)}
+    \UnaryInfC{$5$ is O}
+    \AxiomC{}
+    \RightLabel{\small (1)}
+    \UnaryInfC{$1$ is O}
+    \AxiomC{}
+    \RightLabel{\small (1)}
+    \UnaryInfC{$1$ is O}
+    \RightLabel{\small (E)}
+    \BinaryInfC{$2$ is E}
+    \RightLabel{\small (O)}
+    \UnaryInfC{$3$ is O}
+    \RightLabel{\small (E)}
+    \BinaryInfC{$8$ is E}
+  \end{prooftree}
+  \caption{A derivation of \enquote{$8$ is even} in the inference system from \Cref{ex:even-alt} (with some shorthand to make the derivation fit on the page).}
+  \label{fig:8-is-even-again}
+\end{figure}

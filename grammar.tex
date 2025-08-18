@@ -38,14 +38,12 @@ In order to not be entirely biased, I'll note that Python also has a complete sp
 How do we know that a sentence is grammatically correct?
 Let's try to break down the cognitive process of this determination.
 Consider the following English sentence.
-
 \begin{align*}
   \bnft{the} \ \bnft{cow} \ \bnft{jumped} \ \bnft{over} \ \bnft{the} \ \bnft{moon}
 \end{align*}
 %
 We might first recognize that each word is a particular part of speech (noun, verb, preposition, etc.) and that, with regards to grammar, \textit{only the part of speech counts}; that is, it doesn't matter \textit{what} noun we use, just that we use a noun in the correct position in our sentence.
 We represent this step of the cognitive process by replacing each word with an abstract symbol that stands in for its part of speech.
-
 \begin{align*}
   \bnfnt{article} \ \bnfnt{noun} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{article} \ \bnfnt{noun}
 \end{align*}
@@ -53,20 +51,17 @@ We represent this step of the cognitive process by replacing each word with an a
 After this, there are some familiar patterns: $\bnfnt{article} \ \bnfnt{noun}$ is the determination or quantification of an object, e.g., \enquote{the house} or \enquote{a car.}
 In other words, this pattern represents a \textit{noun phrase} or \textit{nominal phrase}.
 We mentally group these forms, and this group can be represented by a new symbol.
-
 \begin{align*}
   \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep} \ \bnfnt{noun-phrase}
 \end{align*}
 %
 Another pattern we might recognize: a proposition followed by a noun phrase is a single unit, e.g., \enquote{over the moon}, \enquote{through the woods}, or \enquote{behind the wall.}
 These are called \textit{prepositional phrases} and can, again, be represented by a new symbol.
-
 \begin{align*}
   \bnfnt{noun-phrase} \ \bnfnt{verb} \ \bnfnt{prep-phrase}
 \end{align*}
 %
 Prepositional phrases modify verbs, creating a \textit{verb phrase} (e.g., \enquote{ran to the car}) leaving us with something like:
-
 \begin{align*}
   \bnfnt{noun-phrase} \ \bnfnt{verb-phrase}
 \end{align*}
