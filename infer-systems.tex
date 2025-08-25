@@ -1,5 +1,5 @@
 The study of programming languages can be understood in part as the study of a collection of \textbf{inference systems}.\footnote{
-  In some settings, these are called \textbf{formal systems} or \textbf{deductive systems}, though it's my sense that there is no real consensus as to what exactly these terms mean.
+  In some settings, these are called \textbf{formal systems} or \textbf{deductive systems}, though it's my sense that there's no real consensus as to what exactly these terms mean.
 }
 A programming language in the sense of the techology that we use when we program is just an \textit{implementation} of this collection of derivation systems.
 As such, we need to concern ourselves at least briefly with these notions.
@@ -12,7 +12,7 @@ These are all valid tokens in OCaml.
 Furthermore, OCaml requires that sequences of tokens are separated by whitespace, so any whitespace-separated combination of these is a valid sequence of tokens.
 But \codel{,,A,,} is a meaningless sequences of symbols from OCaml's perspective, and cannot appear in a valid sequence of tokens.
 
-Of the possible sequences of tokens, only a handful of those will constitute \textit{well-formed programs}.
+Of the possible sequences of tokens, only a handful of those constitute \textit{well-formed programs}.
 For example, \codel{let f x = x + 2} is a valid OCaml program, whereas \codel{let f rec = =} is not, though both are valid sequences of tokens.
 
 Of the well-formed programs, only a handful make sense as programs; said another way, only a handful are \textit{well-typed programs}.
@@ -46,7 +46,7 @@ We'll take this up in-depth when we cover type systems in \Cref{ch:type-systems}
   \end{tikzpicture}
 \end{center}
 %
-As noted in \Cref{ch:intro}, our goal is to transform a sequence of symbols into the \textit{value} of the underlying program.
+As noted in \Cref{ch:intro}, our goal is to transform a sequence of symbols which make up our program into the \textit{value} of our program.
 This is done by successive passes/transformations, each of which corresponds roughly to one of these nested sets:
 \begin{itemize}
 \item determining valid sequences of tokens in part of \textit{lexical analysis};
@@ -56,7 +56,11 @@ This is done by successive passes/transformations, each of which corresponds rou
 \end{itemize}
 And at each pass, there's an \textbf{inference system} that \textit{formally} describes which inputs are \enquote{good} and which are \enquote{garbage.}
 
-\todo{Describe the outline of the chapter.}
+\subsection*{Chapter Outline}
+
+\begin{itemize}
+\item \todo{list here}
+\end{itemize}
 
 \section{Inference Rules}
 
@@ -70,16 +74,16 @@ Inference rules will generally have the following form.
 \RightLabel{\small (addTwo)}
 \BinaryInfC{$n$ is even}
 \end{prooftree}
-In rough terms, this inference rule expresses that we can infer that a number $n$ is even if we already know that $n - 2$ is even (i.e., that if $n = m + 2$ and $m$ is even).
-We begin by taking a look at the general anatomy of inference rules.
+In rough terms, this inference rule expresses that we can infer that a number $n$ is even if we already know that $n - 2$ is even (i.e., if $n = m + 2$ and $m$ is even).
+We begin by looking at the general anatomy of inference rules.
 
 An inference system is defined over a fixed class of \textbf{judgments}.
-We think of the judgments as the kinds of statements that we're allowed in the process of inferring.
-Mathematically speaking, judgments can be anything we want, element of an arbitrary set.
+We think of the judgments as the things we can say while inferring something.
+Mathematically speaking, judgments can be anything we want, elements of an arbitrary set.
 Practically speaking, we'll always take judgments to be \textit{statements} parametrized by some other set.
 \begin{example}
   \label{ex:evens-odds}
-  If we're interested in the parity of natural numbers, we make take $\mathcal J$, our set of judgments, to be all statements of the form
+  If we're interested in the parity of natural numbers, we may take $\mathcal J$, our set of judgments, to be all statements of the form
   \begin{align*}
     \text{$n$ is even} \qquad \text{or} \qquad \text{$n$ is odd}
   \end{align*}
@@ -89,13 +93,15 @@ We'll call something like \enquote{$n$ is even} a \textbf{parameterized judgment
 In particular, we'll say \enquote{$110$ is odd} is an \textbf{instance} of the parameterized judgment \enquote{$n$ is odd.}
 
 That said, we'll be a cavalier about this distinction.
-For example, we'll say that concrete judgments are also parameterized judgments, insofar as they're parametrized by zero parameters.
+For example, we'll say that concrete judgments are also parameterized judgments, insofar as they're parametrized by no parameters.
 Likewise, we'll say that a parameterized judgment is in a set $\mathcal J$ when we really mean that its instances are in $\mathcal J$.
 
-An \textbf{inference rule} as a way of describing what judgments we're allowed to infer given we've already inferred some other judgments.
+An \textbf{inference rule} is a way of describing what judgments we're allowed to infer given we've already inferred some other judgments.
 They also often include addition statements that need to hold in order for a rule to be applied; these are called \textbf{side conditions}.\footnote{
 In what follows we'll \hl{highlight} side conditions to make clear that they are not formal judgments.
 }
+The following is the general definition of an inference rule.
+It's important that we understand this definition, but not on our first pass; make sure to lean on the intuitions we've been trying to develop here as you work through this chapter, and come back to this definition potentially several times.
 \begin{definition}
   An \textbf{inference rule} named (ruleName) is a nonempty sequence of parameterized judgments $J_1, \dots J_k, J_{k + 1}$ along with a collection of statements $S_1, \dots, S_l$ on the parameters used in those judgments. An inference rule is denoted by
   \begin{prooftree}
@@ -124,8 +130,8 @@ In what follows we'll \hl{highlight} side conditions to make clear that they are
     \RightLabel{\small (addTwo)}
     \UnaryInfC{$12$ is even}
   \end{prooftree}
-  is an instance of the rule (addTwo) from \Cref{ex:add-two}.
-  In particular, the side condition $12 = 10 + 2$ holds.
+  is an instance of the rule (addTwo) above.
+  In particular, the side condition \hl{$12 = 10 + 2$} holds.
   Note that the side condition is not included in the instance, it's checked \enquote{offline} so to speak.
   Also note that
   \begin{prooftree}
@@ -138,15 +144,15 @@ In what follows we'll \hl{highlight} side conditions to make clear that they are
 \end{example}
 We call the judgments \enquote{above the line} \textbf{antecedences} and the judgment below called the \textbf{consequent}.
 It should be recognized that an inference rule may have no side-condition or no antecedent, it could even neither!
-These are a special form of inference rule called \textbf{axioms}.
-As we'll see, an inference system isn't all that interesting with axioms; without them, nothing can be unconditionally inferred!
+An inference rule with no antecedents is called an \textbf{axiom}.
+As we'll see, an inference system can't be very interesting if it doesn't have any axioms; without them, nothing can be unconditionally inferred!
 
 \section{Derivations}
 
 At this point, we can give a very basic definition of an inference system.
 
 \begin{definition}
-  An \textbf{inference system} over a set of judgment $\mathcal J$ is a collection of inference rules defined of $\mathcal J$.
+  An \textbf{inference system} over a set of judgment $\mathcal J$ is a collection of inference rules over $\mathcal J$.
 \end{definition}
 
 \begin{example}
@@ -167,11 +173,11 @@ At this point, we can give a very basic definition of an inference system.
   \end{center}
 \end{example}
 %
-But what were actually interested in with regards to inference systems is the collection of judgments that are \textit{possible} to infer, i.e., the \textit{closure} of the inference rules given in the system.
+What we're interested in with regards to inference systems is the collection of judgments that are \textit{possible} to infer, i.e., the \textit{closure} of the inference rules given in the system.
 We make this more concrete with the notion of a \textbf{derivation}, which is used to demonstrate that it's possible to infer a given judgment within an inference system by repeated invocations of its inference rules.
 
 \begin{definition}
-  A \textbf{derivation} of the judgment $J$ in an inference system $\mathcal I$ over the judgments $\mathcal J$ is a tree $T$ with the following properties:
+  A \textbf{derivation} of the judgment $J$ in an inference system $\mathcal I$ judgments from $\mathcal J$ is a tree $T$ with the following properties:
   \begin{itemize}
   \item The values of $T$ are judgments from $\mathcal J$;
   \item $\troot{T}$ is $J$;
@@ -189,16 +195,14 @@ We make this more concrete with the notion of a \textbf{derivation}, which is us
 %
 It's in this definition that we see why we need axioms: without them, our derivations can't start anywhere.
 \Cref{fig:8-is-even} has a derivation of the judgment \enquote{$8$ is even} in the inference system from \Cref{ex:even-system}.
-It's not a terribly interesting derivation, but it capture the form of reasoning we're allowed to do in this system: $8$ is even because $6$ is even, which holds because $4$ is even, which holds because $2$ is even, which holds because $0$ is even, which holds by definition.
+It's not a terribly interesting derivation, but it captures the form of reasoning we're allowed to do in this system: $8$ is even because $6$ is even, which holds because $4$ is even, which holds because $2$ is even, which holds because $0$ is even, which holds by definition.
 \begin{remark}
   Even though derivations are trees, we present them bottom-up as stacks of inferences.
-  This is in part, because it captures the structure of a proof more naturally, but it's also just historically motivated.
-  Gerhard Gentzen established much of the notation we use here (and in the field called \textit{proof theory}) in the 1930s \cite{TODO}.
+  This is, in part, because it captures the structure of a proof more naturally, but it's also just historical.
+  Gerhard Gentzen established much of the notation we use here (and in the mathematical field called \textit{proof theory}) in the 1930s \cite{TODO}.
 \end{remark}
 %
 Let's consider a slightly more interesting inference system.
-\Cref{ex:even-alt} contains alternative system which allows us to reason about number parity and \Cref{fig:8-is-even-again} is a derivation of \enquote{8 is even} is this alternative system.
-
 
 \begin{example}
   \label{ex:even-alt}
@@ -230,6 +234,7 @@ Let's consider a slightly more interesting inference system.
      \DisplayProof
   \end{center}
 \end{example}
+\Cref{fig:8-is-even-again} is a derivation of \enquote{8 is even} is this alternative system.
 The primary takeaway: different inference systems provide us with different forms of reasoning.
 In this alternative system, we have to first separate $8$ into two summands and reason about them separately.
 This system differs from the one in \Cref{ex:even-system} also because a judgment may have multiple proofs.
@@ -296,3 +301,13 @@ This system differs from the one in \Cref{ex:even-system} also because a judgmen
   \caption{A derivation of \enquote{$8$ is even} in the inference system from \Cref{ex:even-alt} (with some shorthand to make the derivation fit on the page).}
   \label{fig:8-is-even-again}
 \end{figure}
+
+\section{Example: A Simple Calculator}
+
+\begin{figure}
+
+\caption{Lisp-like syntax for a simple calculator}
+\end{figure}
+
+Let's now look at two inference systems defined over judgments about expressions for a calculator with lisp-like syntax.
+Anticipating the next chapter somewhat, the formal syntax for this language is give in \cref{fig:calc-syntax}.
