@@ -471,9 +471,23 @@ The choice to present the program above in three lines was for readability, and 
 Alternatively, we could construct a parse for the given program (\Cref{fig:line-tree}).
 
 \begin{figure}
-  \resizebox{\textwidth}{!}{%
-    \begin{forest}
-      [$\bnfnt{program}$
+  \begin{forest}
+    [$\bnfnt{program}$
+      [$\bnfnt{stmts}$
+        [$\bnfnt{stmt}$
+          [$\bnfnt{var}$
+            [$\bnft{a}$]
+          ]
+          [$\bnft{=}$]
+          [$\bnfnt{expr}$
+            [$\bnfnt{term}$
+              [$\bnfnt{num}$
+                [$\bnft{1}$]
+              ]
+            ]
+          ]
+        ]
+        [$\bnft{;}$]
         [$\bnfnt{stmts}$
           [$\bnfnt{stmt}$
             [$\bnfnt{var}$
@@ -482,8 +496,14 @@ Alternatively, we could construct a parse for the given program (\Cref{fig:line-
             [$\bnft{=}$]
             [$\bnfnt{expr}$
               [$\bnfnt{term}$
+                [$\bnfnt{var}$
+                  [$\bnft{a}$]
+                ]
+              ]
+              [$\bnft{+}$]
+              [$\bnfnt{term}$
                 [$\bnfnt{num}$
-                  [$\bnft{1}$]
+                  [$\bnft{2}$]
                 ]
               ]
             ]
@@ -492,7 +512,7 @@ Alternatively, we could construct a parse for the given program (\Cref{fig:line-
           [$\bnfnt{stmts}$
             [$\bnfnt{stmt}$
               [$\bnfnt{var}$
-                [$\bnft{a}$]
+                [$\bnft{b}$]
               ]
               [$\bnft{=}$]
               [$\bnfnt{expr}$
@@ -501,37 +521,15 @@ Alternatively, we could construct a parse for the given program (\Cref{fig:line-
                     [$\bnft{a}$]
                   ]
                 ]
-                [$\bnft{+}$]
-                [$\bnfnt{term}$
-                  [$\bnfnt{num}$
-                    [$\bnft{2}$]
-                  ]
-                ]
               ]
             ]
             [$\bnft{;}$]
-            [$\bnfnt{stmts}$
-              [$\bnfnt{stmt}$
-                [$\bnfnt{var}$
-                  [$\bnft{b}$]
-                ]
-                [$\bnft{=}$]
-                [$\bnfnt{expr}$
-                  [$\bnfnt{term}$
-                    [$\bnfnt{var}$
-                      [$\bnft{a}$]
-                    ]
-                  ]
-                ]
-              ]
-              [$\bnft{;}$]
-              [$\bnfnt{stmts}$]
-            ]
+            [$\bnfnt{stmts}$]
           ]
         ]
       ]
-    \end{forest}
-  }
+    ]
+  \end{forest}
   \centering
   \caption{
     Example parse tree for the grammar in \Cref{fig:line-pl}.

@@ -12,6 +12,47 @@ Our goal is to understand what's going on here:
 Our intuition should tell us this program is probably doing something fairly complicated.\footnote{Just think of how hard it is to follow directions, and how often we wish we read \textit{all} the instructions before starting some task.}
 So, our basic question is: \textit{How do we get from a stream of symbols to the output of the program?}
 
+\begin{figure}
+  \hspace{-1.5cm} % ugh
+  \begin{tikzpicture}[
+      interpbox/.style={
+        rectangle,
+        rounded corners,
+        draw,
+        thick,
+        minimum width=6cm,
+        minimum height=1cm,
+      }
+    ]
+    \draw[thick, rounded corners] (2,1) rectangle (9, -12.25);
+    \node (chars) {\textit{stream of characters}};
+    \node[interpbox] (lex) [right=of chars] {Lexical Analysis};
+    \node (tokens) [below=of lex] {\textit{stream of tokens}};
+    \node[interpbox] (par) [below=of tokens] {Syntactic Analysis (Parsing)};
+    \node (ast) [below=of par] {\textit{abstract syntax tree (AST)}};
+    \node[interpbox] (sem) [below=of ast] {Semantic Analysis (Type Checking)};
+    \node (ir) [below=of sem] {\textit{well-typed AST/intermediate representation}};
+    \node[interpbox] (eval) [below=of ir] {Evaluation};
+    \node (input) [left=of eval] {\textit{input}};
+    \node (output) [right=of eval] {\textit{output}};
+    \draw[->, thick] (chars.east) -- (lex.west);
+    \draw[thick] (lex.south) -- (tokens.north);
+    \draw[->, thick] (tokens.south) -- (par.north);
+    \draw[thick] (par.south) -- (ast.north);
+    \draw[->, thick] (ast.south) -- (sem.north);
+    \draw[thick] (sem.south) -- (ir.north);
+    \draw[->, thick] (ir.south) -- (eval.north);
+    \draw[->, thick] (input.east) -- (eval.west);
+    \draw[->, thick] (eval.east) -- (output.west);
+    \node at (7.7, -12) {\texttt{INTERPRETER}};
+  \end{tikzpicture}
+  \centering
+  \caption{
+    Visualization of the interpretation pipeline
+  }
+  \label{fig:nested-progs}
+\end{figure}
+
 \todo{expections of the chapters}
 
 \section{The Interpretation Pipeline}

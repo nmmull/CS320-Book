@@ -19,11 +19,11 @@ Of the well-formed programs, only a handful make sense as programs; said another
 For example, \codel{let rec f x = f x} is well-typed, whereas \codel{let rec f x = f + x} is not, though both are well-formed programs.
 
 And, of the well-typed programs, only a handful of \textit{those} make sense as computations; said another way, only a handful can be successfully \textit{evaluated}.
-This can be visualized as a nested collection of sets.\footnote{In order to make the graphic simpler, the code examples are actually OCaml \textit{expressions}, not programs.}
+This can be visualized as a nested collection of sets (\Cref{fig:nested-progs}).
 Note that things get a bit interesting in the relationship between well-typed programs and programs that have values.
 We'll take this up in-depth when we cover type systems in \Cref{ch:type-systems}.
 
-\begin{center}
+\begin{figure}
   \begin{tikzpicture}
     \draw[thick, rounded corners] (0,0) rectangle (10, 7);
     \node at (9.0,0.2) {\tiny sequences of symbols};
@@ -44,7 +44,13 @@ We'll take this up in-depth when we cover type systems in \Cref{ch:type-systems}
     \node  at (7.0,2.3) {\tiny \codel{2 + "two"}};
     \node at (7.5,3.2) {\tiny programs with values};
   \end{tikzpicture}
-\end{center}
+  \centering
+  \caption{
+    Visualization of nested classes of programs.
+    In order to make the graphic simpler, the code examples are actually OCaml \textit{expressions}, not programs.
+  }
+  \label{fig:nested-progs}
+\end{figure}
 %
 As noted in \Cref{ch:intro}, our goal is to transform a sequence of symbols which make up our program into the \textit{value} of our program.
 This is done by successive passes/transformations, each of which corresponds roughly to one of these nested sets:
@@ -56,7 +62,7 @@ This is done by successive passes/transformations, each of which corresponds rou
 \end{itemize}
 And at each pass, there's an \textbf{inference system} that \textit{formally} describes which inputs are \enquote{good} and which are \enquote{garbage.}
 
-\subsection*{Chapter Outline}
+\section*{Chapter Outline}
 
 \begin{itemize}
 \item \todo{list here}
@@ -269,45 +275,435 @@ This system differs from the one in \Cref{ex:even-system} also because a judgmen
 \begin{figure}
   \begin{prooftree}
     \AxiomC{}
-    \RightLabel{\small (1)}
-    \UnaryInfC{$1$ is O}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$1$ is odd}
     \AxiomC{}
-    \RightLabel{\small (1)}
-    \UnaryInfC{$1$ is O}
-    \RightLabel{\small (E)}
-    \BinaryInfC{$2$ is E}
-    \RightLabel{\small (O)}
-    \UnaryInfC{$3$ is O}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$1$ is odd}
+    \RightLabel{\small (even)}
+    \BinaryInfC{$2$ is even}
+    \RightLabel{\small (odd)}
+    \UnaryInfC{$3$ is odd}
     \AxiomC{}
-    \RightLabel{\small (1)}
-    \UnaryInfC{$1$ is O}
-    \RightLabel{\small (E)}
-    \BinaryInfC{$4$ is E}
-    \RightLabel{\small (O)}
-    \UnaryInfC{$5$ is O}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$1$ is odd}
+    \RightLabel{\small (even)}
+    \BinaryInfC{$4$ is even}
+    \RightLabel{\small (odd)}
+    \UnaryInfC{$5$ is odd}
     \AxiomC{}
-    \RightLabel{\small (1)}
-    \UnaryInfC{$1$ is O}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$1$ is odd}
     \AxiomC{}
-    \RightLabel{\small (1)}
-    \UnaryInfC{$1$ is O}
-    \RightLabel{\small (E)}
-    \BinaryInfC{$2$ is E}
-    \RightLabel{\small (O)}
-    \UnaryInfC{$3$ is O}
-    \RightLabel{\small (E)}
-    \BinaryInfC{$8$ is E}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$1$ is odd}
+    \RightLabel{\small (even)}
+    \BinaryInfC{$2$ is even}
+    \RightLabel{\small (odd)}
+    \UnaryInfC{$3$ is odd}
+    \RightLabel{\small (even)}
+    \BinaryInfC{$8$ is even}
   \end{prooftree}
-  \caption{A derivation of \enquote{$8$ is even} in the inference system from \Cref{ex:even-alt} (with some shorthand to make the derivation fit on the page).}
+  \caption{Derivation of \enquote{$8$ is even} in the inference system from \Cref{ex:even-alt}}
   \label{fig:8-is-even-again}
 \end{figure}
 
-\section{Example: A Simple Calculator}
+\section{Example: Calculator}
 
 \begin{figure}
-
+\begin{align*}
+\bnfnt{expr} &\bnfeq \bnft( \ \bnft+ \ \bnfnt{expr} \bnfnt{expr} \bnft) \\
+&\bnfaltn \bnft( \ \bnft* \ \bnfnt{expr} \bnfnt{expr} \bnft) \\
+&\bnfaltn \bnft( \ \bnft= \ \bnfnt{expr} \bnfnt{expr} \bnft) \\
+&\bnfaltn \bnft( \ \bnft? \ \bnfnt{expr} \bnfnt{expr} \bnfnt{expr} \bnft) \\
+&\bnfaltn \bnft 0 \bnfalt \bnft 1
+\end{align*}
 \caption{Lisp-like syntax for a simple calculator}
+\label{fig:calc-syntax}
 \end{figure}
 
-Let's now look at two inference systems defined over judgments about expressions for a calculator with lisp-like syntax.
-Anticipating the next chapter somewhat, the formal syntax for this language is give in \cref{fig:calc-syntax}.
+We now consider several inference systems defined over judgments about expressions for a calculator with lisp-like syntax.
+Anticipating the next chapter, the formal syntax for such expressions is give in \cref{fig:calc-syntax}.
+This syntax allows for only 8 possible symbols: \codel{(}, \codel{)}, \codel{+}, \codel{*}, \codel{=}, \codel{?}, \codel{0}, and \codel{1}.
+We begin by defining an inference system that determines which sequences of symbols constitute well-formed expressions (\Cref{fig:wf-sys}).
+This system is defined over judgments of the form \enquote{$e \in \mathsf{WF}$} where $e$ is a sequence of symbols.
+It captures in its inference rules that operators appear before their arguments, and that all invocations of an operator are surrounded in parentheses.
+For example, \codel{(* (+ 1 1) (+ 1 1))} is a well-formed expression, and we can derive this fact (\Cref{fig:wf-deriv}).
+
+\begin{figure}
+  \begin{center}
+    \AxiomC{}
+    \RightLabel{\small (zero)}
+    \UnaryInfC{$\codel 0 \in \mathsf{WF}$}
+    \DisplayProof
+    \qquad
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel 1 \in \mathsf{WF}$}
+    \DisplayProof
+  \end{center}
+  \begin{center}
+    \AxiomC{$e_1 \in \mathsf{WF}$}
+    \AxiomC{$e_2 \in \mathsf{WF}$}
+    \RightLabel{\small (add)}
+    \BinaryInfC{$\codel( \ \codel+ \ e_1 \ e_2 \ \codel) \in \mathsf{WF}$}
+    \DisplayProof
+    \qquad
+    \AxiomC{$e_1 \in \mathsf{WF}$}
+    \AxiomC{$e_2 \in \mathsf{WF}$}
+    \RightLabel{\small (mul)}
+    \BinaryInfC{$\codel( \ \codel* \ e_1 \ e_2 \ \codel) \in \mathsf{WF}$}
+    \DisplayProof
+  \end{center}
+  \begin{center}
+    \AxiomC{$e_1 \in \mathsf{WF}$}
+    \AxiomC{$e_2 \in \mathsf{WF}$}
+    \RightLabel{\small (eq)}
+    \BinaryInfC{$\codel( \ \codel= \ e_1 \ e_2 \ \codel) \in \mathsf{WF}$}
+    \DisplayProof
+  \end{center}
+  \begin{center}
+    \AxiomC{$e_1 \in \mathsf{WF}$}
+    \AxiomC{$e_2 \in \mathsf{WF}$}
+    \AxiomC{$e_3 \in \mathsf{WF}$}
+    \RightLabel{\small (cond)}
+    \TrinaryInfC{$\codel( \ \codel? \ e_1 \ e_2 \ e_3 \ \codel) \in \mathsf{WF}$}
+    \DisplayProof
+  \end{center}
+  \caption{Inference systems for well-formed expressions in the language from \Cref{fig:calc-syntax}}
+  \label{fig:wf-sys}
+\end{figure}
+
+\begin{figure}
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel 1 \in \mathsf{WF}$}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel 1 \in \mathsf{WF}$}
+    \RightLabel{\small (add)}
+    \BinaryInfC{$\codel{(+ 1 1)} \in \mathsf{WF}$}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel 1 \in \mathsf{WF}$}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel 1 \in \mathsf{WF}$}
+    \RightLabel{\small (add)}
+    \BinaryInfC{$\codel{(+ 1 1)} \in \mathsf{WF}$}
+    \RightLabel{\small (mul)}
+    \BinaryInfC{$\codel{(* (+ 1 1) (+ 1 1))} \in \mathsf{WF}$}
+  \end{prooftree}
+  \caption{Derivation of \enquote{$\codel{(* (+ 1 1) (+ 1 1))} \in \mathsf{WF}$} in the system from \Cref{fig:wf-sys}.}
+  \label{fig:wf-deriv}
+\end{figure}
+
+\begin{remark}
+  Keep in mind that these expressions don't \textit{mean} anything yet, even though we can guess that \enquote{\codel+} will stand for addition and \enquote{\codel{*}} will stand for multiplication.
+  So, for example \codel{(+ (= 1 1) (= 0 1))} is also a well-formed expression, even though this may not make sense if we interpret \enquote{\codel{=}} as an equality operator which evalutes to a Boolean value.
+\end{remark}
+%
+Once we've defined the well-formed expressions using an inference system, we can prove things about well-formed expressions using induction on derivations (see \Cref{ch:trees}).
+\begin{exercise}
+  Prove using induction on derivations that if $e \in \mathsf{WF}$, then the parentheses in $e$ are balanced.
+\end{exercise}
+%
+In addition to proving things via structural induction, we can also define properties on well-formed expressions by defining a new inference system.\footnote{In particular, we can use the notion of a well-formed expression in other inference systems.}
+Suppose for example, we want to reason about how many symbols are in a given well-formed expression.
+We can define an inference system to do this sort of reasoning (\Cref{fig:sym-sys}).
+This system is defined over judgments of the form \enquote{\#($e$) = $n$} where $e$ ranges over well-formed expressions (i.e., we can prove that $e \in \mathsf{WF}$ in the previously defined inference system) and $n$ ranges over natural numbers.
+The rules in this system express that \codel0 and \codel1 have $1$ symbol, and every other expression has 3 plus [the number of symbols in its subexpressions] many symbols.
+We can prove within this system that \codel{(* (+ 1 1) (+ 1 1))} has $13$ symbols.
+
+\begin{figure}
+  \begin{center}
+    \AxiomC{}
+    \RightLabel{\small (zero)}
+    \UnaryInfC{$\#(\codel 0) = 1$}
+    \DisplayProof
+    \qquad
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\#(\codel 1) = 1$}
+    \DisplayProof
+  \end{center}
+  \begin{center}
+    \AxiomC{$\#(e_1) = m$}
+    \AxiomC{$\#(e_2) = n$}
+    \AxiomC{\hl{$k = m + n + 3$}}
+    \RightLabel{\small (add)}
+    \TrinaryInfC{$\#(\codel( \ \codel+ \ e_1 \ e_2 \ \codel)) = k$}
+    \DisplayProof
+  \end{center}
+  \begin{center}
+    \AxiomC{$\#(e_1) = m$}
+    \AxiomC{$\#(e_2) = n$}
+    \AxiomC{\hl{$k = m + n + 3$}}
+    \RightLabel{\small (mul)}
+    \TrinaryInfC{$\#(\codel( \ \codel* \ e_1 \ e_2 \ \codel)) = k$}
+    \DisplayProof
+  \end{center}
+  \begin{center}
+    \AxiomC{$\#(e_1) = m$}
+    \AxiomC{$\#(e_2) = n$}
+    \AxiomC{\hl{$k = m + n + 3$}}
+    \RightLabel{\small (eq)}
+    \TrinaryInfC{$\#(\codel( \ \codel= \ e_1 \ e_2 \ \codel)) = k$}
+    \DisplayProof
+  \end{center}
+  \begin{center}
+    \AxiomC{$\#(e_1) = l$}
+    \AxiomC{$\#(e_2) = m$}
+    \AxiomC{$\#(e_3) = n$}
+    \AxiomC{\hl{$k = l + m + n + 3$}}
+    \RightLabel{\small (add)}
+    \QuaternaryInfC{$\#(\codel( \ \codel? \ e_1 \ e_2 \ e_3 \ \codel)) = k$}
+    \DisplayProof
+  \end{center}
+  \caption{Inference system for determining the number of symbols in a well-formed expression}
+  \label{fig:sym-sys}
+\end{figure}
+
+\begin{figure}
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\#(\codel{1}) = 1$}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\#(\codel{1}) = 1$}
+    \RightLabel{\small (add)}
+    \BinaryInfC{$\#(\codel{(+ 1 1)}) = 5$}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\#(\codel{1}) = 1$}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\#(\codel{1}) = 1$}
+    \RightLabel{\small (add)}
+    \BinaryInfC{$\#(\codel{(+ 1 1)}) = 5$}
+    \RightLabel{\small (mul)}
+    \BinaryInfC{$\#(\codel{(* (+ 1 1) (+ 1 1))}) = 13$}
+  \end{prooftree}
+  \caption{Derivation of \enquote{$\#(\codel{(* (+ 1 1) (+ 1 1))}) = 13$} in the system from \Cref{fig:sym-sys}}
+  \label{fig:sym-deriv}
+\end{figure}
+
+At this point, we'd like to start thinking about the \textit{meaning} of these expressions.
+First, we must content with the fact that not all well-formed expressions are meaningful.
+For example \codel{(= (= 0 0) 1)} doesn't make much sense because it would require us to compare two values that aren't the \enquote{same kind of thing.}
+Formally, the \enquote{kind of thing} a value can be is called its \enquote{type.}
+There are two types of values that an expression can be in our toy calculator language: a number (\codel{int}) or a Boolean value (\codel{bool}).
+
+\begin{remark}
+  It would be possible to represent Boolean values as numbers; this is done, for example, in C.
+  Then there would be a single type of value in our toy lanugage.
+  We'll avoid doing this, in part because it makes our example less interesting, but also because there are some serious problems that arise when we design programming languages this way.
+\end{remark}
+%
+We can define an inference system which determines the type of (the value of) an expression, if it has one.
+This means that the system has two purposes: (1) it delineates which expressions have values (i.e., which we can evaluate), and (2) it determine the type of the value \textit{before} we've evaluated the expression (\Cref{fig:calc-ty-sys}).
+
+\begin{figure}
+  \begin{center}
+    \AxiomC{}
+    \RightLabel{\small (zero)}
+    \UnaryInfC{$\codel0 : \codel{int}$}
+    \DisplayProof
+    \qquad
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel1 : \codel{int}$}
+    \DisplayProof
+  \end{center}
+  \begin{center}
+    \AxiomC{$e_1 : \codel{int}$}
+    \AxiomC{$e_2 : \codel{int}$}
+    \RightLabel{\small (add)}
+    \BinaryInfC{$\codel( \ \codel+ \ e_1 \ e_2 \ \codel) : \codel{int}$}
+    \DisplayProof
+    \qquad
+    \AxiomC{$e_1 : \codel{int}$}
+    \AxiomC{$e_2 : \codel{int}$}
+    \RightLabel{\small (mul)}
+    \BinaryInfC{$\codel( \ \codel* \ e_1 \ e_2 \ \codel) : \codel{int}$}
+    \DisplayProof
+  \end{center}
+  \begin{center}
+    \AxiomC{$e_1 : t_1$}
+    \AxiomC{$e_2 : t_2$}
+    \AxiomC{\hl{$t_1 = t_2$}}
+    \RightLabel{\small (eq)}
+    \TrinaryInfC{$\codel( \ \codel= \ e_1 \ e_2 \ \codel) : \codel{bool}$}
+    \DisplayProof
+    \qquad
+    \AxiomC{$e_1 : \codel{bool}$}
+    \AxiomC{$e_2 : t_2$}
+    \AxiomC{$e_3 : t_3$}
+    \AxiomC{\hl{$t_2 = t_3$}}
+    \RightLabel{\small (cond)}
+    \QuaternaryInfC{$\codel( \ \codel? \ e_1 \ e_2 \ e_3 \ \codel) : t_2$}
+    \DisplayProof
+  \end{center}
+  \caption{Inference system for determining the type of an expression}
+  \label{fig:calc-ty-sys}
+\end{figure}
+
+This system is defined over judgments of the form \enquote{$e : t$} where $e$ is a well-formed expression and $t$ is either \codel{int} or \codel{bool}.
+Let's take a breif moment to read what each of these rules says.
+\begin{itemize}
+\item (zero) says \codel 0 is a \codel{int}, no matter what.
+\item (one) says \codel 1 is a \codel{int}, no matter what.
+\item (add) says if $e_1$ is a \codel{int} (i.e., evaluates to a number) and $e_2$ is a \codel{int}, then $\codel( \ \codel+ \ e_1 \ e_2 \ \codel)$ is a \codel{int}.
+  In particular, we can only add numbers, not Boolean values.
+\item (mul) says if $e_1$ is a \codel{int} (i.e., evaluates to a number) and $e_2$ is a \codel{int}, then $\codel( \ \codel* \ e_1 \ e_2 \ \codel)$ is a \codel{int}.
+  In particular, we can only multiply numbers, not Boolean values.
+\item (eq) says if $e_1$ and $e_2$ are the same type then we can compare them, and $\codel( \ \codel= \ e_1 \ e_2 \ \codel)$ is a \codel{bool}. In particular, we can't compare a number with a Boolean value.
+\item (cond) says if $e_1$ is a \codel{bool}, and $e_2$ and $e_3$ are the same type, then we can condition on the value of $e_1$ to get either the value of $e_2$ or $e_3$, and the type of $\codel( \ \codel? \ e_1 \ e_2 \ \ e_3 \ \codel)$ is the same as that of $e_2$ and $e_3$.
+\end{itemize}
+See \Cref{fig:calc-ty-deriv} for an example derivation in this system.
+
+\begin{figure}
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel{1} : \codel{int}$}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel{1} : \codel{int}$}
+    \BinaryInfC{$\codel{(= 1 1)} : \codel{bool}$}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel{1} : \codel{int}$}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel{1} : \codel{int}$}
+    \RightLabel{\small (add)}
+    \BinaryInfC{$\codel{(+ 1 1)} : \codel{int}$}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel{1} : \codel{int}$}
+    \AxiomC{}
+    \RightLabel{\small (zero)}
+    \UnaryInfC{$\codel{0} : \codel{int}$}
+    \RightLabel{\small (mul)}
+    \BinaryInfC{$\codel{(* 1 0)} : \codel{int}$}
+    \RightLabel{\small (cond)}
+    \TrinaryInfC{$\codel{(?} \ \codel{(= 1 1) (+ 1 1) (* 1 0))} : \codel{int}$}
+  \end{prooftree}
+  \caption{Derivation of \enquote{$\codel{(?} \ \codel{(= 1 1) (+ 1 1) (* 1 0))} : \codel{int}$} in the system from \Cref{fig:calc-ty-sys}}
+  \label{fig:calc-ty-deriv}
+\end{figure}
+
+\begin{remark}
+  Notice that, ultimately, an inference rule, is a more compact way of expressing a statement in (mathematical) English.
+  It takes some practice to read inference rules, but it is worthwhile to learn in the long run, and eventually becomes easier than reading the equivalent English expression.
+\end{remark}
+%
+Finally, we can define an inference system for determining the value of an expression in our toy calculator language (\Cref{fig:calc-eval-sys}).
+This system is defined over judgments of the form \enquote{$e \Downarrow v$}, which we read as \enquote{$e$ evaluates to $v$,} where $e$ ranges over well-formed expressions, and $v$ ranges over numbers ($\mathbb N$) or Boolean values ($\{\top, \bot\}$).
+Let's again take a moment to read what each of these rules says.
+\begin{itemize}
+\item (zero) says \codel0 evaluates to the number $0$.
+\item (one) says \codel1 evaluates to the number $1$.
+\item (add) says if $e_1$ evaluates to $m$ and $e_2$ evaluates to $n$, then $\codel( \ \codel+ \ e_1 \ e_2 \ \codel)$ evaluates to $m + n$.
+\item (mul) says if $e_1$ evaluates to $m$ and $e_2$ evaluates to $n$, then $\codel( \ \codel* \ e_1 \ e_2 \ \codel)$ evaluates to $m \times n$.
+\item (eqTrue) says if $e_1$ evaluates to $v_1$ and $e_2$ evaluates to $v_2$, and $v_1$ and $v_2$ are the same then $\codel( \ \codel= \ e_1 \ e_2 \ \codel)$ evaluates to true.
+\item (eqFalse) says if $e_1$ evaluates to $v_1$ and $e_2$ evaluates to $v_2$, and $v_1$ and $v_2$ are \textit{not} the same then $\codel( \ \codel= \ e_1 \ e_2 \ \codel)$ evaluates to false.
+\item (ifTrue) says if $e_1$ evaluates to true and $e_2$ evaluates to $v$, then $\codel( \ \codel? \ e_1 \ e_2 \ e_3 \ \codel)$ evaluates to $v$.
+  In particular, $e_3$ does not need to be evaluated.
+\item (ifFalse) says if $e_1$ evaluates to true and $e_3$ evaluates to $v$, then $\codel( \ \codel? \ e_1 \ e_2 \ e_3 \ \codel)$ evaluates to $v$.
+  In particular, $e_2$ does not need to be evaluated.
+\end{itemize}
+See \Cref{fig:calc-eval-deriv} for an example derivation in this system.
+
+\begin{figure}
+  \begin{center}
+    \AxiomC{}
+    \RightLabel{\small (zero)}
+    \UnaryInfC{$\codel0 \Downarrow 0$}
+    \DisplayProof
+    \qquad
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel1 \Downarrow 1$}
+    \DisplayProof
+  \end{center}
+  \begin{center}
+    \AxiomC{$e_1 \Downarrow v_1$}
+    \AxiomC{$e_2 \Downarrow v_2$}
+    \AxiomC{\hl{$v = v_1 + v_2$}}
+    \RightLabel{\small (add)}
+    \TrinaryInfC{$\codel( \ \codel+ \ e_1 \ e_2 \ \codel) \Downarrow v$}
+    \DisplayProof
+    \qquad
+    \AxiomC{$e_1 \Downarrow v_1$}
+    \AxiomC{$e_2 \Downarrow v_2$}
+    \AxiomC{\hl{$v = v_1 \times v_2$}}
+    \RightLabel{\small (mul)}
+    \TrinaryInfC{$\codel( \ \codel* \ e_1 \ e_2 \ \codel) \Downarrow v$}
+    \DisplayProof
+  \end{center}
+  \begin{center}
+    \AxiomC{$e_1 \Downarrow v_1$}
+    \AxiomC{$e_2 \Downarrow v_2$}
+    \AxiomC{\hl{$v_1 = v_2$}}
+    \RightLabel{\small (eqTrue)}
+    \TrinaryInfC{$\codel( \ \codel= \ e_1 \ e_2 \ \codel) \Downarrow \top$}
+    \DisplayProof
+    \qquad
+    \AxiomC{$e_1 \Downarrow v_1$}
+    \AxiomC{$e_2 \Downarrow v_2$}
+    \AxiomC{\hl{$v_1 \neq v_2$}}
+    \RightLabel{\small (eqFalse)}
+    \TrinaryInfC{$\codel( \ \codel= \ e_1 \ e_2 \ \codel) \Downarrow \bot$}
+    \DisplayProof
+  \end{center}
+  \begin{center}
+    \AxiomC{$e_1 \Downarrow \top$}
+    \AxiomC{$e_2 \Downarrow v$}
+    \RightLabel{\small (ifTrue)}
+    \BinaryInfC{$\codel( \ \codel? \ e_1 \ e_2 \ e_3 \ \codel) \Downarrow v$}
+    \DisplayProof
+    \qquad
+    \AxiomC{$e_1 \Downarrow \bot$}
+    \AxiomC{$e_3 \Downarrow v$}
+    \RightLabel{\small (ifFalse)}
+    \BinaryInfC{$\codel( \ \codel? \ e_1 \ e_2 \ e_3 \ \codel) \Downarrow v$}
+    \DisplayProof
+  \end{center}
+  \caption{Inference system for determine the values of well-formed expressions}
+  \label{fig:calc-eval-sys}
+\end{figure}
+
+\begin{figure}
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel{1} \Downarrow 1$}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel{1} \Downarrow 1$}
+    \RightLabel{\small (add)}
+    \BinaryInfC{$\codel{(+ 1 1)} \Downarrow 2$}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel{1} \Downarrow 1$}
+    \AxiomC{}
+    \RightLabel{\small (one)}
+    \UnaryInfC{$\codel{1} \Downarrow 1$}
+    \RightLabel{\small (add)}
+    \BinaryInfC{$\codel{(+ 1 1)} \Downarrow 2$}
+    \RightLabel{\small (mul)}
+    \BinaryInfC{$\codel{(* (+ 1 1) (+ 1 1))} \Downarrow 4$}
+  \end{prooftree}
+  \caption{Derivation of \enquote{$\codel{(* (+ 1 1) (+ 1 1))} \Downarrow 4$} in the system from \Cref{fig:calc-eval-sys}}
+  \label{fig:calc-eval-deriv}
+\end{figure}
+
+There is quite a bit more we could say about this example, but we'll leave it for now.
+The purpose of this presentation is primarily to offer examples of inferences systems like the ones on which we'll focus for the remainder of the text.
+The defer more careful considerations to those latter chapters.
+
+\section*{Chapter Summary}
