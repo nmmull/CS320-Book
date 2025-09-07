@@ -1,7 +1,7 @@
-When we write a program in our favorite programming language, we fill a file with a collection of symbols that we've typed out on a keyboard.
+When we write a program in our favorite programming language, we fill a file with a collection of symbols that we've typed up using a computer keyboard.
 This is one of the beauties of programming: looking past the bells and whistles provided by editors and programming tools, a program is just a stream of characters.
 At some point in our programming workflow, we need to verify that what we've typed up works as expected, so we \textit{run} our program.
-In some editors, there is literally \enquote{play} button, but in many other cases this means opening a terminal and typing out a few commands.
+In some editors, there is literally a \enquote{play} button, but in many other cases this means opening a terminal and typing out a few commands.
 In either case, we're running a \textit{different} program in order to run the program we've written.
 Our goal is to understand what's going on here:
 \textit{
@@ -10,7 +10,44 @@ Our goal is to understand what's going on here:
   What sorts of data structures does this program use?
 }
 Our intuition should tell us this program is probably doing something fairly complicated.\footnote{Just think of how hard it is to follow directions, and how often we wish we read \textit{all} the instructions before starting some task.}
-So, our basic question is: \textit{How do we get from a stream of symbols to the output of the program?}
+So our basic question is: \textit{How do we get from a stream of symbols to the output of the program?}
+
+\section{The Interpretation Pipeline}
+
+The program to which we referred in the previous paragraph\textemdash the one that runs the programs we write\textemdash is called an \textit{interpreter}.
+An interpreter takes as input a stream of character, along with additional input to the input program (perhaps given as command line arguments or environment variables) and produces and output of our program.
+So another way of phrasing our basic question is simply: \textit{what does an interpreter do?}
+As is typically the case, it's easier to answer a question like this by breaking it up into several subquestions.
+These subquestions correspond to passes in the \textit{interpretation pipeline}, which is visualized in \Cref{fig:interp-pipe}.  As we will understand it in this text, an interpreter does four things:
+\begin{enumerate}
+\item
+  It attempts to convert a sequence of characters (our program) into a sequence of \textit{tokens}.
+  We can think of tokens as the \textit{units} or \textit{atoms} of our program.
+  This part of the interpreter is called \textbf{lexical analysis}, and its primary purpose is to simplify the process of analyzing the input program.
+  It's easier, for example, to analyze a program if we know beforehand whether the character \enquote{\codel{1}} which appears in our program is part of a number, a variable name, or a comment.
+  Lexical analysis handles all these low-level syntactic concerns front.
+  In analogy with natural language, this is like the part of language processing in which our brains connects sequences of sounds or letters into whole words.
+\item
+  Once we have a sequence of tokens, our interpreter will attempt to convert them into an \textit{abstract syntax tree (AST)}, which is a representation of our program as \textit{hierarchical data}.
+  This part of the interpreter is called \textbf{syntactic analysis} or \textbf{parsing}
+  This hierarchical data is easier to analyze and evaluate, e.g., we'd like to know before evaluating our program if the variable \enquote{\codel{x}} which appears in our program is part of the expression we're evaluating is part of a new variable declaration.
+  In analogy with natural language, this is like when our brains combines words into sub-phrases like prepositional phrases and verb phrases.
+\item
+  Not all programs will make sense.
+  It doesn't make sense, for example, to add a number to a string.\footnote{Even though some languages allow you to do this.}
+  The next part of an interpreter should analyze the hierarchical data from the previous part to verify that everything in it \enquote{looks reasonable.}
+  There are a couple ways to do this; this is generally a part of what is called \textbf{static semantic analysis}, but one of the most common ways\textemdash and the way on which we'll focus because it's OCaml's approach\textemdash is via \textbf{type checking}.
+  Types help us describe what kind of things we're working with \textit{before we start running our program} and help us determine \textit{before we start running our program} if we're using data in our program correctly.
+  In analogy with natural language, this is like when our brains gives us an uneasy feeling when we hear or see the sentence \enquote{the happiness is cold.}
+  The word \enquote{happiness} is not the right category of word for its location in the sentence, despite the fact that this sentence is grammatically correct.
+
+  Not all languages do this, but we will maintain in this text that \enquote{good} languages do this.
+\item
+  Everything above is in service of \textit{running} our program.
+  This part of the interpreter is called \textbf{dynamic semantic analysis} or \textbf{evaluation}.
+  In a sense, this is the most intuitive part of the process as programmers; learning to program is ultimately just internalizing the evaluation rules of a programming language, so that we know what to write when we want to accomplish a certain task.
+\end{enumerate}
+
 
 \begin{figure}
   \hspace{-1.5cm} % ugh
@@ -31,7 +68,7 @@ So, our basic question is: \textit{How do we get from a stream of symbols to the
     \node[interpbox] (par) [below=of tokens] {Syntactic Analysis (Parsing)};
     \node (ast) [below=of par] {\textit{abstract syntax tree (AST)}};
     \node[interpbox] (sem) [below=of ast] {Semantic Analysis (Type Checking)};
-    \node (ir) [below=of sem] {\textit{well-typed AST/intermediate representation}};
+    \node (ir) [below=of sem] {\textit{well-typed AST/intermediate repr. (IR)}};
     \node[interpbox] (eval) [below=of ir] {Evaluation};
     \node (input) [left=of eval] {\textit{input}};
     \node (output) [right=of eval] {\textit{output}};
@@ -50,12 +87,8 @@ So, our basic question is: \textit{How do we get from a stream of symbols to the
   \caption{
     Visualization of the interpretation pipeline
   }
-  \label{fig:nested-progs}
+  \label{fig:interp-pipe}
 \end{figure}
-
-\todo{expections of the chapters}
-
-\section{The Interpretation Pipeline}
 
 \todo{outline of the text}
 
