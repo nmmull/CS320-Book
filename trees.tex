@@ -1,8 +1,8 @@
-Much of the study of programming languages depends on trees or, more generally, inductively-defined structures.
+Trees\textemdash or, more generally inductively-defined structures\textemdash are core to the study of programming languages.
 This is, in part, why functional programming languages like OCaml are well-suited for \textit{implementing} programming languages.
 As such, we have to spend some time on the humble notion of trees.
 This appendix covers a small slice of the topic, only what we need for the main part of the text.\footnote{
-There are whole books dedicated to the study of mathematical induction and inductively defined structures!
+There are whole books dedicated to the study of mathematical induction and inductively defined structures.
 }
 
 If you've taken a course in discrete mathematics, you've likely seen the graph-theoretic definition of trees.
@@ -54,10 +54,10 @@ We can naturally define rose trees in OCaml, which means we can also define the 
   let example = Node (1, [Node (2, []); Node (3, [])])
 
   let rec depth (Node (_, ts)) =
-  List.fold_left
-    (fun acc n -> max acc (n + 1))
-    0
-    (List.map depth ts)
+    List.fold_left
+      (fun acc n -> max acc (n + 1))
+      0
+      (List.map depth ts)
 
   let rec size (Node (_, ts)) =
     List.(fold_left (+) 1 (map size ts))
@@ -125,7 +125,7 @@ This form is based on visualizations of file trees.\footnote{
 If you're interested, look up the command line tool \texttt{tree}, or just type \texttt{tree .} in your terminal and see what you get.
 }
 It's particularly useful when a tree it too wide to draw otherwise, e.g., when the values in nodes are themselves very wide.
-There's one more form of tree visualization we'll use for drawing derivation trees; this will be covered in \Cref{ch:deriv}.
+There's one more form of tree visualization we'll use for drawing derivation trees; this will be covered in \Cref{ch:infer}.
 
 \section{Structural Induction}
 
@@ -202,7 +202,7 @@ In other words, inductively-defined subsets of trees are defined by describing w
       ]
     \end{forest}
   \end{center}
-  We might recognize that the leaves of this tree define a prime factorization of the root, e.g., $80 = 5 * 2 * 3 * 2$.
+  We might recognize that the leaves of this tree define a prime factorization of the root, e.g., $60 = 5 * 2 * 3 * 2$.
 \end{example}
 %
 Once we have inductively-defined subsets of trees, we can define their corresponding principle of induction.
@@ -236,14 +236,14 @@ Otherwise,
 yielding a prime factorization of $n$.
 That is, we take the product of all the prime factorizations of the children of $T$ to get a prime factorization of its root.\footnote{
 What we've done here is only \textit{part of} the fundamental theorem of arithmetic.
-We would also, need to prove that every natural number is the root of some tree in $\mathcal Q$, which we can prove by (strong) induction over natural numbers (we also say nothing of uniqueness...).
+We would also need to prove that every natural number is the root of some tree in $\mathcal Q$, which we can prove by (strong) induction over natural numbers (we also say nothing of uniqueness...).
 }
 \end{proof}
 
 \section{Induction on Derivations}
 
-What we've done so far is more general than necessary\footnote{Sorry, I can't help it.}, and is ultimately in service of defining the \textit{derivation induction principle}.
-First, observe that the set of derivations in a given derivation system $\mathcal D$, as defined in \Cref{ch:deriv}, is an inductively-define subset of trees.
+What we've done so far is more general than necessary, and is ultimately in service of defining the \textit{derivation induction principle}.
+First, observe that the set of derivations in a given inference system $\mathcal I$, as defined in \Cref{ch:infer}, is an inductively-define subset of trees.
 The property is straightforward: it holds of the nonempty sequence of judgments $(J, J_1, \dots, J_k)$ when
 \begin{prooftree}
   \AxiomC{$J_1$}
@@ -251,24 +251,24 @@ The property is straightforward: it holds of the nonempty sequence of judgments 
   \AxiomC{$J_k$}
   \TrinaryInfC{$J$}
 \end{prooftree}
-is (an instance of) an inference rule of $\mathcal D$.
+is (an instance of) an inference rule of $\mathcal I$.
 In other words, a derivation is a tree in which every node is either an axiom or follows from an inference rule.
 The upshot is that the derivation induction principle is a specialization of the induction principle for inductively-defined subsets of trees.
 
 Our second observation: being able to prove that a property holds of all derivations is enough to be able to prove that a property holds of all \textit{derivable judgments}.
 There's is an obvious correspondence between derivations and derivable judgments: if a judgment is derivable, then it has a derivation.
-And this is ultimately what we care about when we reason about things like type safety and meta-theory.
+And this is ultimately what we care about when we reason about things like type safety (\Cref{ch:types}).
 All said, we can state the derivation induction principle as follows:
 
 \begin{quote}
   \textit{
-    Given a property $P$ of judgments of $\mathcal D$, if
+    Given a property $P$ of judgments of $\mathcal I$, if
     \begin{itemize}
     \item for any judgment $J$ and derivable judgments $J_1, \dots, J_k$, if we assume that $P$ holds of each judgment $J_1, \dots, J_k$ where
       \begin{prooftree}
-        \AxiomC{$\troot{T_1}$}
+        \AxiomC{$J_1$}
         \AxiomC{$\dots$}
-        \AxiomC{$\troot{T_k}$}
+        \AxiomC{$J_k$}
         \TrinaryInfC{$J$}
       \end{prooftree}
     then we can demonstrate that $P$ holds of $J$;
@@ -280,19 +280,24 @@ All said, we can state the derivation induction principle as follows:
 This principle tells us that we can look at the \textit{last} inference rule applied and prove that the property holds assuming it holds of the \textit{antecedents} of the applied rule.
 
 It may be easier to grok this principle by example.
-Consider the following basic derivation system over judgments of the form \enquote{$n$ is even} where $n \in \N$.
-\begin{center}
-  \AxiomC{}
-  \RightLabel{(zero)}
-  \UnaryInfC{$0$ is even}
-  \DisplayProof
-   \qquad
-  \AxiomC{$n$ is even}
-  \RightLabel{(addTwo)}
-  \UnaryInfC{$n + 2$ is even}
-  \DisplayProof
-\end{center}
-We'd like to prove that this derivation system is sound, i.e., that if \enquote{$n$ is even} is derivable, then $n$ is, in fact, even (in particular, \enquote{$3$ is even} is not derivable).
+Consider the following basic inference system over judgments of the form \enquote{$n$ is even} where $n \in \N$.
+
+\begin{example}
+  This system is taken directly from \Cref{ch:infer}.
+  \begin{center}
+    \AxiomC{}
+    \RightLabel{\small (zero)}
+    \UnaryInfC{$0$ is even}
+    \DisplayProof
+    \qquad
+    \AxiomC{$m$ is even}
+    \AxiomC{\hl{$n = m + 2$}}
+    \RightLabel{\small (addTwo)}
+    \BinaryInfC{$n$ is even}
+    \DisplayProof
+  \end{center}
+\end{example}
+We'd like to prove that this inference system is sound, i.e., that if \enquote{$n$ is even} is derivable, then $n$ is, in fact, even (in particular, \enquote{$3$ is even} is not derivable).
 We can prove this by induction on derivations.
 \begin{proof}
   Let $J$ denote an arbitrary judgment \enquote{$n$ is even.}
@@ -306,5 +311,5 @@ We can prove this by induction on derivations.
 \end{proof}
 %
 In a sense, this example might be \textit{too} simple.
-It's not immediately clear that we've done anything in this proof (the distinction between $n$ being even and the judgment \enquote{$n$ is even} being derivable is admittedly a subtle one).
-But, in order to avoid ballooning this appendix into a full-blown chapter, I'll relegate the presentation of more interesting examples to \Cref{todo} and our discussion of type safety.
+It's not immediately clear that we've done anything in this proof; the distinction between $n$ being even and the judgment \enquote{$n$ is even} being derivable is admittedly a subtle one.
+But, in order to avoid ballooning this appendix into a full-blown chapter, I'll relegate the presentation of more interesting examples to \Cref{ch:types}.

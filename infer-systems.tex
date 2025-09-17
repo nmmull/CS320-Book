@@ -1,11 +1,10 @@
 The study of programming languages can be understood in part as the study of a collection of \textbf{inference systems}.\footnote{
   In some settings, these are called \textbf{formal systems} or \textbf{deductive systems}, though it's my sense that there's no real consensus as to what exactly these terms mean.
 }
-A programming language in the sense of the techology that we use when we program is just an \textit{implementation} of this collection of derivation systems.
-As such, we need to concern ourselves at least briefly with these notions.
+A programming language\textemdash in the sense of the techology that we use when we program\textemdash is just an \textit{implementation} of this collection of inference systems.
 
 Let's begin with a picture.
-When we program we type a bunch of symbols into a file.
+As we said in \Cref{ch:intro}, when we program we type a bunch of symbols into a file.
 Of the sequences of symbols we can type, only a handful of them are valid \textit{sequences of tokens} of the language in which we're programming.
 For example, \codel{let} is a keyword of OCaml, \codel{1.223} is a floating point literal, \codel{\%} is an operator, and \codel{yasn3\_\_} is a valid variable name.
 These are all valid tokens in OCaml.
@@ -52,7 +51,7 @@ We'll take this up in-depth when we cover type systems in \Cref{ch:type-systems}
   \label{fig:nested-progs}
 \end{figure}
 %
-As noted in \Cref{ch:intro}, our goal is to transform a sequence of symbols which make up our program into the \textit{value} of our program.
+Our goal is to transform a sequence of symbols which make up our program into the \textit{value} of our program.
 This is done by successive passes/transformations, each of which corresponds roughly to one of these nested sets:
 \begin{itemize}
 \item determining valid sequences of tokens in part of \textit{lexical analysis};
@@ -62,10 +61,13 @@ This is done by successive passes/transformations, each of which corresponds rou
 \end{itemize}
 And at each pass, there's an \textbf{inference system} that \textit{formally} describes which inputs are \enquote{good} and which are \enquote{garbage.}
 
-\section*{Chapter Outline}
+\bigskip
 
+\noindent In this chapter we will:
 \begin{itemize}
-\item \todo{list here}
+\item formally define \textbf{inference rules}, i.e, the rules which govern when we can derive new judgments from judgements we've already derived within an inference system;
+\item use \textbf{derivations} to demonstrate that a judgment is derivable in an inference system;
+\item go through an extended example in which we define a collection of inference systems that define the syntax, typing behavior, and evaluation behavior of a simple calculator.
 \end{itemize}
 
 \section{Inference Rules}
@@ -98,10 +100,11 @@ Practically speaking, we'll always take judgments to be \textit{statements} para
 We'll call something like \enquote{$n$ is even} a \textbf{parameterized judgment} and something like \enquote{$4$ is even} a \textbf{concrete judgment}, or just a judgment if it's clear from context that it's concrete.
 In particular, we'll say \enquote{$110$ is odd} is an \textbf{instance} of the parameterized judgment \enquote{$n$ is odd.}
 
-That said, we'll be a cavalier about this distinction.
+\begin{remark}
+We'll genearlly be a cavalier about this distinction between parametrized and concrete judgments.
 For example, we'll say that concrete judgments are also parameterized judgments, insofar as they're parametrized by no parameters.
 Likewise, we'll say that a parameterized judgment is in a set $\mathcal J$ when we really mean that its instances are in $\mathcal J$.
-
+\end{remark}
 An \textbf{inference rule} is a way of describing what judgments we're allowed to infer given we've already inferred some other judgments.
 They also often include addition statements that need to hold in order for a rule to be applied; these are called \textbf{side conditions}.\footnote{
 In what follows we'll \hl{highlight} side conditions to make clear that they are not formal judgments.
@@ -116,7 +119,7 @@ It's important that we understand this definition, but not on our first pass; ma
     \RightLabel{\small (ruleName)}
     \BinaryInfC{$J_{k + 1}$}
   \end{prooftree}
-  We say that a (concrete) judgment $J_{k + 1}'$ \textbf{follows from} the (concrete) judgments $J_1', \dots, J_k'$ \textbf{by (ruleName)} if $J_i'$ is an instance of $J_i$ for each index $i$ and all statements $S_1, \dots, S_l$ hold for the parameters used in the given judgments.
+  We say that a concrete judgment $J_{k + 1}'$ \textbf{follows from} the concrete judgments $J_1', \dots, J_k'$ \textbf{by (ruleName)} if $J_i'$ is an instance of $J_i$ for each index $i$ and all statements $S_1, \dots, S_l$ hold for the parameters used in the given judgments.
   We'll often also denote this by
   \begin{prooftree}
     \AxiomC{$J_1'$}
@@ -149,13 +152,13 @@ It's important that we understand this definition, but not on our first pass; ma
   It expresses that, hypothetically, if $11$ is even, then it's reasonable to infer that $13$ is even as well.
 \end{example}
 We call the judgments \enquote{above the line} \textbf{antecedences} and the judgment below called the \textbf{consequent}.
-It should be recognized that an inference rule may have no side-condition or no antecedent, it could even neither!
+It should be recognized that an inference rule may have no side-condition or no antecedents, it could even neither.
 An inference rule with no antecedents is called an \textbf{axiom}.
-As we'll see, an inference system can't be very interesting if it doesn't have any axioms; without them, nothing can be unconditionally inferred!
+As we'll see, an inference system can't be very interesting if it doesn't have any axioms; without them, nothing can be unconditionally inferred.q
 
 \section{Derivations}
 
-At this point, we can give a very basic definition of an inference system.
+At this point, we can give a basic definition of an inference system.
 
 \begin{definition}
   An \textbf{inference system} over a set of judgment $\mathcal J$ is a collection of inference rules over $\mathcal J$.
@@ -164,7 +167,7 @@ At this point, we can give a very basic definition of an inference system.
 \begin{example}
   \label{ex:even-system}
   Let $\mathcal J$ be as in \Cref{ex:evens-odds}.
-  We can consider the inference system given by the following two inference rules (these rules do not say anything about odd numbers).
+  We can consider the inference system given by the following two inference rules (note that these rules do not say anything about odd numbers).
   \begin{center}
     \AxiomC{}
     \RightLabel{\small (zero)}
@@ -183,7 +186,7 @@ What we're interested in with regards to inference systems is the collection of 
 We make this more concrete with the notion of a \textbf{derivation}, which is used to demonstrate that it's possible to infer a given judgment within an inference system by repeated invocations of its inference rules.
 
 \begin{definition}
-  A \textbf{derivation} of the judgment $J$ in an inference system $\mathcal I$ judgments from $\mathcal J$ is a tree $T$ with the following properties:
+  A \textbf{derivation} of the judgment $J$ in an inference system $\mathcal I$ is a tree $T$ with the following properties:
   \begin{itemize}
   \item The values of $T$ are judgments from $\mathcal J$;
   \item $\troot{T}$ is $J$;
@@ -205,7 +208,7 @@ It's not a terribly interesting derivation, but it captures the form of reasonin
 \begin{remark}
   Even though derivations are trees, we present them bottom-up as stacks of inferences.
   This is, in part, because it captures the structure of a proof more naturally, but it's also just historical.
-  Gerhard Gentzen established much of the notation we use here (and in the mathematical field called \textit{proof theory}) in the 1930s \cite{TODO}.
+  Gerhard Gentzen established much of the notation we use here (and in the mathematical field called \textit{proof theory}) in the 1930s \cite{gentzen1964investigations}.
 \end{remark}
 %
 Let's consider a slightly more interesting inference system.
@@ -243,7 +246,7 @@ Let's consider a slightly more interesting inference system.
 \Cref{fig:8-is-even-again} is a derivation of \enquote{8 is even} is this alternative system.
 The primary takeaway: different inference systems provide us with different forms of reasoning.
 In this alternative system, we have to first separate $8$ into two summands and reason about them separately.
-This system differs from the one in \Cref{ex:even-system} also because a judgment may have multiple proofs.
+This system also differs from the one in \Cref{ex:even-system} because a judgment may have multiple proofs.
 
 \begin{exercise}
   Give another derivation of \enquote{$8$ is even} in this system from \Cref{ex:even-alt}.
@@ -308,14 +311,14 @@ This system differs from the one in \Cref{ex:even-system} also because a judgmen
   \label{fig:8-is-even-again}
 \end{figure}
 
-\section{Example: Calculator}
+\section{Extended Example: Calculator}
 
 \begin{figure}
 \begin{align*}
-\bnfnt{expr} &\bnfeq \bnft( \ \bnft+ \ \bnfnt{expr} \bnfnt{expr} \bnft) \\
-&\bnfaltn \bnft( \ \bnft* \ \bnfnt{expr} \bnfnt{expr} \bnft) \\
-&\bnfaltn \bnft( \ \bnft= \ \bnfnt{expr} \bnfnt{expr} \bnft) \\
-&\bnfaltn \bnft( \ \bnft? \ \bnfnt{expr} \bnfnt{expr} \bnfnt{expr} \bnft) \\
+\bnfnt{expr} &\bnfeq \bnft( \ \bnft+ \ \bnfnt{expr} \ \bnfnt{expr} \ \bnft) \\
+&\bnfaltn \bnft( \ \bnft* \ \bnfnt{expr} \ \bnfnt{expr} \ \bnft) \\
+&\bnfaltn \bnft( \ \bnft= \ \bnfnt{expr} \ \bnfnt{expr} \ \bnft) \\
+&\bnfaltn \bnft( \ \bnft? \ \bnfnt{expr} \ \bnfnt{expr} \ \bnfnt{expr} \ \bnft) \\
 &\bnfaltn \bnft 0 \bnfalt \bnft 1
 \end{align*}
 \caption{Lisp-like syntax for a simple calculator}
@@ -323,12 +326,15 @@ This system differs from the one in \Cref{ex:even-system} also because a judgmen
 \end{figure}
 
 We now consider several inference systems defined over judgments about expressions for a calculator with lisp-like syntax.
-Anticipating the next chapter, the formal syntax for such expressions is give in \cref{fig:calc-syntax}.
+Anticipating the next chapter, the formal syntax for such expressions is give in \Cref{fig:calc-syntax}.
 This syntax allows for only 8 possible symbols: \codel{(}, \codel{)}, \codel{+}, \codel{*}, \codel{=}, \codel{?}, \codel{0}, and \codel{1}.
+It is not expected at this point that you understand this specification; it's just meant to give a hint of what is to come.
+
+
 We begin by defining an inference system that determines which sequences of symbols constitute well-formed expressions (\Cref{fig:wf-sys}).
 This system is defined over judgments of the form \enquote{$e \in \mathsf{WF}$} where $e$ is a sequence of symbols.
 It captures in its inference rules that operators appear before their arguments, and that all invocations of an operator are surrounded in parentheses.
-For example, \codel{(* (+ 1 1) (+ 1 1))} is a well-formed expression, and we can derive this fact (\Cref{fig:wf-deriv}).
+For example, \codel{(* (+ 1 1) (+ 1 1))} is a well-formed expression, and we can derive this judgment formally (\Cref{fig:wf-deriv}).
 
 \begin{figure}
   \begin{center}
@@ -409,12 +415,14 @@ Once we've defined the well-formed expressions using an inference system, we can
   Prove using induction on derivations that if $e \in \mathsf{WF}$, then the parentheses in $e$ are balanced.
 \end{exercise}
 %
-In addition to proving things via structural induction, we can also define properties on well-formed expressions by defining a new inference system.\footnote{In particular, we can use the notion of a well-formed expression in other inference systems.}
-Suppose for example, we want to reason about how many symbols are in a given well-formed expression.
+In addition to proving things via structural induction, we can also define properties on well-formed expressions by defining new inference systems.
+In particular, we can use the notion of a well-formed expression in other inference systems.
+
+Suppose, for example, we want to reason about how many symbols are in a given well-formed expression.
 We can define an inference system to do this sort of reasoning (\Cref{fig:sym-sys}).
-This system is defined over judgments of the form \enquote{\#($e$) = $n$} where $e$ ranges over well-formed expressions (i.e., we can prove that $e \in \mathsf{WF}$ in the previously defined inference system) and $n$ ranges over natural numbers.
+This system is defined over judgments of the form \enquote{\#($e$) = $n$} where $e$ ranges over well-formed expressions (i.e., we can derive \enquote{$e \in \mathsf{WF}$} in the previously defined inference system) and $n$ ranges over natural numbers.
 The rules in this system express that \codel0 and \codel1 have $1$ symbol, and every other expression has 3 plus [the number of symbols in its subexpressions] many symbols.
-We can prove within this system that \codel{(* (+ 1 1) (+ 1 1))} has $13$ symbols.
+We can derive within this system that \codel{(* (+ 1 1) (+ 1 1))} has $13$ symbols (\Cref{fig:sym-deriv}).
 
 \begin{figure}
   \begin{center}
@@ -491,9 +499,9 @@ We can prove within this system that \codel{(* (+ 1 1) (+ 1 1))} has $13$ symbol
 \end{figure}
 
 At this point, we'd like to start thinking about the \textit{meaning} of these expressions.
-First, we must content with the fact that not all well-formed expressions are meaningful.
+First, we must contend with the fact that not all well-formed expressions are meaningful.
 For example \codel{(= (= 0 0) 1)} doesn't make much sense because it would require us to compare two values that aren't the \enquote{same kind of thing.}
-Formally, the \enquote{kind of thing} a value can be is called its \enquote{type.}
+Formally, the \enquote{kind of thing} a value can be is called its \textbf{type}.
 There are two types of values that an expression can be in our toy calculator language: a number (\codel{int}) or a Boolean value (\codel{bool}).
 
 \begin{remark}
@@ -502,7 +510,7 @@ There are two types of values that an expression can be in our toy calculator la
   We'll avoid doing this, in part because it makes our example less interesting, but also because there are some serious problems that arise when we design programming languages this way.
 \end{remark}
 %
-We can define an inference system which determines the type of (the value of) an expression, if it has one.
+We can define an inference system which determines the type of an expression, if it has one.
 This means that the system has two purposes: (1) it delineates which expressions have values (i.e., which we can evaluate), and (2) it determine the type of the value \textit{before} we've evaluated the expression (\Cref{fig:calc-ty-sys}).
 
 \begin{figure}
@@ -551,7 +559,7 @@ This means that the system has two purposes: (1) it delineates which expressions
 \end{figure}
 
 This system is defined over judgments of the form \enquote{$e : t$} where $e$ is a well-formed expression and $t$ is either \codel{int} or \codel{bool}.
-Let's take a breif moment to read what each of these rules says.
+Let's take a brief moment to read what each of these rules says.
 \begin{itemize}
 \item (zero) says \codel 0 is a \codel{int}, no matter what.
 \item (one) says \codel 1 is a \codel{int}, no matter what.
@@ -560,7 +568,7 @@ Let's take a breif moment to read what each of these rules says.
 \item (mul) says if $e_1$ is a \codel{int} (i.e., evaluates to a number) and $e_2$ is a \codel{int}, then $\codel( \ \codel* \ e_1 \ e_2 \ \codel)$ is a \codel{int}.
   In particular, we can only multiply numbers, not Boolean values.
 \item (eq) says if $e_1$ and $e_2$ are the same type then we can compare them, and $\codel( \ \codel= \ e_1 \ e_2 \ \codel)$ is a \codel{bool}. In particular, we can't compare a number with a Boolean value.
-\item (cond) says if $e_1$ is a \codel{bool}, and $e_2$ and $e_3$ are the same type, then we can condition on the value of $e_1$ to get either the value of $e_2$ or $e_3$, and the type of $\codel( \ \codel? \ e_1 \ e_2 \ \ e_3 \ \codel)$ is the same as that of $e_2$ and $e_3$.
+\item (cond) says if $e_1$ is a \codel{bool}, and $e_2$ and $e_3$ are the same type, then we can condition on the value of $e_1$ to get either the value of $e_2$ or $e_3$, and the type of $\codel( \ \codel? \ e_1 \ e_2 \ e_3 \ \codel)$ is the same as that of $e_2$ and $e_3$.
 \end{itemize}
 See \Cref{fig:calc-ty-deriv} for an example derivation in this system.
 
@@ -598,7 +606,7 @@ See \Cref{fig:calc-ty-deriv} for an example derivation in this system.
 
 \begin{remark}
   Notice that, ultimately, an inference rule, is a more compact way of expressing a statement in (mathematical) English.
-  It takes some practice to read inference rules, but it is worthwhile to learn in the long run, and eventually becomes easier than reading the equivalent English expression.
+  It takes some practice to read inference rules, but it is worthwhile to learn in the long run, and eventually becomes easier than reading the equivalent English.
 \end{remark}
 %
 Finally, we can define an inference system for determining the value of an expression in our toy calculator language (\Cref{fig:calc-eval-sys}).
@@ -617,6 +625,7 @@ Let's again take a moment to read what each of these rules says.
   In particular, $e_2$ does not need to be evaluated.
 \end{itemize}
 See \Cref{fig:calc-eval-deriv} for an example derivation in this system.
+Notice that the side conditions are where the \enquote{real} computation happens, e.g., the (add) rule draws a correspondence between the \codel{+} operator in our language and normal addition \enquote{$+$} in the side condition.
 
 \begin{figure}
   \begin{center}
@@ -705,5 +714,3 @@ See \Cref{fig:calc-eval-deriv} for an example derivation in this system.
 There is quite a bit more we could say about this example, but we'll leave it for now.
 The purpose of this presentation is primarily to offer examples of inferences systems like the ones on which we'll focus for the remainder of the text.
 We defer more careful considerations to those later chapters.
-
-\section*{Chapter Summary}
