@@ -1,0 +1,134 @@
+\section{Additional Exercises}
+
+\begin{enumerate}
+\item
+  Implement the function
+  \begin{ocaml}
+    val sqrt : int -> int
+  \end{ocaml}
+  so that \codel{sqrt n} is the smallest number \codel i such that \codel{n <= i * i}.
+  The behavior of the function is undefined if \codel n is negative.
+\item
+  Implement the function
+  \begin{ocaml}
+    val pow : int -> int -> int
+  \end{ocaml}
+  so that \codel{pow n k} is \codel n to the power of \codel k.
+  The behavior of the function is undefined if \codel k is negative.
+\item
+  Implement the function
+  \begin{ocaml}
+    val is_prime : int -> bool
+  \end{ocaml}
+  so that \codel{is\_prime n} is \codel{true} if \codel n is prime and \codel{false} otherwise.
+\item
+  A positive integer $n$ is \textbf{perfect} if it is equal to the sum of its proper divisors.
+  Implement the function
+  \begin{ocaml}
+    val is_perfect : int -> bool
+  \end{ocaml}
+  so that \codel{is\_perfect n} is \codel{true} if \codel n is perfect and \codel{false} otherwise.
+\item
+  Implement the function
+  \begin{ocaml}
+    val tail_fib : int -> int
+  \end{ocaml}
+  so that \codel{tail\_fib n} is the \codel{n}th element of the Fibonacci sequence, where $0$ is the $0$th element and $1$ is the $1$st element.
+  Your implementation must be tail recursive.
+\item
+  A \textbf{taxicab number} is a positive integer which can be expressed as the sum of two positive cubes in more than one way.\footnote{This is slightly different than the usual definition.}
+  Implement the function
+  \begin{ocaml}
+    val taxicab : int -> int
+  \end{ocaml}
+  so that \codel{taxicab n} is the number of ways that \codel n can be expressed as the sum of two positive cubes.
+\item
+  Consider the following types.
+  \begin{ocaml}
+    type int_list_or_string_list =
+      | IntList of int list
+      | StringList of string list
+
+    type int_or_string =
+      | Int of int
+      | String of string
+  \end{ocaml}
+  Implement the function
+  \begin{ocaml}
+    val convert : int_or_string list -> int_list_or_string_list list
+  \end{ocaml}
+  so that \codel{convert l} is the result of grouping adjacent \codel{int} values and \codel{string} values, e.g.,
+  \begin{ocaml}
+    let test_in = [Int 2; Int 3; String "a"; String "b"; Int 4; String "c"]
+    let test_out = [IntList [2;3]; StringList ["a";"b"]; IntList [4]; StringList ["c"]]
+    let _ = assert (convert test_in = test_out)
+  \end{ocaml}
+\item
+  Consider the following types representing recipes.
+  \begin{ocaml}
+    type ingr = string
+
+    type recipe = {
+      name : string;
+      ingrs : ingr list;
+    }
+  \end{ocaml}
+  Implement a function
+  \begin{ocaml}
+    val recs_by_ingrs : recipe list -> ingr list -> recipe list
+  \end{ocaml}
+  so that \codel{recs\_by\_ingrs recs ingrs} is the list of those recipes in \codel{recs} whose incredients are included in \codel{ingrs}.
+  The recipes in \codel{recs\_by\_ingrs recs ingrs} should appear in the same order as they appear in \codel{recs}.
+  You may assume that \codel{ingrs} and \codel{r.ingrs} for every \codel r in \codel{recs} do not contain duplicates.
+\item
+  Consider the following type.
+  \begin{ocaml}
+    type temp =
+      | Hot of int
+      | Icy of int
+  \end{ocaml}
+  Implement the function
+  \begin{ocaml}
+    val reduce : temp list -> temp list
+  \end{ocaml}
+  \codel{reduce l} is the result of applying the following rule until it's not possible to apply it any further: \textit{if \textnormal{\codel{Hot i}} and \textnormal{\codel{Icy i}} are adjacent (in particular, they must be carrying the same value) in any order, then they cancel out and are removed from the list.}
+\item
+  Consider the following type.
+  \begin{ocaml}
+    type 'a concatlist =
+      | Nil
+      | Single of 'a
+      | Concat of 'a concatlist * 'a concatlist
+  \end{ocaml}
+  Implement the function
+  \begin{ocaml}
+    val sort : 'a concatlist -> 'a list
+  \end{ocaml}
+  so that \codel{sort l} is a list with the same element as \codel l in sorted order.
+  You should do this \textit{without} converting \codel l into a regular list.
+\item
+  Consider the following type for a \textbf{fork list}, which is a combination of a list and a binary tree.
+
+  \begin{ocaml}
+    type 'a forklist =
+      | Nil
+      | Cons of 'a * 'a forklist
+      | Fork of 'a * 'a forklist * 'a forklist
+  \end{ocaml}
+  A fork list \codel l with distinct elements is \textbf{ordered} if it satisfies the following properties:
+  \begin{itemize}
+  \item
+    if \codel l is of the form \codel{Cons (x, xs)} then every element in \codel{xs} is
+    greater than \codel x;
+  \item
+    if \codel l is of the form \codel{Fork (x, lxs rxs)} then every element in
+    \codel{lxs} is less than \codel x and every element in \codel{rxs} is greater than
+    \codel x.
+  \end{itemize}
+  A fork list \codel l is \textbf{tailed} if it satisfies the property that if \codel{Cons (x, xs)} appears in \codel l, then \codel{xs} contains no \codel{Fork} constructors.
+  Implement the function
+  \begin{ocaml}
+    val delay_cons : 'a forklist -> 'a forklist
+  \end{ocaml}
+  so that, given an ordered fork list \codel l, the fork list \codel{delay\_cons l} is a tailed ordered fork list with the same element of \codel l and the same number of \codel{Cons}, \codel{Fork} and \codel{Nil} constructors as \codel l, respectively.
+\end{enumerate}
