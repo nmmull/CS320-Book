@@ -6,7 +6,7 @@ A programming language\textemdash in the sense of the techology that we use when
 We begin with a picture.
 As we said in \Cref{ch:intro}, when we program we type a bunch of characters into a file.
 Of the sequence of characters we can type, only a handful of them are valid \textit{sequences of tokens} in our programming language.
-For example, \codel{let} is a keyword of OCaml, \codel{1.223} is a floating point literal, \codel{\%} is an operator, and \codel{yasn3\_\_} is a valid variable name.
+For example, \codel{let} is a keyword of OCaml, \codel{1.223} is a floating point literal, \codel{+} is an operator, and \codel{yasn3\_\_} is a valid variable name.
 These are all valid tokens in OCaml.\footnote{We'll take of the question of what makes a valid token more formally in \ref{}.}
 Furthermore, OCaml requires that tokens are separated by whitespace, so any whitespace-separated combination of these is a valid sequence of tokens.
 But \codel{,,A,,} is a meaningless sequences of symbols from OCaml's perspective, and cannot appear in a valid sequence of tokens.
@@ -357,12 +357,12 @@ It captures in its inference rules that operators appear before their arguments,
 is a well-formed expression, and we can derive this judgment formally (\Cref{fig:wf-deriv}).
 Let’s take a brief moment to read what each of these rules says.
 \begin{itemize}
-\item \textsc{zeroS} says that $\codel 0$ is a well-formed expression, no matter what.
-\item \textsc{oneS} says that $\codel 1$ is a well-formed expression, no matter what.
-\item \textsc{addS} says that that if $e_1$ and $e_2$ are well-formed expressions, then so is $\codel( \ \codel+ \ e_1 \ e_2 \ \codel)$.
-\item \textsc{mulS} says that that if $e_1$ and $e_2$ are well-formed expressions, then so is $\codel( \ \codel* \ e_1 \ e_2 \ \codel)$.
-\item \textsc{eqS} says that that if $e_1$ and $e_2$ are well-formed expressions, then so is $\codel( \ \codel= \ e_1 \ e_2 \ \codel)$.
-\item \textsc{condS} says that that if $e_1$, $e_2$, and $e_3$ are well-formed expressions, then so is $\codel( \ \codel ? \ e_1 \ e_2 \ e_3 \ \codel)$.
+\item \textsc{zeroS} says $\codel 0$ is a well-formed expression, no matter what.
+\item \textsc{oneS} says $\codel 1$ is a well-formed expression, no matter what.
+\item \textsc{addS} says if $e_1$ and $e_2$ are well-formed expressions, then so is $\codel( \ \codel+ \ e_1 \ e_2 \ \codel)$.
+\item \textsc{mulS} says if $e_1$ and $e_2$ are well-formed expressions, then so is $\codel( \ \codel* \ e_1 \ e_2 \ \codel)$.
+\item \textsc{eqS} says if $e_1$ and $e_2$ are well-formed expressions, then so is $\codel( \ \codel= \ e_1 \ e_2 \ \codel)$.
+\item \textsc{condS} says if $e_1$, $e_2$, and $e_3$ are well-formed expressions, then so is $\codel( \ \codel ? \ e_1 \ e_2 \ e_3 \ \codel)$.
 \end{itemize}
 We cannot stress this enough: \textit{inference rules are formal shorthand for expressing rules which can also be expressed in natural language.}
 The natural language descriptions above may at first seem a lot easier to read.

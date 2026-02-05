@@ -1,1 +1,1017 @@
-\todo{Include 320Caml spec.}
+
+The following is a specification for a subset of OCaml used during the
+first part of the course.
+
+\section{Literals}
+
+\subsection*{Syntax}
+
+\begin{align*}
+  \bnfnt{int} &\bnfeq \bnft 0 \bnfalt \bnft 1 \bnfalt \bnft 2 \bnfalt \dots \\
+  \bnfnt{float} &\bnfeq \bnft {0.} \bnfalt \bnft {1.} \bnfalt \bnft {2.} \bnfalt \dots \\
+  \bnfnt{bool} &\bnfeq \bnft {true} \bnfalt \bnft {false} \\
+  \bnfnt{expr} &\bnfeq \bnfnt{int} \bnfalt \bnfnt{float} \bnfalt \bnfnt{bool} \\
+  \bnfnt{ty} &\bnfeq \bnft{int} \bnfalt \bnft{float} \bnfalt \bnft{bool}
+\end{align*}
+Literals are well-formed expressions by \textit{fiat}.  In the case of
+Boolean literals, we can make the syntax explicit: there are two
+literals, $\bnft{true}$ and $\bnft{false}$.  Infinite sets of literals
+(e.g., in the case of integers and floating-point numbers) are defined
+using regular expressions and are dealt with during \textit{lexical
+  analysis}.  We additionally state that $\codel{int}$,
+$\codel{float}$, and $\codel{bool}$ are well-formed types.
+
+\begin{example}
+  The integer literal $\codel{-2}$ and the Boolean literal
+  $\codel{true}$ are well-formed expressions.
+\end{example}
+
+\subsection*{Typing}
+
+\begin{mathpar}
+  \inferrule*[right=intLit]{
+    $\hl{$\codel{n}$ is an integer literal}$
+  }{
+    \G \ent \codel n : \intt
+  }
+  \and
+  \inferrule*[right=floatLit]{
+    $\hl{$\codel{n}$ is an float literal}$
+  }{
+    \G \ent \codel n : \floatt
+  }
+  \and
+  \inferrule*[right=true]{
+  }{
+    \G \ent \truee : \boolt
+  }
+  \and
+  \inferrule*[right=false]{
+  }{
+    \G \ent \falsee : \boolt
+  }
+\end{mathpar}
+The rules for literals are \textit{axioms}, i.e., they have no
+premises.  When building a derivation, these rules will appear as
+leaves of the derivation tree.
+\begin{itemize}
+\item \textsc{intLit} says every integer literal is of type $\intt$ in any context.
+\item \textsc{floatLit} says every floating-point literl is of type $\floatt$ in any context.
+\item \textsc{true} says $\truee$ is of type $\boolt$ in any context.
+\item \textsc{false} says $\falsee$ is of type $\boolt$ in any context.
+\end{itemize}
+
+\begin{example}
+  The integer literal $\codel{35}$ is of type $\intt$ in the empty context, i.e.,
+  the following is a valid derivation.
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLit}}
+    \UnaryInfC{$\varnothing \ent \codel{35} : \intt$}
+  \end{prooftree}
+\end{example}
+
+\subsection*{Semantics}
+
+\begin{mathpar}
+  \inferrule*[right=intLitE]{
+    $\hl{$\codel{n}$ is an integer literal for $n$}$
+  }{
+    \codel{n} \evl n
+  }
+  \and
+  \inferrule*[right=floatLitE]{
+    $\hl{$\codel{n}$ is an float literal for $n$}$
+  }{
+    \codel n \evl n
+  }
+  \and
+  \inferrule*[right=trueE]{
+  }{
+    \truee \evl \top
+  }
+  \and
+  \inferrule*[right=falseE]{
+  }{
+    \falsee \evl \bot
+  }
+\end{mathpar}
+\begin{itemize}
+\item \textsc{intLitE} says an integer literal evaluates to the number it denotes.
+\item \textsc{floatLitE} says a floating-point literal evaluates to the number it denotes.
+\item \textsc{trueE} says the literal $\truee$ evaluates to the Boolean value $\top$.
+\item \textsc{falseE} says the literal $\falsee$ evaluates to the Boolean value $\bot$.
+\end{itemize}
+
+\begin{example}
+  The floating-point literal $\codel{3.14}$ evaluates to the number
+  $3.14$, i.e., the following is a valid derivation.
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small \textsc{floatLitE}}
+    \UnaryInfC{$\codel{3.14} \evl 3.14$}
+  \end{prooftree}
+\end{example}
+
+\section{Variables}
+
+\subsection*{Syntax}
+
+\begin{align*}
+  \bnfnt{var} &\bnfeq \bnft{x} \bnfalt \bnft{foo\_bar} \bnfalt \bnft{abc'} \bnfalt \dots \\
+  \bnfnt{expr} &\bnfeq \bnfnt{var}
+\end{align*}
+Variables is a well-formed expression.  As with number literals, we
+can't make the syntax of a variable explicit, but we'll take a
+variable to be alphanumeric with underscores and single-quotes, not
+starting with a capital letter.
+
+\subsection*{Typing}
+
+\begin{mathpar}
+  \inferrule*[right=var]{
+    $\hl{$(x : \tau) \in \G$}$
+  }{
+    \G \ent x : \tau
+  }
+\end{mathpar}
+\textsc{var} says if the variable $x$ is declared to be of type $\tau$
+in the context $\G$, then $x$ is of type $\tau$ in the context $\G$.
+
+\begin{example}
+Since $(\codel{x} : \codel{int})$ appears in the context $\{\codel{x}
+: \intt, \codel{y} : \boolt\}$, the variables $\codel{x}$ is of type $\intt$ in
+this context, i.e., the following is a valid derivation.
+\begin{prooftree}
+  \AxiomC{}
+  \RightLabel{\small \textsc{var}}
+  \UnaryInfC{$\{ \codel x : \intt , \codel y : \boolt \} \ent \codel x : \intt$}
+\end{prooftree}
+\end{example}
+
+\subsection*{Semantics}
+
+There are no semantic rules for variables.  If evaluating an
+expression requires evaluating a variable, then the expression is not
+well-scoped.
+
+\section{Operators}
+
+\subsection*{Syntax}
+
+\begin{align*}
+  \bnfnt{op} &\bnfeq \bnft + \bnfalt \bnft - \bnfalt \bnft * \bnfalt \bnft / \bnfalt \bnft{mod} \\
+  &\bnfaltn \bnft {+.} \bnfalt \bnft {-.} \bnfalt \bnft {*.} \bnfalt \bnft {/.} \\
+  &\bnfaltn \bnft {\&\&} \bnfalt \bnft {||} \\
+  &\bnfaltn \bnft {=} \bnfalt \bnft {<>} \bnfalt \bnft {<} \bnfalt \bnft {<=} \bnfalt \bnft {>} \bnfalt \bnft {>=} \\
+  \bnfnt{expr} &\bnfeq \bnfnt{expr} \ \bnfnt{op} \ \bnfnt{expr}
+\end{align*}
+The first rule says the symbols $\codel{+}$, $\codel-$, $\codel *$,
+$\codel/$, $\codel{mod}$, etc. are well-formed operators.  The second
+says that if $\square$ is a well-formed operator and $e_1$ and $e_2$
+are well-formed expressions, then $e_1 \ \square \ e_2$ is a
+well-formed expression.
+
+\subsection*{Typing}
+
+\begin{mathpar}
+  \inferrule*[right=addInt]{
+    \G \ent e_1 : \intt
+    \and
+    \G \ent e_2 : \intt
+  }{
+    \G \ent e_1 \pluse e_2 : \intt
+  }
+  \and
+  \inferrule*[right=subInt]{
+    \G \ent e_1 : \intt
+    \and
+    \G \ent e_2 : \intt
+  }{
+    \G \ent e_1 \sube e_2 : \intt
+  }
+  \and
+  \inferrule*[right=mulInt]{
+    \G \ent e_1 : \intt
+    \and
+    \G \ent e_2 : \intt
+  }{
+    \G \ent e_1 \mule e_2 : \intt
+  }
+  \and
+  \inferrule*[right=divInt]{
+    \G \ent e_1 : \intt
+    \and
+    \G \ent e_2 : \intt
+  }{
+    \G \ent e_1 \dive e_2 : \intt
+  }
+  \and
+  \inferrule*[right=modInt]{
+    \G \ent e_1 : \intt
+    \and
+    \G \ent e_2 : \intt
+  }{
+    \G \ent e_1 \mode e_2 : \intt
+  }
+  \and
+  \inferrule*[right=addFloat]{
+    \G \ent e_1 : \floatt
+    \and
+    \G \ent e_2 : \floatt
+  }{
+    \G \ent e_1 \plusde e_2 : \floatt
+  }
+  \and
+  \inferrule*[right=subFloat]{
+    \G \ent e_1 : \floatt
+    \and
+    \G \ent e_2 : \floatt
+  }{
+    \G \ent e_1 \subde e_2 : \floatt
+  }
+  \and
+  \inferrule*[right=mulFloat]{
+    \G \ent e_1 : \floatt
+    \and
+    \G \ent e_2 : \floatt
+  }{
+    \G \ent e_1 \mulde e_2 : \floatt
+  }
+  \and
+  \inferrule*[right=divFloat]{
+    \G \ent e_1 : \floatt
+    \and
+    \G \ent e_2 : \floatt
+  }{
+    \G \ent e_1 \divde e_2 : \floatt
+  }
+  \and
+  \inferrule*[right=and]{
+    \G \ent e_1 : \boolt
+    \and
+    \G \ent e_2 : \boolt
+  }{
+    \G \ent e_1 \ande e_2 : \boolt
+  }
+  \and
+  \inferrule*[right=or]{
+    \G \ent e_1 : \boolt
+    \and
+    \G \ent e_2 : \boolt
+  }{
+    \G \ent e_1 \ore e_2 : \boolt
+  }
+  \and
+  \inferrule*[right=eq]{
+    \G \ent e_1 : \tau
+    \and
+    \G \ent e_2 : \tau
+  }{
+    \G \ent e_1 \eqe e_2 : \boolt
+  }
+  \and
+  \inferrule*[right=neq]{
+    \G \ent e_1 : \tau
+    \and
+    \G \ent e_2 : \tau
+  }{
+    \G \ent e_1 \neqe e_2 : \boolt
+  }
+  \and
+  \inferrule*[right=lt]{
+    \G \ent e_1 : \tau
+    \and
+    \G \ent e_2 : \tau
+  }{
+    \G \ent e_1 \lte e_2 : \boolt
+  }
+  \and
+  \inferrule*[right=leq]{
+    \G \ent e_1 : \tau
+    \and
+    \G \ent e_2 : \tau
+  }{
+    \G \ent e_1 \leqe e_2 : \boolt
+  }
+  \and
+  \inferrule*[right=gt]{
+    \G \ent e_1 : \tau
+    \and
+    \G \ent e_2 : \tau
+  }{
+    \G \ent e_1 \gte e_2 : \boolt
+  }
+  \and
+  \inferrule*[right=geq]{
+    \G \ent e_1 : \tau
+    \and
+    \G \ent e_2 : \tau
+  }{
+    \G \ent e_1 \geqe e_2 : \boolt
+  }
+\end{mathpar}
+There are quite a few rules here, but in essence, they all say: if
+$e_1$ and $e_2$ are some type in a given context then $e_1 \ \square
+\ e_2$ is some type in the same context.
+
+\begin{example}
+  The following is derivation of the fact that $\codel{x} \pluse \codel{2}$ is of
+  type $\intt$ in the context $\{ \codel x : \intt \}$.
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small \textsc{var}}
+    \UnaryInfC{$\{\codel x : \intt\} \ent \codel x : \intt$}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLit}}
+    \UnaryInfC{$\{\codel x : \intt\} \ent \codel 2 : \intt$}
+    \RightLabel{\small \textsc{addInt}}
+    \BinaryInfC{$\{\codel x : \intt\} \ent \codel x \pluse \codel 2 : \intt$}
+  \end{prooftree}
+\end{example}
+
+\subsection*{Semantics}
+
+\begin{mathpar}
+  \inferrule*[right=addIntE]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v = v_1 + v_2$}$
+  }{
+    e_1 \pluse e_2 \evl v
+  }
+  \and
+  \inferrule*[right=subIntE]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v = v_1 - v_2$}$
+  }{
+    e_1 \sube e_2 \evl v
+  }
+  \and
+  \inferrule*[right=mulIntE]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v = v_1 \times v_2$}$
+  }{
+    e_1 \mule e_2 \evl v
+  }
+  \and
+  \inferrule*[right=divIntE]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v_2 \neq 0$}$
+    \and
+    $\hl{$v = v_1 / v_2$}$
+  }{
+    e_1 \dive e_2 \evl v
+  }
+  \and
+  \inferrule*[right=modIntE]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v_2 \neq 0$}$
+    \and
+    $\hl{$v = v_1 \pmod {v_2}$}$
+  }{
+    e_1 \mode e_2 \evl v
+  }
+  \and
+  \inferrule*[right=addFloatE]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v = v_1 + v_2$}$
+  }{
+    e_1 \pluse e_2 \evl v
+  }
+  \and
+  \inferrule*[right=subFloatE]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v = v_1 - v_2$}$
+  }{
+    e_1 \sube e_2 \evl v
+  }
+  \and
+  \inferrule*[right=mulFloatE]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v = v_1 \times v_2$}$
+  }{
+    e_1 \mule e_2 \evl v
+  }
+  \and
+  \inferrule*[right=divFloatE]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v = v_1 / v_2$}$
+  }{
+    e_1 \dive e_2 \evl v
+  }
+  \and
+  \inferrule*[right=andFalse]{
+    e_1 \evl \bot
+  }{
+    e_1 \ande e_2 \evl \bot
+  }
+  \and
+  \inferrule*[right=andTrue]{
+    e_1 \evl \top
+    \and
+    e_2 \evl v
+  }{
+    e_1 \ande e_2 \evl v
+  }
+  \and
+  \inferrule*[right=orTrue]{
+    e_1 \evl \top
+  }{
+    e_1 \ore e_2 \evl \top
+  }
+  \and
+  \inferrule*[right=orFalse]{
+    e_1 \evl \bot
+    \and
+    e_2 \evl v
+  }{
+    e_1 \ore e_2 \evl v
+  }
+  \and
+  \inferrule*[right=eqTrue]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v_1 = v_2$}$
+  }{
+    e_1 \eqe e_2 \evl \top
+  }
+  \and
+  \inferrule*[right=eqFalse]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v_1 \neq v_2$}$
+  }{
+    e_1 \eqe e_2 \evl \bot
+  }
+  \and
+  \inferrule*[right=neqTrue]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v_1 \neq v_2$}$
+  }{
+    e_1 \neqe e_2 \evl \top
+  }
+  \and
+  \inferrule*[right=eqFalse]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v_1 = v_2$}$
+  }{
+    e_1 \neqe e_2 \evl \bot
+  }
+  \and
+  \inferrule*[right=ltTrue]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v_1 < v_2$}$
+  }{
+    e_1 \lte e_2 \evl \top
+  }
+  \and
+  \inferrule*[right=ltFalse]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v_1 \geq v_2$}$
+  }{
+    e_1 \lte e_2 \evl \bot
+  }
+  \and
+  \inferrule*[right=lteTrue]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v_1 \leq v_2$}$
+  }{
+    e_1 \leqe e_2 \evl \top
+  }
+  \and
+  \inferrule*[right=lteFalse]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v_1 > v_2$}$
+  }{
+    e_1 \leqe e_2 \evl \bot
+  }
+  \and
+  \inferrule*[right=gtTrue]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v_1 > v_2$}$
+  }{
+    e_1 \gte e_2 \evl \top
+  }
+  \and
+  \inferrule*[right=gtFalse]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v_1 \leq v_2$}$
+  }{
+    e_1 \gte e_2 \evl \bot
+  }
+  \and
+  \inferrule*[right=geqTrue]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v_1 \geq v_2$}$
+  }{
+    e_1 \geqe e_2 \evl \top
+  }
+  \and
+  \inferrule*[right=geqFalse]{
+    e_1 \evl v_1
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$v_1 < v_2$}$
+  }{
+    e_1 \geqe e_2 \evl \bot
+  }
+\end{mathpar}
+Again, there are a lot of rules here, but they all in essence say that
+if $e_1$ and $e_2$ evaluate to particular values, then $e_1 \ \square
+\ e_2$ evaluates to the expected value. One case of note is Boolean
+operators. Note how the rules enforce \textit{short-circuiting}.
+
+\begin{example}
+  The following is derivation of the fact that $\codel{2} \pluse
+  \codel{3}$ evaluates to $5$.
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLitE}}
+    \UnaryInfC{$\codel 2 \evl 2$}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLitE}}
+    \UnaryInfC{$\codel 2 \evl 3$}
+    \RightLabel{\small \textsc{addIntE}}
+    \BinaryInfC{$\codel 2 \pluse \codel 3 \evl 5$}
+  \end{prooftree}
+\end{example}
+
+\section{If-Expressions}
+
+\subsection*{Syntax}
+
+\begin{align*}
+  \bnfnt{expr} \bnfeq \bnft{if} \ \bnfnt{expr} \ \bnft{then} \ \bnfnt{expr} \ \bnft{else} \ \bnfnt{expr}
+\end{align*}
+If $e_1$ is a well-formed expression and $e_2$ is a well-formed
+expression and $e_3$ is a well-formed expression, then $\ife {e_1}
+\thene {e_2} \elsee {e_3}$ is a well-formed expression.
+
+\begin{example}
+  Since $\codel 2$ is a well-formed expression, then $\ife \codel 2
+  \thene \codel 2 \elsee \codel 2$ is a well-formed expression, i.e.,
+  the following is a valid parse tree.
+  \begin{center}
+    \begin{forest}
+      [$\bnfnt{expr}$
+        [$\bnft{if}$]
+        [$\bnfnt{expr}$
+          [$\bnfnt{int}$
+            [$\bnft{2}$]
+          ]
+        ]
+        [$\bnft{then}$]
+        [$\bnfnt{expr}$
+          [$\bnfnt{int}$
+            [$\bnft{2}$]
+          ]
+        ]
+        [$\bnft{else}$]
+        [$\bnfnt{expr}$
+          [$\bnfnt{int}$
+            [$\bnft{2}$]
+          ]
+        ]
+      ]
+    \end{forest}
+  \end{center}
+\end{example}
+
+\subsection*{Typing}
+
+\begin{mathpar}
+  \inferrule*[right=if]{
+    \G \ent e_1 : \boolt
+    \and
+    \G \ent e_2 : \tau
+    \and
+    \G \ent e_3 : \tau
+  }{
+    \G \ife e_1 \thene e_2 \elsee e_3 : \tau
+  }
+\end{mathpar}
+\textsc{if} says if $e_1$ is of type $\boolt$ in the context $\Gamma$
+and $e_2$ is of type $\tau$ in the context $\Gamma$ and $e_3$ is
+\textit{also} of type $\tau$ in the context $\Gamma$, then
+$\ife{e_1} \thene {e_2} \elsee {e_3}$ is of type $\tau$ in the context $\Gamma$.
+
+\begin{example}
+  The following is a valid derivation of the fact that $\ife \falsee
+  \thene \codel 2 \elsee \codel 3 \pluse \codel 4$ is of type $\intt$ in the empty
+  context.
+
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small \textsc{true}}
+    \UnaryInfC{$\varnothing \ent \falsee : \boolt$}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLit}}
+    \UnaryInfC{$\varnothing \ent \codel 2 : \intt$}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLit}}
+    \UnaryInfC{$\varnothing \ent \codel 3 : \intt$}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLit}}
+    \UnaryInfC{$\varnothing \ent \codel 4 : \intt$}
+    \RightLabel{\small \textsc{addInt}}
+    \BinaryInfC{$\varnothing \ent \codel 3 \pluse \codel 4 : \intt$}
+    \RightLabel{\small \textsc{if}}
+    \TrinaryInfC{$\varnothing \ent \ife \falsee \thene \codel 2 \elsee \codel 3 \pluse \codel 4 : \intt$}
+  \end{prooftree}
+\end{example}
+
+\subsection*{Semantics}
+
+\begin{mathpar}
+  \inferrule*[right=ifTrue]{
+    e_1 \evl \top
+    \and
+    e_2 \evl v
+  }{
+    \ife e_1 \thene e_2 \elsee e_3 \evl v
+  }
+  \and
+  \inferrule*[right=ifFalse]{
+    e_1 \evl \bot
+    \and
+    e_3 \evl v
+  }{
+    \ife e_1 \thene e_2 \elsee e_3 \evl v
+  }
+\end{mathpar}
+\begin{itemize}
+\item \textsc{ifTrue} says if $e_1$ evaluates to $\truee$ and $e_2$ evaluates to $v$, then $\ife e_1 \thene e_2 \elsee e_3$ evaluates to $v$
+\item \textsc{ifFalse} says if $e_1$ evaluates to $\falsee$ and $e_3$ evaluates to $v$, then $\ife e_1 \thene e_2 \elsee e_3$ evaluates to $v$
+\end{itemize}
+In either case, we do not evaluate the irrelevant branch.
+
+\begin{example}
+  The following is a valid derivation of the fact that $\ife \falsee
+  \thene \codel 2 \elsee \codel 3 \pluse \codel 4$ evaluates to $7$.
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small \textsc{falseE}}
+    \UnaryInfC{$\falsee \evl \bot$}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLitE}}
+    \UnaryInfC{$\codel 3 \evl 3$}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLitE}}
+    \UnaryInfC{$\codel 4 \evl 4$}
+    \RightLabel{\small \textsc{addIntE}}
+    \BinaryInfC{$\codel 3 \pluse \codel 4 \evl 7$}
+    \RightLabel{\small \textsc{ifFalse}}
+    \BinaryInfC{$\ife \falsee \thene \codel 2 \elsee \codel 3 \pluse \codel 4 \evl 7$}
+  \end{prooftree}
+\end{example}
+
+\section{Let-Expressions}
+
+\subsection*{Syntax}
+
+\begin{align*}
+  \bnfnt{expr} \bnfeq \bnft{let} \ \bnfnt{var} \ \bnft{=} \ \bnfnt{expr} \ \bnft{in} \ \bnfnt{expr}
+\end{align*}
+If $x$ is a variable and $e_1$ is a well-formed expression and $e_2$
+is a well-formed expression, then $\lete x \eqe e_1 \ine e_2$ is a
+well-formed expression.
+
+\begin{example}
+  Since $\codel{var\_name}$ is a well-formed variable name and $\codel
+  2$ is a well-formed expression then $\lete \codel{var\_name} \eqe
+  \codel 2 \ine \codel{var\_name}$ is a well-formed expression, i.e.,
+  the following is a valid parse tree.
+
+  \begin{center}
+        \begin{forest}
+      [$\bnfnt{expr}$
+        [$\bnft{let}$]
+        [$\bnfnt{var}$
+          [$\bnft{var\_name}$]
+        ]
+        [$\bnft{=}$]
+        [$\bnfnt{expr}$
+          [$\bnfnt{int}$
+            [$\bnft{2}$]
+          ]
+        ]
+        [$\bnft{in}$]
+        [$\bnfnt{expr}$
+          [$\bnfnt{var}$
+            [$\bnft{var\_name}$]
+          ]
+        ]
+      ]
+    \end{forest}
+  \end{center}
+\end{example}
+
+\subsection*{Typing}
+
+\begin{mathpar}
+  \inferrule*[right=let]{
+    \G \ent e_1 : \tau_1
+    \and
+    \G, x : \tau_1 \ent e_2 : \tau_2
+  }{
+    \G \ent \lete x \eqe e_1 \ine e_2 : \tau
+  }
+\end{mathpar}
+\textsc{let} says if $e_1$ is of type $\tau_1$ in the context $\G$,
+and $e_2$ is of type $\tau_2$ in the context $\G$ \textit{with the
+  variable declaration $(x : \tau_1)$ added to it}, then
+$\lete x \eqe e_1 \ine e_2$ is of type $\tau_2$ in the context $\G$.
+
+\begin{example}
+  The following is a valid derivation.
+
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLit}}
+    \UnaryInfC{$\{\} \ent \codel 2 : \intt$}
+    \AxiomC{}
+    \RightLabel{\small \textsc{var}}
+    \UnaryInfC{$\{\codel y : \intt\} \ent \codel y : \intt$}
+    \AxiomC{}
+    \RightLabel{\small \textsc{var}}
+    \UnaryInfC{$\{\codel y : \intt\} \ent \codel y : \intt$}
+    \RightLabel{\small \textsc{intAdd}}
+    \BinaryInfC{$\{\codel y : \intt\} \ent \codel y \pluse \codel y : \intt$}
+    \RightLabel{\small \textsc{let}}
+    \BinaryInfC{$\{\} \ent \lete \codel y \eqe \codel 2 \ine \codel y \pluse \codel y : \intt$}
+  \end{prooftree}
+\end{example}
+
+\subsection*{Semantics}
+
+\begin{mathpar}
+  \inferrule*[right=letE]{
+    e_1 \evl v_1
+    \and
+    $\hl{$[v_1 / x]e_2 = e'$}$
+    \and
+    e' \evl v
+  }{
+    \lete x \eqe e_1 \ine e_2 \evl v
+  }
+\end{mathpar}
+\textsc{letE} says if $e_1$ evaluates to $v_1$ and $e_2$ \textit{with
+  $v_1$ substituted for $x$} evaluates to $v$, then $\lete x \eqe e_1
+\ine e_2$ evaluates to $v$.
+
+\begin{example}
+  The following is a valid derivation.
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLitE}}
+    \UnaryInfC{$\codel 2 \evl 2$}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLitE}}
+    \UnaryInfC{$\codel 2 \evl 2$}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLitE}}
+    \UnaryInfC{$\codel 2 \evl 2$}
+    \RightLabel{\small \textsc{intAddE}}
+    \BinaryInfC{$\codel 2 \pluse \codel 2 \evl 4$}
+    \RightLabel{\small \textsc{letE}}
+    \BinaryInfC{$\lete \codel y \eqe \codel 2 \ine \codel y \pluse \codel y \evl 4$}
+  \end{prooftree}
+\end{example}
+
+\section{Functions}
+
+\subsection*{Syntax}
+
+\begin{align*}
+  \bnfnt{expr} \bnfeq \bnft{fun} \ \bnfnt{var} \ \bnft{->} \ \bnfnt{expr}
+\end{align*}
+If $x$ is a well-formed variable and $e$ is a well-formed expression,
+then $\fune x \toe e$ is a well-formed expression.
+
+\begin{example}
+  The following is a valid parse tree for the well-formed expression
+  $\fune \codel{name} \toe \codel{name} \pluse \codel 2$.
+  \begin{center}
+    \begin{forest}
+      [$\bnfnt{expr}$
+        [$\bnft{fun}$]
+        [$\bnfnt{var}$
+          [$\bnft{name}$]
+        ]
+        [$\bnft{->}$]
+        [$\bnfnt{expr}$
+          [$\bnfnt{var}$
+            [$\bnft{name}$]
+          ]
+          [$\bnft{+}$]
+          [$\bnfnt{int}$
+            [$\bnft{3}$]
+          ]
+        ]
+      ]
+    \end{forest}
+  \end{center}
+\end{example}
+
+\subsection*{Typing}
+
+\begin{mathpar}
+  \inferrule*[right=fun]{
+    \G, x : \tau_1 \ent e : \tau_2
+  }{
+    \G \ent \fune x \toe e : \tau_1 \toe \tau_2
+  }
+\end{mathpar}
+\textsc{fun} says if $e$ is of type $\tau_2$ in the context $\Gamma$
+\textit{together with the variable declaration $(x : \tau_1)$ added to
+  it}, then $\fune {x} \toe {e}$ is of type ${\tau_1} \toe {\tau_2}$.
+
+\begin{example}
+  The following is a valid derivation.
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLit}}
+    \UnaryInfC{$\{ \codel z : \floatt \} \ent \codel 2 : \intt$}
+    \RightLabel{\small \textsc{fun}}
+    \UnaryInfC{$\{\} \ent \fune \codel z \toe \codel 2 : \floatt \toe \intt$}
+  \end{prooftree}
+\end{example}
+
+\subsection*{Semantics}
+
+\begin{mathpar}
+  \inferrule*[right=funE]{
+  }{
+    \fune x \toe e \evl \lambda x . e
+  }
+\end{mathpar}
+\textsc{funE} says a function $\fune x \toe e$ evaluates to a special
+function value that essentially hold the variables $x$ and the body
+$e$ with the notation $\lambda x . e$.
+
+\begin{example}
+  The following is a valid derivation.
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small \textsc{funEval}}
+    \UnaryInfC{$\fune \codel x \toe \codel x \pluse \codel x \evl \lambda \codel x . \codel x \pluse \codel x$}
+  \end{prooftree}
+\end{example}
+
+\section{Application}
+
+\subsection*{Syntax}
+
+\begin{align*}
+  \bnfnt{expr} \bnfeq \bnfnt{expr} \ \bnfnt{expr}
+\end{align*}
+If $e_1$ is a well-formed expression and $e_2$ is a well-formed
+expression, then $e_1 \ e_2$ is a well-formed expression.
+
+\subsection*{Typing}
+
+\begin{mathpar}
+  \inferrule*[right=app]{
+    \G \ent e_1 : \tau_2 \toe \tau
+    \and
+    \G \ent e_2 : \tau_2
+  }{
+    \G \ent e_1 \ e_2 : \tau
+  }
+\end{mathpar}
+\textsc{app} says if $e_1$ is of type $\tau_2 \toe \tau$ and $e_2$ is of type $\tau_2$,
+then $e_1 \ e_2$ is of type $\tau$.
+
+\begin{example}
+  The following is a valid derivation.
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLit}}
+    \UnaryInfC{$\{ \codel z : \floatt \} \ent \codel 2 : \intt$}
+    \RightLabel{\small \textsc{fun}}
+    \UnaryInfC{$\{\} \ent \fune {\codel z} \toe {\codel 2} : \floatt \toe \intt$}
+    \AxiomC{}
+    \RightLabel{\small \textsc{floatLit}}
+    \UnaryInfC{$\{\}\ent \codel{2.0} : \floatt$}
+    \RightLabel{\small \textsc{app}}
+    \BinaryInfC{$\{\} \ent (\fune \codel z \toe \codel 2) \ \codel{2.0} : \intt$}
+  \end{prooftree}
+\end{example}
+
+\subsection*{Semantics}
+
+\begin{mathpar}
+  \inferrule*[right=appE]{
+    e_1 \evl \lambda x . e
+    \and
+    e_2 \evl v_2
+    \and
+    $\hl{$[v_2 / x]e = e'$}$
+    \and
+    e' \evl v
+  }{
+    e_1 \ e_2 \evl v
+  }
+\end{mathpar}
+\textsc{appE} says if $e_1$ evaluates to the function value $\lambda x
+. e$ and $e_2$ evaluates to $v_2$ and $e$ \textit{with $v_2$ substituted for
+$x$} evaluates to $v$, then $e_1 \ e_2$ evaluates to $v$.
+
+\begin{example}
+  The following is a valid derivation.
+  \begin{prooftree}
+    \AxiomC{}
+    \RightLabel{\small \textsc{funEval}}
+    \UnaryInfC{$\fune \codel x \toe \codel x \pluse \codel x \evl \lambda \codel x . \codel x \pluse \codel x$}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLitE}}
+    \UnaryInfC{$\codel 2 \evl 2$}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLitE}}
+    \UnaryInfC{$\codel 2 \evl 2$}
+    \AxiomC{}
+    \RightLabel{\small \textsc{intLitE}}
+    \UnaryInfC{$\codel 2 \evl 2$}
+    \RightLabel{\small \textsc{addIntE}}
+    \BinaryInfC{$\codel 2 \pluse \codel 2 \evl 4$}
+    \RightLabel{\small \textsc{appE}}
+    \TrinaryInfC{$(\fune \codel x \toe \codel x \pluse \codel x) \ \codel 2 \evl 4$}
+  \end{prooftree}
+\end{example}
+
+\begin{remark}
+  (\textbf{IMPORTANT}) There is a subtlety to substitution: when a
+  value is substituted for a variable in an expression, \textit{it is
+    converted back into an expression}, e.g., $[2 / \codel x](\codel x
+  \pluse \codel x) = \codel 2 \pluse \codel 2$.  This will be made
+  more clear when we see how this manifests in our implementation of
+  interpreters.  For now, it is important to note that it is simple to
+  convert the values we care about back into expressions via the
+  following mapping:
+  \begin{align*}
+    \textit{integer} &\mapsto \codel{integer literal} & \text{(e.g., $2 \mapsto \codel{2}$)} \\
+    \textit{float} &\mapsto \codel{float literal} & \text{(e.g., $3.5 \mapsto \codel{3.5}$)} \\
+    \top &\mapsto \truee \\
+    \bot &\mapsto \falsee \\
+    \lambda x . e & \mapsto \fune x \toe e
+  \end{align*}
+\end{remark}
