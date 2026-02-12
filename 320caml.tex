@@ -646,7 +646,7 @@ expression and $e_3$ is a well-formed expression, then $\ife {e_1}
     \and
     \G \ent e_3 : \tau
   }{
-    \G \ife e_1 \thene e_2 \elsee e_3 : \tau
+    \G \ent \ife e_1 \thene e_2 \elsee e_3 : \tau
   }
 \end{mathpar}
 \textsc{if} says if $e_1$ is of type $\boolt$ in the context $\Gamma$
@@ -773,7 +773,7 @@ well-formed expression.
     \and
     \G, x : \tau_1 \ent e_2 : \tau_2
   }{
-    \G \ent \lete x \eqe e_1 \ine e_2 : \tau
+    \G \ent \lete x \eqe e_1 \ine e_2 : \tau_2
   }
 \end{mathpar}
 \textsc{let} says if $e_1$ is of type $\tau_1$ in the context $\G$,
