@@ -5,7 +5,7 @@ A programming language\textemdash in the sense of the techology that we use when
 
 We begin with a picture.
 As we said in \Cref{ch:intro}, when we program we type a bunch of characters into a file.
-Of the sequence of characters we can type, only a handful of them are valid \textit{sequences of tokens} in our programming language.
+Of the sequences of characters we can type, only a handful of them are valid \textit{sequences of tokens} in our programming language.
 For example, \codel{let} is a keyword of OCaml, \codel{1.223} is a floating point literal, \codel{+} is an operator, and \codel{yasn3\_\_} is a valid variable name.
 These are all valid tokens in OCaml.\footnote{We'll take of the question of what makes a valid token more formally in \ref{}.}
 Furthermore, OCaml requires that tokens are separated by whitespace, so any whitespace-separated combination of these is a valid sequence of tokens.
@@ -65,15 +65,15 @@ And each transformation has a corresponding inference system that \textit{formal
 
 \noindent In this chapter we will:
 \begin{itemize}
-\item formally define \textbf{inference rules}, i.e, the rules which govern when we can derive new judgments from judgements we've already derived in an inference system;
+\item formally define \textbf{inference rules}, i.e, the rules which govern when we can derive new judgments from judgements we've already derived;
 \item use \textbf{derivations} to demonstrate that a judgment is derivable in an inference system;
-\item present an extended example which consists of a collection of inference systems that define the syntax, typing behavior, and evaluation behavior of a simple programming language for a calculator.
+\item present an extended example which consists of a collection of inference systems that define the syntax, typing, and (dynamic) semantics of a simple programming language for arithmetic.
 \end{itemize}
 
 \section{Inference Rules}
 
 An \textbf{inference system} is determined by a collection of \textbf{inference rules}.
-These inference rules describe what new information we're allowed to \textit{infer} given previously inferred information.
+These inference rules describe what new information we can \textit{infer} given previously inferred information.
 Inference rules will generally have the following form.
 \begin{mathpar}
   \inferrule*[right=addTwo]{
@@ -88,7 +88,7 @@ This inference rule expresses that we can infer a number $n$ is even if we alrea
 We begin by looking at the general anatomy of inference rules.
 
 An inference system is defined over a fixed class of \textbf{judgments}.
-We think of judgments as the things we can say while inferring something.
+We think of judgments as the \enquote{things we can say} when we inferring something.
 Mathematically speaking, judgments can be anything we want, i.e., elements of an arbitrary set.
 Practically speaking, we'll always take judgments to be \textit{statements} parametrized by some other set.
 \begin{example}
@@ -110,12 +110,13 @@ Likewise, we'll say that a parameterized judgment is in a set $\mathcal J$ when 
 \end{remark}
 An \textbf{inference rule} is a way of describing what judgments we're allowed to infer given we've already inferred some other judgments.
 They also often include additional statements that need to hold in order for a given rule to be applied; these are called \textbf{side conditions}.\footnote{
-In what follows we \hl{highlight} side conditions to make clear that they are not formal judgments.
+In what follows we \hl{highlight} side conditions to make clear that they are not judgments.
 }
 The following is the general definition of an inference rule.
 It's important that we understand this definition, but not on our first pass; make sure to lean on the intuitions we've been trying to develop here as you work through this chapter, and come back to this definition potentially several times.
 \begin{definition}
-  An \textbf{inference rule} named \textsc{ruleName} is a nonempty sequence of parameterized judgments $J_1, \dots J_k, J_{k + 1}$ along with a collection of statements $S_1, \dots, S_l$ depending on the parameters used in those judgments. An inference rule is denoted by
+  An \textbf{inference rule} named \textsc{ruleName} is a nonempty sequence of parameterized judgments $J_1, \dots J_k, J_{k + 1}$ along with a collection of statements $S_1, \dots, S_l$ depending on the parameters used in those judgments.
+  Such an inference rule is denoted by
   \begin{mathpar}
     \inferrule*[right=ruleName]{
       J_1 \quad \dots \quad J_k
@@ -137,7 +138,7 @@ It's important that we understand this definition, but not on our first pass; ma
   and say that this is an \textbf{instance} of the rule \textsc{ruleName}.
   We'll also call this an \textbf{inference}.
 \end{definition}
-We call the judgments above the line \textbf{antecedences} and the judgment below called the \textbf{consequent}.
+We call the judgments above the line \textbf{antecedences} and the judgment below the line the \textbf{consequent}.
 An inference rule may have no side-condition or no antecedents.
 An inference rule with no antecedents is called an \textbf{axiom}.
 
