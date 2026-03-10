@@ -1,8 +1,8 @@
 When you write a program in your favorite programming language, you fill a file with characters, typically by typing on a keyboard.
 This is one of the beauties of programming: looking past the bells and whistles provided by IDEs, a program is a stream of characters.
 At some point in the programming workflow, you need to verify that what you've typed up works as expected, so you \textit{run} the program.
-In some cases this might mean pressing a \enquote{play} button, but in many cases it means opening a terminal and typing a few commands.
-In either case, you're running a \textit{different} program\textemdash an \textbf{interpreter}\textemdash in order to run the program you yourself have written.
+In some cases this means pressing a \enquote{play} button, but in many cases it means opening a terminal and typing a few commands.
+In either case, you're running a \textit{different} program\textemdash an \textbf{interpreter}\textemdash in order to run the program you've written.
 Our goal is to understand:
 \textit{
   What does an interpreter do?
@@ -60,7 +60,7 @@ As we will come to understand it, an interpreter does four things:
 \begin{enumerate}
 \item
   It attempts to convert the input stream of characters into a stream of \textit{tokens} by grouping together related characters.
-  We think of tokens as the \textit{units} or \textit{atoms} of our programming langauge
+  We think of tokens as the \textit{units} or \textit{atoms} of our programming langauge.
   This part interpretation is called \textbf{lexical analysis}, and its primary purpose is to simplify the process of analyzing the input program.
   It's useful, for example, to know whether the character \codel{1} that appears in our program is part of a number (e.g., \codel{210}) or a variable name (e.g., \codel{case1}).
   Lexical analysis handles all these low-level syntactic concerns up front.
@@ -77,23 +77,22 @@ As we will come to understand it, an interpreter does four things:
   There are many forms of static analysis, but the one we'll focus on is \textbf{type checking}.
   Types help us describe what kind of things we're working with \textit{before we run our program}.
   They help us determine \textit{before we run our program} if we're using data correctly.
-  In analogy with natural language, this is akin to the uneasy feeling you get when you hear or see a sentence like \enquote{the happiness is cold}.
-  The word \enquote{happiness} isn't the right kind of word for its location in the sentence, despite the fact that the sentence is grammatically correct.
+  In analogy with natural language, this is akin to the uneasy feeling you get when you hear or see a sentence like \enquote{the happiness is cold}; the word \enquote{happiness} isn't the right kind of word for its place in the sentence, despite the fact that the sentence is grammatically correct.
   Not all languages have type checkers, but we maintain that \enquote{good} languages have type checkers.
 \item
   Everything above is in service of \textit{running} our program.
   This part of interpretion is called \textbf{dynamic (semantic) analysis} or \textbf{evaluation}.
-  This is the most intuitive part of an interpreter for programmers; learning to program is ultimately internalizing the evaluation rules of a programming language, so that we know what to write to accomplish a certain task.
+  This is the most intuitive part of an interpreter for programmers; learning to program is ultimately internalizing the evaluation rules of a programming language so that we know what to write to accomplish a certain task.
 \end{enumerate}
-The about outline should be understood as our roadmap; we will consider each part in turn, and build several interpreters along the way.
+The above outline should be understood as our roadmap; we will consider each part in turn, and build several interpreters along the way.
 For each part, there will be two perspectives: the theoretical perspective and the practical perspective.
 For example, the formal counterpart of syntactic analysis is \textbf{formal grammar} and the practical counterpart is \textbf{parsing}.
-By the end we hop you'll have gained an appreciation for the considerations that go into designing \enquote{good} programming languages.
+By the end we hope you'll have gained an appreciation for the considerations that go into designing \enquote{good} programming languages.
 
 \begin{remark}
-It should be noted at this point that we will \textit{not} consider \textbf{compilation} in this text.
+It should be noted that we will \textit{not} consider \textbf{compilation} in this text.
 In rough terms, compilation is the process of translating a program in one programming language into an \textit{equivalent} program in a different programming language.
 The target language of the translation is often one that deals with low-level concerns like memory management (e.g., assembly language or LLVM).
-We'll only consider high-level semantics for our programming languages, and when we implement interpreters we'll work in high-level abstractions using OCaml.
+We'll only consider high-level semantics for our programming languages, and when we implement interpreters we'll work in high-level abstractions using OCaml (these are sometimes called \textbf{definitional interpreters}).
 If you're interested in compilers, there are many great sources, perhaps mostly notably the \enquote{dragon book} \cite{alfred-et-al-2007}.
 \end{remark}
